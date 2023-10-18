@@ -29,13 +29,6 @@ class Lobby(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class Lobby_Players(db.Model):
-    player_1 = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    player_2 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_3 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_4 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_5 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_6 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_7 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_8 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_9 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
-    player_10 = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
+    id = db.Column(db.Integer, primary_key=True)
+    lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
+    players = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
