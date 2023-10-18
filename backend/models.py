@@ -32,3 +32,11 @@ class Lobby_Players(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
     players = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    messages = db.Column(db.String(10000))
+    time_stamp = date = db.Column(db.DateTime(timezone=True), default=func.now())
+
