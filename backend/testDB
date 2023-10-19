@@ -8,5 +8,7 @@ conn = psycopg2.connect(database="",
                         port="")
 
 cursor = conn.cursor()
+cursor.execute("INSERT INTO public.\"User\"(user_id, user_name, email, user_password, fav_game_id) VALUES (0, 'admin', 'admin@quest.com', 'password', NULL) ON CONFLICT DO NOTHING")
+conn.commit()
 cursor.execute("SELECT * FROM public.\"User\"")
-print(cursor.fetchone())
+print(cursor.fetchall())
