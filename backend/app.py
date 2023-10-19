@@ -1,9 +1,22 @@
-from flask import Flask
-from routes.main import main_blueprint
+from flask import Flask, request, render_template, jsonify
+import os
+from dotenv import load_dotenv
+from flask_cors import CORS
+
+load_dotenv()
 
 app = Flask(__name__)
 
-app.register_blueprint(main_blueprint)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 
-if __name__ == '__main__':
-    app.run()
+CORS(app)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# testing flask -> angular data
+@app.route('/api/testdata', methods=['GET'])
+def testdata():
+    greetings = 'hello from flask'
+    return jsonify(greetings)
