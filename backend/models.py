@@ -14,7 +14,7 @@ class User(db.Model):
 class Friends(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     friend_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    relationship = db.Column(db.String)
+    relationship = db.Column(db.String(15))
 
 class Blocked(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,5 +38,5 @@ class Chat(db.Model):
     lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     messages = db.Column(db.String(10000))
-    time_stamp = date = db.Column(db.DateTime(timezone=True), default=func.now())
+    time_stamp = db.Column(db.DateTime(timezone=True), default=func.now())
 

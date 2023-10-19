@@ -1,0 +1,12 @@
+import psycopg2
+
+# Here you input the database data relating to YOUR local instance of the database
+conn = psycopg2.connect(database="",
+                        host="", # Could have set it as localhost
+                        user="postgres", # Default is postgres
+                        password="",
+                        port="")
+
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM public.\"User\"")
+print(cursor.fetchone())
