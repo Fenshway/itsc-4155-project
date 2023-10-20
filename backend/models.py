@@ -14,7 +14,7 @@ class User(db.Model):
 class Friends(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     friend_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    relationship = db.Column(db.String)
+    relationship = db.Column(db.String(15))
 
 class Blocked(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,4 +25,18 @@ class Lobby(db.Model):
     game_id = db.Comuln(db.Integer)
     host_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     num_players = db.Comuln(db.Integer)
+    description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+
+class Lobby_Players(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
+    players = db.Column(db.Integer, db.ForeignKey('user.user_id'), default=None)
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lobby_id = db.Column(db.Integer, db.ForeignKey('lobby.lobby_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    messages = db.Column(db.String(10000))
+    time_stamp = db.Column(db.DateTime(timezone=True), default=func.now())
+
