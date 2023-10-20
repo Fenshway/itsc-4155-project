@@ -1,1 +1,18 @@
-<p>create-lobby works!</p>
+<h2>Create a Lobby</h2>
+
+<form>
+    <p>Still thinking how we choose game</p>
+    <div class="form-group col-4">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" placeholder="Title" required>
+    </div>
+    <div class="form-group col-4">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" rows="3" placeholder="Description"></textarea>
+    </div>
+    <div class="form-group col-4">
+        <label for="size">Lobby Size</label>
+        <input type="number" class="form-control" id="size" min="2" max="10" placeholder="2-10" required>
+    </div>
+    <button type="submit" class="btn btn-outline-success mt-3">Create</button>
+</form>
