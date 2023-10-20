@@ -1,6 +1,10 @@
 from models.model import User, db, app # This are always necessary when calling the database
 from sqlalchemy import exc # This one too to check for douplicates and handle them
 
+# Creates the tables
+with app.app_context():
+    db.create_all()
+
 # This is the way to call the email from all users in the User table
 with app.app_context(): # The app.app_context() is only necessary when calling the database from outside the Flask scope(aka routes)
     userInfo = User.query.all()
