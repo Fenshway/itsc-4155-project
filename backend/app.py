@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_file
 import os
+import base64
+from io import BytesIO
 from dotenv import load_dotenv
 from flask_cors import CORS
-from models.model import db
+from models.model import UserImage, User, db
 
 load_dotenv()
 
@@ -26,6 +28,21 @@ def index():
 def testdata():
     greetings = 'hello from flask'
     return jsonify(greetings)
+
+# Testing for Image Upload
+# TODO: Add a way to display upoaded image
+# Can fetch uploaded image with: UserImage.query.filter_by(filename=file.filename).first()
+@app.route('/testImage', methods=['GET', 'POST'])
+def testImage():
+    if request.method == 'POST':
+        file = request.files['file']
+        adminID = User.query.filter_by(user_name='Admin').first()
+        upload = UserImage(user_id=adminID.user_id, filename=file.filename, data=file.read())
+        db.session.add(upload)
+        db.session.flush()
+        db.session.commit()
+        return f'Uploaded: {file.filename}'
+    return render_template('fetchImage.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
