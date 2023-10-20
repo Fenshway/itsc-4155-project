@@ -5,12 +5,20 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TestComponentComponent } from './test-component/test-component.component';
 import { UserNavComponent } from './user-nav/user-nav.component';
+import { GeneralNavComponent } from './general-nav/general-nav.component';
+import { RegistrationComponent } from './registration/registration.component';
+import { LoginComponent } from './login/login.component';
+import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TestComponentComponent,
-    UserNavComponent
+    UserNavComponent,
+    GeneralNavComponent,
+    RegistrationComponent,
+    LoginComponent,
+    CreateLobbyComponent
   ],
   imports: [
     BrowserModule,
