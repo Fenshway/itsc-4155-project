@@ -21,6 +21,19 @@ def index():
     print(User.query.all()) # Test [] when empty. This is how a query would be run from inside a Flask instance
     return render_template('index.html')
 
+#json user object. keys = username, email, password1, password2. Path used for account registration
+@app.route('/register', methods=['POST'])
+def register():
+    user = request.get_json()
+
+    test_data = user.get('username')
+    print(test_data)
+
+    response_data = {
+        "message": "Data received successfully"
+    }
+    return jsonify(response_data), 200
+
 # testing flask -> angular data
 @app.route('/api/testdata', methods=['GET'])
 def testdata():

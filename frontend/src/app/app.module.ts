@@ -9,6 +9,7 @@ import { GeneralNavComponent } from './general-nav/general-nav.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { LoginComponent } from './login/login.component';
 import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
