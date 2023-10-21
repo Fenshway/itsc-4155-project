@@ -1,6 +1,6 @@
 <h2>Login</h2>
 
-<form #userRegister="ngForm" (ngSubmit)="onSubmit()" autocomplete="off">
+<form #userLogin="ngForm" (ngSubmit)="onSubmit()" autocomplete="off">
   <div class="form-group col-4">
       <label for="username">Username</label>
       <input [(ngModel)]="user.username" type="text" class="form-control" name="username" placeholder="Username" required>

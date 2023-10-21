@@ -26,7 +26,7 @@ def index():
     print(User.query.all()) # Test [] when empty. This is how a query would be run from inside a Flask instance
     return render_template('index.html')
 
-#json user object. keys = username, email, password1, password2. Path used for account registration
+#json user object. keys = username, email, password. Path used for account registration
 @app.route('/register', methods=['POST'])
 def register():
     user = request.get_json()
@@ -34,13 +34,12 @@ def register():
     userName = user.get('username')
     print(userName)
     email = user.get('email')
-    password1 = user.get('password1')
-    password2 = user.get('password2')
+    password = user.get('password')
 
-    hashed_bytes = bcrypt.generate_password_hash(password1, int(os.getenv('BCRYPT_ROUNDS')))
+    hashed_bytes = bcrypt.generate_password_hash(password, int(os.getenv('BCRYPT_ROUNDS')))
     hashed_password = hashed_bytes.decode('utf-8')
 
-    # Verify the username/email doesn't exsist or that the passwords match.
+    # Verify the username/email doesn't exsist.
     userMail = User.query.filter_by(email=email).first()
     user = User.query.filter_by(user_name=userName).first()
 
@@ -52,13 +51,9 @@ def register():
         flash('User Namre already exist', category='error')
     elif len(userName) < 2:
         flash('First name must be greater than 1 characters', category='error')
-    elif password1 != password2:
-        flash('Passwords don\'t match', category='error')
-    elif len(password1) < 7:
-        flash('Passwords must be at least 7 characters long', category='error')
     else:
         # This is how it get's passed to the DataBase
-        new_user = User(user_name=userName, email=email, user_password=password1)
+        new_user = User(user_name=userName, email=email, user_password=password)
         db.session.add(new_user)
         db.session.commit()
         flash('Account Created and added to the DataBase!', category='success')

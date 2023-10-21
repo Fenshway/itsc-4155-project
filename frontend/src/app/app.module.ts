@@ -11,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
 import { FormsModule } from '@angular/forms';
 import { UserSidenavComponent } from './user-sidenav/user-sidenav.component';
+import { RouterLink } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { UserSidenavComponent } from './user-sidenav/user-sidenav.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   providers: [],
   bootstrap: [AppComponent]
