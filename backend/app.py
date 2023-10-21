@@ -28,8 +28,15 @@ def index():
 def register():
     user = request.get_json()
 
-    test_data = user.get('username')
-    print(test_data)
+    userName = user.get('username')
+    print(userName)
+    email = user.get('email')
+    password = user.get('password1')
+
+    # This is how it get's passed to the DataBase
+    new_user = User(user_name=userName, email=email, user_password=password)
+    db.session.add(new_user)
+    db.session.commit()
 
     response_data = {
         "message": "Data received successfully"
