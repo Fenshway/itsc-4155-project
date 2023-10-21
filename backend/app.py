@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify, send_file
+from flask import Flask, request, render_template, jsonify, send_file, flash
 import os
 import base64
 from io import BytesIO
@@ -31,12 +31,31 @@ def register():
     userName = user.get('username')
     print(userName)
     email = user.get('email')
-    password = user.get('password1')
+    password1 = user.get('password1')
+    password2 = user.get('password2')
 
-    # This is how it get's passed to the DataBase
-    new_user = User(user_name=userName, email=email, user_password=password)
-    db.session.add(new_user)
-    db.session.commit()
+    # Verify the username/email doesn't exsist or that the passwords match.
+    userMail = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(user_name=userName).first()
+
+    if userMail:
+        flash('Email already exist', category='error')
+    elif len(email) < 4:
+        flash('Email must be greater than 3 characters', category='error')
+    elif user:
+        flash('User Namre already exist', category='error')
+    elif len(userName) < 2:
+        flash('First name must be greater than 1 characters', category='error')
+    elif password1 != password2:
+        flash('Passwords don\'t match', category='error')
+    elif len(password1) < 7:
+        flash('Passwords must be at least 7 characters long', category='error')
+    else:
+        # This is how it get's passed to the DataBase
+        new_user = User(user_name=userName, email=email, user_password=password1)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Account Created and added to the DataBase!', category='success')
 
     response_data = {
         "message": "Data received successfully"
