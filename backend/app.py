@@ -4,6 +4,7 @@ import base64
 from io import BytesIO
 from dotenv import load_dotenv
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 from models.model import UserImage, User, db
 
 load_dotenv()
@@ -16,6 +17,8 @@ with app.app_context():
     db.create_all()
 
 CORS(app)
+
+bcrypt = Bcrypt(app)
 
 @app.route('/')
 def index():
@@ -33,6 +36,9 @@ def register():
     email = user.get('email')
     password1 = user.get('password1')
     password2 = user.get('password2')
+
+    hashed_bytes = bcrypt.generate_password_hash(password1, int(os.getenv('BCRYPT_ROUNDS')))
+    hashed_password = hashed_bytes.decode('utf-8')
 
     # Verify the username/email doesn't exsist or that the passwords match.
     userMail = User.query.filter_by(email=email).first()
@@ -57,6 +63,27 @@ def register():
         db.session.commit()
         flash('Account Created and added to the DataBase!', category='success')
 
+    response_data = {
+        "message": "Data received successfully"
+    }
+    return jsonify(response_data), 200
+
+#user login
+@app.route('/login', methods=['POST'])
+def login():
+    user = request.get_json()
+
+    username = user.get(username)
+    password = user.get(password)
+
+    # TODO check if username exists in db. check is passwords math
+    existing_user = 'get from database'
+
+    if not bcrypt.check_password_hash(existing_user.user_password, password):
+        #if they dont match we will get out and pass error to frontend
+        pass
+
+    #still looking how we should pass session back and forth
     response_data = {
         "message": "Data received successfully"
     }
