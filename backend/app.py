@@ -52,7 +52,7 @@ def register():
     elif len(userName) < 2:
         flash('First name must be greater than 1 characters', category='error')
     else:
-        # This is how it get's passed to the DataBase
+        # This is how it gets passed to the DataBase
         new_user = User(user_name=userName, email=email, user_password=password)
         db.session.add(new_user)
         db.session.commit()
@@ -71,11 +71,13 @@ def login():
     username = user.get(username)
     password = user.get(password)
 
-    # TODO check if username exists in db. check is passwords math
-    existing_user = 'get from database'
+    existing_user = User.query.filter_by(user_name=username).first()
+    if not existing_user:
+        flash('No user name found. Please try again.', category='error') #This is how I passed to the front end as an error, but change it as necessary.
 
-    if not bcrypt.check_password_hash(existing_user.user_password, password):
+    elif not bcrypt.check_password_hash(existing_user.user_password, password):
         #if they dont match we will get out and pass error to frontend
+        flash('Wrong password. Check it and try again', category='error')
         pass
 
     #still looking how we should pass session back and forth
