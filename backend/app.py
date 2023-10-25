@@ -106,6 +106,8 @@ def testImage():
         db.session.add(upload)
         db.session.flush()
         db.session.commit()
+        # TODO Once the image has been uploaded, you can fetch it with the following code:
+        image = UserImage.query.filter_by(user_id=(adminID.user_id)).first().data
         return f'Uploaded: {file.filename}'
     return render_template('fetchImage.html')
 
