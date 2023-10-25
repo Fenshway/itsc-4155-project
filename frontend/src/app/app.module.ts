@@ -12,6 +12,9 @@ import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
 import { FormsModule } from '@angular/forms';
 import { UserSidenavComponent } from './user-sidenav/user-sidenav.component';
 import { JwtModule } from '@auth0/angular-jwt';
+import { ProfileComponent } from './profile/profile.component';
+import { LobbyComponent } from './lobby/lobby.component';
+import { ViewLobbiesComponent } from './view-lobbies/view-lobbies.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -26,7 +29,10 @@ export function tokenGetter() {
     RegistrationComponent,
     LoginComponent,
     CreateLobbyComponent,
-    UserSidenavComponent
+    UserSidenavComponent,
+    ProfileComponent,
+    LobbyComponent,
+    ViewLobbiesComponent
   ],
   imports: [
     BrowserModule,

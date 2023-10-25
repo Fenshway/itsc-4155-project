@@ -1,19 +1,19 @@
 <h2>Registration</h2>
 <div class="container">
     <form #userRegister="ngForm" (ngSubmit)="onSubmit()" autocomplete="off">
-        <div class="form-group col-4">
+        <div class="form-group">
             <label for="username">Username</label>
             <input [(ngModel)]="user.username" type="text" class="form-control" name="username" placeholder="Username" required>
         </div>
-        <div class="form-group col-4">
+        <div class="form-group">
             <label for="email">Email</label>
             <input [(ngModel)]="user.email" type="email" class="form-control" name="email" placeholder="Email" required>
         </div>
-        <div class="form-group col-4">
+        <div class="form-group">
             <label for="password">Password</label>
             <input [(ngModel)]="user.password" type="password" class="form-control" name="password" placeholder="Password" required>
         </div>
-        <div class="form-group col-4">
+        <div class="form-group">
             <label for="confirmPassword">Reenter Password</label>
             <input [(ngModel)]="user.confirmPassword" type="password" class="form-control" name="confirmPassword" placeholder="Reenter Password" required>
             <div class="text-danger" *ngIf="!passwordsMatch">Passwords do not match.</div>
