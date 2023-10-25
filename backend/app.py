@@ -5,6 +5,7 @@ from io import BytesIO
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token
 from models.model import UserImage, User, db
 
 load_dotenv()
@@ -27,12 +28,11 @@ def index():
     return render_template('index.html')
 
 #json user object. keys = username, email, password. Path used for account registration
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     user = request.get_json()
 
-    userName = user.get('username')
-    print(userName)
+    username = user.get('username')
     email = user.get('email')
     password = user.get('password')
 
@@ -40,51 +40,49 @@ def register():
     hashed_password = hashed_bytes.decode('utf-8')
 
     # Verify the username/email doesn't exsist.
-    userMail = User.query.filter_by(email=email).first()
-    user = User.query.filter_by(user_name=userName).first()
+    existing_email = User.query.filter_by(email=email).first()
+    existing_user = User.query.filter_by(user_name=username).first()
 
-    if userMail:
-        flash('Email already exist', category='error')
+    if existing_email:
+        return jsonify({'error': "Email already exists"}), 400
     elif len(email) < 4:
-        flash('Email must be greater than 3 characters', category='error')
-    elif user:
-        flash('User Namre already exist', category='error')
-    elif len(userName) < 2:
-        flash('First name must be greater than 1 characters', category='error')
+        return jsonify({'error': "Invalid email address"}), 400
+    elif existing_user:
+        return jsonify({'error': "Username is taken"}), 400
+    elif len(username) < 2:
+        return jsonify({'error': "Username must be longer than 1 character"}), 400
     else:
         # This is how it gets passed to the DataBase
-        new_user = User(user_name=userName, email=email, user_password=password)
+        new_user = User(user_name=username, email=email, user_password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        flash('Account Created and added to the DataBase!', category='success')
+        user_data = {
+            'username': new_user.user_name
+        }
+        access_token = create_access_token(identity=new_user['user_name'], additional_claims=user_data)
+        return jsonify({'access_token': access_token}), 200
 
-    response_data = {
-        "message": "Data received successfully"
-    }
-    return jsonify(response_data), 200
 
 #user login
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     user = request.get_json()
 
-    username = user.get(username)
-    password = user.get(password)
+    username = user.get('username')
+    password = user.get('password')
 
     existing_user = User.query.filter_by(user_name=username).first()
+
     if not existing_user:
-        flash('No user name found. Please try again.', category='error') #This is how I passed to the front end as an error, but change it as necessary.
-
+        return jsonify({'error': "Unable to login"}), 400
     elif not bcrypt.check_password_hash(existing_user.user_password, password):
-        #if they dont match we will get out and pass error to frontend
-        flash('Wrong password. Check it and try again', category='error')
-        pass
-
-    #still looking how we should pass session back and forth
-    response_data = {
-        "message": "Data received successfully"
-    }
-    return jsonify(response_data), 200
+        return jsonify({'error': "Unable to login"}), 400
+    else: 
+        user_data = {
+            'username': existing_user.user_name
+        }
+        access_token = create_access_token(identity=existing_user['user_name'], additional_claims=user_data)
+        return jsonify({'access_token': access_token}), 200
 
 # testing flask -> angular data
 @app.route('/api/testdata', methods=['GET'])

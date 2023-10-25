@@ -11,7 +11,11 @@ import { LoginComponent } from './login/login.component';
 import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
 import { FormsModule } from '@angular/forms';
 import { UserSidenavComponent } from './user-sidenav/user-sidenav.component';
-import { RouterLink } from '@angular/router';
+import { JwtModule } from '@auth0/angular-jwt';
+
+export function tokenGetter() {
+  return localStorage.getItem('access_token');
+}
 
 @NgModule({
   declarations: [
@@ -29,7 +33,11 @@ import { RouterLink } from '@angular/router';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    RouterLink
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter
+      }
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
