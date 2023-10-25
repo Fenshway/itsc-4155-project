@@ -6,16 +6,16 @@
         <div class="menu-content">
             <ul class="menu-items">
                 <div class="menu-title">Let's get started!</div>
-                <li class="item" (click)="toggleSubMenu('firstSubMenu')">
+                <li class="item">
                     <a href="#">Profile</a>
                 </li>
-                <li class="item" (click)="toggleSubMenu('secondSubMenu1')">
+                <li class="item" (click)="toggleSubMenu('friendsList', $event)">
                     <div class="submenu-item">
                         <span>Friends</span>
-                        <i class="fa-solid fa-chevron-right"></i>
+                        <i class="fa-solid fa-chevron-right" [ngClass]="{'fa-rotate-90': isSubMenuActive('friendsList')}"></i>
                     </div>
-                    <ul class="menu-items submenu" [ngClass]="{ 'submenu-active': isSubMenuActive('secondSubMenu1') }">
-                        <div class="menu-title" (click)="toggleSubMenu('')">
+                    <ul class="menu-items submenu" *ngIf="isSubMenuActive('friendsList')">
+                        <div class="menu-title">
                             <i class="fa-solid fa-chevron-left"></i>
                             Your submenu title
                         </div>

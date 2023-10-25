@@ -110,5 +110,5 @@ class Chat(db.Model):
 
     def __repr__(self):
         return '<lobby_id {}>'.format(self.lobby_id)
-    
-#from backend.app import app
+
+

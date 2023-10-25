@@ -9,15 +9,22 @@ export class UserSidenavComponent {
   sidebarClosed: boolean = false;
   activeSubMenu: string = '';
 
-  toggleSubMenu(subMenu: string) {
-    this.activeSubMenu = this.activeSubMenu === subMenu ? '' : subMenu;
-  }
-
-  toggleSidebar() {
-    this.sidebarClosed = !this.sidebarClosed;
+  toggleSubMenu(subMenu: string, event: Event) {
+    event.stopPropagation();
+    console.log('closing', subMenu)
+    if (this.activeSubMenu === subMenu) {
+      this.activeSubMenu = '';
+    } else {
+      this.activeSubMenu = subMenu;
+      console.log('opening', subMenu);
+    }
   }
 
   isSubMenuActive(subMenu: string): boolean {
     return this.activeSubMenu === subMenu;
+  }
+
+  toggleSidebar() {
+    this.sidebarClosed = !this.sidebarClosed;
   }
 }

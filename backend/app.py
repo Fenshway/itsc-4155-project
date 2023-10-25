@@ -21,6 +21,10 @@ CORS(app)
 
 bcrypt = Bcrypt(app)
 
+app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET')
+jwt = JWTManager(app)
+
+
 @app.route('/')
 def index():
     from models.model import User
@@ -59,7 +63,7 @@ def register():
         user_data = {
             'username': new_user.user_name
         }
-        access_token = create_access_token(identity=new_user['user_name'], additional_claims=user_data)
+        access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
 
 
@@ -81,7 +85,7 @@ def login():
         user_data = {
             'username': existing_user.user_name
         }
-        access_token = create_access_token(identity=existing_user['user_name'], additional_claims=user_data)
+        access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
 
 # testing flask -> angular data
