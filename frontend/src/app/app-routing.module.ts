@@ -1,7 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { RegistrationComponent } from './registration/registration.component';
+import { LoginComponent } from './login/login.component';
+import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
+import { ProfileComponent } from './profile/profile.component';
+import { LobbyComponent } from './lobby/lobby.component';
+import { ViewLobbiesComponent } from './view-lobbies/view-lobbies.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: '', redirectTo: '/view-lobbies', pathMatch: 'full'},
+  { path: 'view-lobbies', component: ViewLobbiesComponent},
+  { path: 'register', component: RegistrationComponent},
+  { path: 'login', component: LoginComponent},
+  { path: 'create-lobby', component: CreateLobbyComponent},
+  { path: 'profile', component: ProfileComponent},
+  { path: 'lobby', component: LobbyComponent},
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

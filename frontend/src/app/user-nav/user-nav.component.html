@@ -1,17 +1,17 @@
 <body>
     <header>
-        <img class="logo" src="../../assets/images/questwhite.png" alt="logo">
+        <a [routerLink]="['/view-lobbies']"><img class="logo" src="../../assets/images/questwhite.png" alt="logo"></a>
         <nav>
             <ul class="nav__links">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Create</a></li>
-                <li><a href="#">Join</a></li>
-                <li><a href="#">Help Center</a></li>
+                <li><a routerLink="">About</a></li>
+                <li><a [routerLink]="['/create-lobby']">Create</a></li>
+                <li><a routerLink="">Join</a></li>
+                <li><a routerLink="">Help Center</a></li>
             </ul>
         </nav>
         <div class="btns">
-            <a class="btn1" href="#"><button>Profile</button></a>
-            <a class="btn2" href="#"><button>Sign Out</button></a>
+            <a [routerLink]="['/profile']" class="btn1"><button>Profile</button></a>
+            <a routerLink="" class="btn2"><button>Sign Out</button></a>
         </div>
     </header>
     
