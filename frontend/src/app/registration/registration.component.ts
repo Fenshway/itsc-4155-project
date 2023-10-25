@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '@angular/router';
+import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
   selector: 'app-registration',
@@ -17,7 +19,7 @@ export class RegistrationComponent {
   passwordsMatch = true;
   passwordLength = true;
 
-  constructor(private http:HttpClient, private jwtHelper: JwtHelperService){}
+  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router){}
 
   onSubmit() {
     // Reset validation flags
@@ -39,7 +41,7 @@ export class RegistrationComponent {
     }
 
     // Registration request
-    this.http.post('http://localhost:5000/api/register', this.user)
+    this.flaskService.register(this.user)
     .subscribe((result: any)=>{
       if (result && result.access_token) {
         localStorage.setItem('access_token', result.access_token)
@@ -49,6 +51,7 @@ export class RegistrationComponent {
 
         if (!this.jwtHelper.isTokenExpired(result.access_token)) {
           console.log('Registration and login successful');
+          this.router.navigate(['/profile']);
         } else {
           console.error('Token is expired');
         }

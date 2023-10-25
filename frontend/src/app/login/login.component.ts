@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '@angular/router';
+import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
   selector: 'app-login',
@@ -13,9 +15,9 @@ export class LoginComponent {
     password: ''
   };
 
-  constructor(private http:HttpClient, private jwtHelper: JwtHelperService){}
+  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router){}
   onSubmit() {
-    this.http.post('http://localhost:5000/api/login', this.user)
+    this.flaskService.login(this.user)
     .subscribe((result: any)=>{
       if (result && result.access_token) {
         localStorage.setItem('access_token', result.access_token)
@@ -25,6 +27,7 @@ export class LoginComponent {
 
         if (!this.jwtHelper.isTokenExpired(result.access_token)) {
           console.log('Login successful');
+          this.router.navigate(['/view-lobbies'])
         } else {
           console.error('Token is expired');
         }
