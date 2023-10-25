@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
 * {
-    box-sizing: boder-box;
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
     background-color: rgb(18, 18, 18);
@@ -17,16 +17,16 @@ li, a, button {
 
 header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding: 30px 10%;
+    margin-left: 200px;
 }
 
 .logo {
     cursor: pointer;
-    margin-right: auto;
-    /* Please delete after inserting logo */
-    color: rgb(253, 255, 252);
+    width: 200px;
+    height: auto;
 }
 
 .nav__links {
@@ -55,7 +55,44 @@ button {
     cursor: pointer;
     transition: all 0.3s ease 0s;
 }
-
 button:hover {
     background-color: rgb(118, 200, 147);
+}
+
+.friends-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.friends-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px; /* Adjust the width as needed */
+    height: 100%; /* Ensure it spans the entire height */
+    background-color: rgb(18, 18, 18);
+    padding: 20px;
+    z-index: 1;
+    overflow-y: auto; /* Add a scrollbar if the content exceeds the height */
+}
+
+.friends-list h2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgb(253, 255, 252);
+}
+
+.friend-box {
+    background-color: rgba(255, 255, 255, 0.1); /* Set the background color for friend boxes */
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.friend-box li, .friend-box p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgb(253, 255, 252);
 }
