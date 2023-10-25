@@ -12,4 +12,16 @@ export class FlaskdataService {
   getTestData() {
     return this.http.get(`${this.apiBaseUrl}/api/testdata`);
   }
+
+  register(userData: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/register`, userData);
+  }
+
+  login(credentials: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/login`, credentials);
+  }
+
+  createLobby(lobbyData: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/login`, lobbyData);
+  }
 }
