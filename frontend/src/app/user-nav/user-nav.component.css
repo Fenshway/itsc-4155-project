@@ -17,7 +17,7 @@ li, a, button {
 
 header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 30px 10%;
     margin-left: 200px;
@@ -57,42 +57,4 @@ button {
 }
 button:hover {
     background-color: rgb(118, 200, 147);
-}
-
-.friends-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.friends-list {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 200px; /* Adjust the width as needed */
-    height: 100%; /* Ensure it spans the entire height */
-    background-color: rgb(18, 18, 18);
-    padding: 20px;
-    z-index: 1;
-    overflow-y: auto; /* Add a scrollbar if the content exceeds the height */
-}
-
-.friends-list h2 {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    color: rgb(253, 255, 252);
-}
-
-.friend-box {
-    background-color: rgba(255, 255, 255, 0.1); /* Set the background color for friend boxes */
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.friend-box li, .friend-box p {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    color: rgb(253, 255, 252);
 }

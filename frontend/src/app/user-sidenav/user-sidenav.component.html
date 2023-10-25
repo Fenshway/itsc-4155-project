@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<body>
+    <nav class="sidebar" [ngClass]="{ 'close': sidebarClosed }">
+        <a href="#" class="logo">Quest</a>
+        <div class="menu-content">
+            <ul class="menu-items">
+                <div class="menu-title">Let's get started!</div>
+                <li class="item" (click)="toggleSubMenu('firstSubMenu')">
+                    <a href="#">Profile</a>
+                </li>
+                <li class="item" (click)="toggleSubMenu('secondSubMenu1')">
+                    <div class="submenu-item">
+                        <span>Friends</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <ul class="menu-items submenu" [ngClass]="{ 'submenu-active': isSubMenuActive('secondSubMenu1') }">
+                        <div class="menu-title" (click)="toggleSubMenu('')">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            Your submenu title
+                        </div>
+                        <li class="item">
+                            <a href="#">First sublink</a>
+                        </li>
+                        <!-- Add more sublinks as needed -->
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="#">Help Center</a>
+                </li>
+                <li class="item">
+                    <a href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <nav class="navbar">
+        <i class="fa-solid fa-bars" id="sidebar-close" (click)="toggleSidebar()"></i>
+    </nav>
+    <main class="main">
+        <h1>Quest Content Here</h1>
+    </main>
+</body>
