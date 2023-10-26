@@ -1,60 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.mat-toolbar {
     background-color: rgb(18, 18, 18);
-}
-
-li, a, button {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 16px;
     color: rgb(253, 255, 252);
-    text-decoration: none;
 }
 
-header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 30px 10%;
-    margin-left: 200px;
+.custom-profile-button {
+    background-color: rgb(229, 56, 59) !important;
+    color: rgb(253, 255, 252) !important;
 }
 
-.logo {
-    cursor: pointer;
-    width: 200px;
-    height: auto;
+.custom-profile-button:hover {
+    background-color: rgb(118, 200, 147) !important;
 }
 
-.nav__links {
-    list-style: none;
+.toolbar-divider {
+    width: 1px;
+    background-color: transparent;
+    margin: 0 20px;
 }
 
-.nav__links li {
-    display: inline-block;
-    padding: 0px 20px;
-}
-
-.nav__links li a {
-    transition: all 0.3s ease 0s;
-}
-
-.nav__links li a:hover {
-    color: rgb(118, 200, 147);
-}
-
-button {
-    margin-left: 20px;
-    padding: 9px 25px;
-    background-color: rgb(229, 56, 59);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease 0s;
-}
-button:hover {
-    background-color: rgb(118, 200, 147);
-}
+.custom-drawer {
+    background-color: rgb(18,18,18);
+  }
