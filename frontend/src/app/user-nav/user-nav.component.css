@@ -7,6 +7,12 @@
 .mat-toolbar {
     background-color: rgb(18, 18, 18);
     color: rgb(253, 255, 252);
+    height: 100px;
+}
+
+.mat-toolbar img {
+    max-height: 80px;
+    width: auto;
 }
 
 .custom-profile-button {
