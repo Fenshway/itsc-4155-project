@@ -24,4 +24,9 @@ export class FlaskdataService {
   createLobby(lobbyData: any) {
     return this.http.post(`${this.apiBaseUrl}/api/login`, lobbyData);
   }
+
+  updateProfilePicture(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/updateProfileIcon`, formData);
+  }
+
 }

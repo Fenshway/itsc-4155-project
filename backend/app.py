@@ -111,5 +111,17 @@ def testImage():
         return f'Uploaded: {file.filename}'
     return render_template('fetchImage.html')
 
+@app.route('/api/updateProfileIcon', methods=['POST'])
+def updateProfileIcon():
+
+    if not 'file' in request.files:
+        return jsonify({})
+    
+    file = request.files['file']
+    
+    return jsonify({
+        'icon': "words",
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)

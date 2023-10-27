@@ -1,1 +1,45 @@
-<p>profile works!profile works!profile works!profile works!profile works!profile works!profile works!profile works!</p>
+<body>
+
+        <div id="profile-header">
+            <div class="left-content">
+                <button (click)="initProfileIconChange()"><img class="icon" src="{{data.icon}}"></button>
+                <!-- <img class="icon-update" src="../../assets/images/profilepicupdate.png"> -->
+            </div>
+            <div class="right-content">
+                <div class="name-header">
+                    <h1>{{data.username}}</h1>
+                    <select class="status" name="status" id="status">
+                        <option value = "online">Online</option>
+                        <option value = "dnd">Do Not Disturb</option>
+                        <option value = "invisible">Invisible</option>
+                    </select>
+                </div>
+                <div class="rating-section">
+                    <h2>Player Rating</h2>
+                    <div class="rating-stars">
+                        <img src="../../assets/images/rating-star.png">
+                        <img src="../../assets/images/rating-star.png">
+                        <img src="../../assets/images/rating-star.png">
+                        <img src="../../assets/images/rating-star.png">
+                        <img src="../../assets/images/rating-star.png">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-library">
+            <h1>Game Library</h1>
+            <div id="games-display">
+                <div class="game-container">
+                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
+                </div>
+                <div class="game-container">
+                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
+                </div>
+                <div class="game-container">
+                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
+                </div>
+            </div>
+        </div>
+
+</body>
