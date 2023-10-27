@@ -12,17 +12,4 @@ export class ViewLobbiesComponent {
 
   constructor(private http: HttpClient) {}
 
-  gamesLibrary() {
-
-  }
-  ngOnInit(): void {
-    this.loadGameLibrary();
-  }
-
-  loadGameLibrary() {
-    this.http.get('https://www.freetogame.com/api/games?platform=pc')
-    .subscribe((data) => {
-      this.gamesData = data;
-    });
-  }
 }

@@ -28,6 +28,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { GeneralHomeComponent } from './general-home/general-home.component';
 
 
 
@@ -47,7 +48,8 @@ export function tokenGetter() {
     UserSidenavComponent,
     ProfileComponent,
     LobbyComponent,
-    ViewLobbiesComponent
+    ViewLobbiesComponent,
+    GeneralHomeComponent
   ],
   imports: [
     MatSelectModule,

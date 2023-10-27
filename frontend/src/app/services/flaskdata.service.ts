@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/testdata`);
   }
 
-  register(userData: any) {
+  register(userData: any): Observable<any> {
     return this.http.post(`${this.apiBaseUrl}/api/register`, userData);
   }
 
