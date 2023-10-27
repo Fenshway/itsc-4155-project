@@ -11,8 +11,8 @@ import { isAuthenticatedGuard } from './is-authenticated.guard';
 
 const routes: Routes = [
 
-  { path: '', redirectTo: '/view-lobbies', pathMatch: 'full'},
-  { path: 'view-lobbies', component: ViewLobbiesComponent},
+  { path: '', redirectTo: '/home', pathMatch: 'full'},
+  { path: 'home', component: ViewLobbiesComponent},
   { path: 'welcome', component: GeneralHomeComponent},
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},

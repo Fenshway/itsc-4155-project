@@ -14,6 +14,5 @@ export class AppComponent {
 
   constructor(private jwtHelper: JwtHelperService) {
     this.jwt = sessionStorage.getItem('access_token')
-    console.log("jwt token:", this.jwt);
   }
 }
