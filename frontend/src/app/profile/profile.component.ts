@@ -27,7 +27,7 @@ export class ProfileComponent {
     if(!access_token){return;}
     const user: user_data|null = jwtHelper.decodeToken(access_token)
     if(!user){return;}
-
+    console.log(user)
     //Update user info fields
     this.data.username = user.username;
     if(user.icon){
