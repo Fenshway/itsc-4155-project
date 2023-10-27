@@ -1,3 +1,10 @@
-<app-general-nav></app-general-nav>
-<!-- <app-user-nav></app-user-nav> -->
-<router-outlet></router-outlet>
+<div *ngIf="!jwt">
+    <app-general-nav></app-general-nav>
+    <router-outlet></router-outlet>
+</div>
+<div *ngIf="jwt">
+    <app-user-nav></app-user-nav>
+    <router-outlet></router-outlet>
+</div>
+
+

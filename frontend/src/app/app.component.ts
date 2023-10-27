@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'frontend';
+
+  jwt: string | null;
+
+  constructor(private jwtHelper: JwtHelperService) {
+    this.jwt = sessionStorage.getItem('access_token')
+    console.log("jwt token:", this.jwt);
+  }
 }
