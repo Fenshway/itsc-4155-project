@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+
+function getHttpOptions() {
+  return {
+    headers: {"Authorization": localStorage.getItem("access_token") || ""}
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,18 +18,23 @@ export class FlaskdataService {
   constructor(private http: HttpClient) { }
 
   getTestData() {
-    return this.http.get(`${this.apiBaseUrl}/api/testdata`);
+    return this.http.get(`${this.apiBaseUrl}/api/testdata`, getHttpOptions());
   }
 
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiBaseUrl}/api/register`, userData);
+    return this.http.post(`${this.apiBaseUrl}/api/register`, userData, getHttpOptions());
   }
-
+  
   login(credentials: any) {
-    return this.http.post(`${this.apiBaseUrl}/api/login`, credentials);
+    return this.http.post(`${this.apiBaseUrl}/api/login`, credentials, getHttpOptions());
   }
 
   createLobby(lobbyData: any) {
-    return this.http.post(`${this.apiBaseUrl}/api/login`, lobbyData);
+    return this.http.post(`${this.apiBaseUrl}/api/login`, lobbyData, getHttpOptions());
   }
+
+  updateProfilePicture(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/updateProfileIcon`, formData, getHttpOptions());
+  }
+
 }

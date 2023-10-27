@@ -5,7 +5,7 @@ from io import BytesIO
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from models.model import UserImage, User, db
 
 load_dotenv()
@@ -56,8 +56,13 @@ def register():
         new_user = User(user_name=username, email=email, user_password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        imageByteString = UserImage.query.filter_by(user_id=(new_user.user_id)).first()
+        image = ""
+        if(imageByteString):
+            image = base64.b64encode(imageByteString.data).decode("UTF-8")
         user_data = {
-            'username': new_user.user_name
+            'username': new_user.user_name,
+            'icon': image,
         }
         access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
@@ -78,8 +83,13 @@ def login():
     elif not bcrypt.check_password_hash(existing_user.user_password, password):
         return jsonify({'error': "Unable to login"}), 400
     else: 
+        imageByteString = UserImage.query.filter_by(user_id=(existing_user.user_id)).first()
+        image = ""
+        if(imageByteString):
+            image = base64.b64encode(imageByteString.data).decode("UTF-8")
         user_data = {
-            'username': existing_user.user_name
+            'username': existing_user.user_name,
+            'icon': image,
         }
         access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
@@ -106,6 +116,35 @@ def testImage():
         image = UserImage.query.filter_by(user_id=(adminID.user_id)).first().data
         return f'Uploaded: {file.filename}'
     return render_template('fetchImage.html')
+
+@app.route('/api/updateProfileIcon', methods=['POST'])
+def updateProfileIcon():
+    
+    #Checking if file is valid
+    if not 'file' in request.files:
+        return jsonify({})
+    
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    
+    if not user:
+        return jsonify({})
+
+    #Uploading file
+    file = request.files['file']
+    upload = UserImage(user_id=user.user_id, filename=file.filename, data=file.read())
+    db.session.add(upload)
+    db.session.flush()
+    db.session.commit()
+    
+    imageByteString = UserImage.query.filter_by(user_id=(user.user_id)).first().data
+    image = base64.b64encode(imageByteString).decode("UTF-8")
+
+    return jsonify({
+        'icon': image,
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
