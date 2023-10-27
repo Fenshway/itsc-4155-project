@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-user-nav',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class UserNavComponent {
 
+  constructor(private jwtHelper: JwtHelperService) {}
+
+  logout () {
+    localStorage.removeItem('access_token')
+  }
+  
 }

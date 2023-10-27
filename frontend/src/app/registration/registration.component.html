@@ -22,6 +22,7 @@
                     <input [(ngModel)]="user.confirmPassword" type="password" class="form-control" name="confirmPassword" placeholder="Reenter Password" required>
                     <div class="text-danger" *ngIf="!passwordsMatch">Passwords do not match.</div>
                     <div class="text-danger" *ngIf="!passwordLength">Password must be at least 8 characters.</div>
+                    <div class="text-danger" *ngIf="registrationError">{{registrationError}}</div>
                 </div>
             </div>
             <button type="submit" class="btn btn-outline-success mt-3">Register</button>

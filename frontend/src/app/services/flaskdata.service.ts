@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 function getHttpOptions() {
   return {
@@ -19,10 +21,10 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/testdata`, getHttpOptions());
   }
 
-  register(userData: any) {
+  register(userData: any): Observable<any> {
     return this.http.post(`${this.apiBaseUrl}/api/register`, userData, getHttpOptions());
   }
-
+  
   login(credentials: any) {
     return this.http.post(`${this.apiBaseUrl}/api/login`, credentials, getHttpOptions());
   }
