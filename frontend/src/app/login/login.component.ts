@@ -2,6 +2,8 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
+import { UserServiceService } from '../services/user-service.service';
+
 
 @Component({
   selector: 'app-login',
@@ -18,11 +20,14 @@ export class LoginComponent {
     private flaskService: FlaskdataService, 
     private jwtHelper: JwtHelperService, 
     private router: Router,
+    private userService: UserServiceService
+
   ) {}
   onSubmit() {
     this.flaskService.login(this.user)
     .subscribe((result: any)=>{
       if (result && result.access_token) {
+        this.userService.user = result;
         sessionStorage.setItem('access_token', result.access_token)
 
         //testing. delete later

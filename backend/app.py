@@ -49,12 +49,8 @@ def register():
 
     if existing_email:
         return jsonify({'error': "Email already exists"}), 400
-    elif len(email) < 4:
-        return jsonify({'error': "Invalid email address"}), 400
     elif existing_user:
         return jsonify({'error': "Username is taken"}), 400
-    elif len(username) < 2:
-        return jsonify({'error': "Username must be longer than 1 character"}), 400
     else:
         # This is how it gets passed to the DataBase
         new_user = User(user_name=username, email=email, user_password=hashed_password)

@@ -5,5 +5,16 @@ import { Injectable } from '@angular/core';
 })
 export class UserServiceService {
 
+  private _user?: any;
+  
   constructor() { }
+
+  get user() {
+    return this._user;
+  }
+
+  set user(value: any) {
+    this._user = value;
+  }
+
 }

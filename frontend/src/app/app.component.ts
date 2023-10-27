@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { UserServiceService } from './services/user-service.service';
 
 
 @Component({
@@ -10,9 +11,12 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 export class AppComponent {
   title = 'frontend';
 
-  jwt: string | null;
+  constructor(
+    private jwtHelper: JwtHelperService,
+    private userService: UserServiceService
+  ) {}
 
-  constructor(private jwtHelper: JwtHelperService) {
-    this.jwt = sessionStorage.getItem('access_token')
+  userSessionActive() {
+    return this.userService.user
   }
 }
