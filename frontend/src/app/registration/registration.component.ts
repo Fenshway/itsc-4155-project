@@ -3,6 +3,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { catchError } from 'rxjs';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-registration',
@@ -24,6 +25,7 @@ export class RegistrationComponent {
     private flaskService: FlaskdataService, 
     private jwtHelper: JwtHelperService, 
     private router: Router,
+    private userService: UserServiceService
     ) {}
 
   onSubmit() {
@@ -50,6 +52,7 @@ export class RegistrationComponent {
       next: (result: any) => {
         console.log(result)
         if (result && result.access_token) {
+          this.userService.user = result;
           sessionStorage.setItem('access_token', result.access_token)
   
           //testing. delete later
@@ -57,7 +60,8 @@ export class RegistrationComponent {
   
           if (!this.jwtHelper.isTokenExpired(result.access_token)) {
             console.log('Registration and login successful');
-  
+            
+
             this.router.navigate(['/profile']);
           } else {
             console.error('Token is expired');
@@ -72,23 +76,5 @@ export class RegistrationComponent {
         console.error('Registration failed')
       }
     })
-      /*(result: any)=>{
-      if (result && result.access_token) {
-        sessionStorage.setItem('access_token', result.access_token)
-
-        //testing. delete later
-        console.log(this.jwtHelper.decodeToken(result.access_token.username))
-
-        if (!this.jwtHelper.isTokenExpired(result.access_token)) {
-          console.log('Registration and login successful');
-
-          this.router.navigate(['/profile']);
-        } else {
-          console.error('Token is expired');
-        }
-      } else {
-        console.error('Registration failed');
-      }      
-    })*/
   }
 }
