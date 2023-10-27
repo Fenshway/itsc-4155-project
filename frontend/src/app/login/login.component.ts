@@ -18,7 +18,6 @@ export class LoginComponent {
     private flaskService: FlaskdataService, 
     private jwtHelper: JwtHelperService, 
     private router: Router,
-    private cdr: ChangeDetectorRef
   ) {}
   onSubmit() {
     this.flaskService.login(this.user)
@@ -31,8 +30,7 @@ export class LoginComponent {
 
         if (!this.jwtHelper.isTokenExpired(result.access_token)) {
           console.log('Login successful');
-          this.cdr.detectChanges();
-          this.router.navigate(['/view-lobbies']);
+          this.router.navigate(['/home']);
         } else {
           console.error('Token is expired');
         }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component} from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-view-lobbies',
@@ -7,9 +7,10 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./view-lobbies.component.css']
 })
 export class ViewLobbiesComponent {
-  gamesData: any;
-  errorMessage: any;
 
-  constructor(private http: HttpClient) {}
+  jwt: string | null;
 
+  constructor(private jwtHelper: JwtHelperService) {
+    this.jwt = sessionStorage.getItem('access_token')
+  }
 }
