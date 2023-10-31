@@ -9,6 +9,8 @@ with app.app_context():
     db.session.execute(text('DROP TABLE if exists public.\"UserImage\" cascade'))
     db.session.execute(text('DROP TABLE if exists public.\"Friends\" cascade'))
     db.session.execute(text('DROP TABLE if exists public.\"Blocked\" cascade'))
+    db.session.execute(text('DROP TABLE if exists public.\"Games\" cascade'))
+    db.session.execute(text('DROP TABLE if exists public.\"User_games\" cascade'))
     db.session.execute(text('DROP TABLE if exists public.\"Lobby\" cascade'))
     db.session.execute(text('DROP TABLE if exists public.\"Lobby_Players\" cascade'))
     db.session.execute(text('DROP TABLE if exists public.\"Chat\" cascade'))
@@ -58,6 +60,7 @@ with app.app_context():
 
 print('------------------------POST-UPDATE------------------------')
 
+# This is how to update a already created User's email
 with app.app_context():
     admin = User.query.filter_by(user_name='Admin').first()
     admin.email = 'admin@meta.com'
@@ -71,6 +74,41 @@ with app.app_context():
 with app.app_context():
     admin = User.query.filter_by(user_name='Admin').first()
     admin.email = 'admin@quest.com'
+    db.session.commit()
+
+#------------------------Game-add-test------------------------
+# This is how to add games to the Games table
+from models.model import Games
+from models.model import User_games
+
+with app.app_context():
+    try:
+        new_game = Games(game_name='Left 4 Dead 2', img_path='/backend/static/l4d2.png') # Image does not exists this is just for show
+        db.session.add(new_game)
+        db.session.commit()
+    except exc.IntegrityError:
+        db.session.rollback()
+
+    # Now we make Admin an owner of Left 4 Dead 2
+    admin = User.query.filter_by(user_name='Admin').first()
+    l4d2_game = Games.query.filter_by(game_name='Left 4 Dead 2').first()
+
+    try:
+        admin_game = User_games(user_id=admin.user_id, game_id=l4d2_game.game_id)
+        db.session.add(admin_game)
+        db.session.commit()
+    except exc.IntegrityError:
+        db.session.rollback()
+
+    # After the game has been created and added to the table, we can now set it as favorite if we want
+    admin_fav = User_games.query.filter_by(user_id=admin.user_id).first()
+    admin_fav.fav_game = True
+    db.session.commit()
+
+    # Now we delete it to add the game later in a more proper context
+    # IMPORTANT when deleting a game or user, make sure to delete it from the User_game table too, otherwise we might run into an error or just have junk data
+    User_games.query.filter_by(game_id=l4d2_game.game_id).delete()
+    Games.query.filter_by(game_name='Left 4 Dead 2').delete()
     db.session.commit()
 
 # How to create a Database on pgAdmin(postgresSQL)

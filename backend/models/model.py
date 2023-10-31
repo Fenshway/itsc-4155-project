@@ -10,8 +10,8 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True)
     user_password = db.Column(db.String(150))
     user_rating = db.Column(db.Integer, nullable=True)
-    user_image = db.relationship('UserImage', backref='user', cascade='all, delete')
-    user_games = db.relationship('User_games', backref='user', cascade='all, delete') 
+    user_image = db.relationship('UserImage', backref='user', cascade='all, delete, delete-orphan')
+    user_games = db.relationship('User_games', backref='user', cascade='all, delete, delete-orphan') 
 
     def __init__(self, email, user_password, user_name):
         self.user_name = user_name
@@ -62,9 +62,9 @@ class Blocked(db.Model):
 class Games(db.Model):
     __tablename__ = 'Games'
     game_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    game_name = db.Column(db.String(50))
+    game_name = db.Column(db.String(50), unique=True)
     img_path = db.Column(db.String(120))
-    user_games = db.relationship('User_games', backref='games', cascade='all, delete') 
+    user_games = db.relationship('User_games', backref='games', cascade='all, delete, delete-orphan') 
 
     def __init__(self, game_name, img_path):
         self.game_name = game_name
