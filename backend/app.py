@@ -108,7 +108,7 @@ def testImage():
     if request.method == 'POST':
         file = request.files['file']
         adminID = User.query.filter_by(user_name='Admin').first()
-        upload = UserImage(user_id=adminID.user_id, filename=file.filename, data=file.read())
+        upload = UserImage(user_id=adminID.user_id, data=file.read(), filename=file.filename)
         db.session.add(upload)
         db.session.flush()
         db.session.commit()
