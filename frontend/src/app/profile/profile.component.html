@@ -2,8 +2,9 @@
 
         <div id="profile-header">
             <div class="left-content">
-                <button (click)="initProfileIconChange()"><img class="icon" src="{{data.icon}}"></button>
-                <!-- <img class="icon-update" src="../../assets/images/profilepicupdate.png"> -->
+                <button (click)="initProfileIconChange()"><img class="icon" src="{{data.icon}}">
+                    <img class="icon-update" src="../../assets/images/profilepicupdate.png">
+                </button>
             </div>
             <div class="right-content">
                 <div class="name-header">
@@ -17,11 +18,27 @@
                 <div class="rating-section">
                     <h2>Player Rating</h2>
                     <div class="rating-stars">
-                        <img src="../../assets/images/rating-star.png">
-                        <img src="../../assets/images/rating-star.png">
-                        <img src="../../assets/images/rating-star.png">
-                        <img src="../../assets/images/rating-star.png">
-                        <img src="../../assets/images/rating-star.png">
+                        <ng-container *ngFor="let star of [1,2,3,4,5]">
+                            <ng-container *ngIf="1 == 1; then star_empty">
+                            </ng-container>
+
+                            <ng-template #star_empty>
+                                <ng-container *ngIf="star - data.rating >= 1; else star_half">
+                                    <img src="../../assets/images/star_empty.svg">
+                                </ng-container>
+                            </ng-template>
+
+                            <ng-template #star_half>
+                                <ng-container *ngIf="star - data.rating >= .5; else star_full">
+                                    <img src="../../assets/images/star_half.svg">
+                                </ng-container>
+                            </ng-template>
+
+                            <ng-template #star_full>
+                                <img src="../../assets/images/star_full.svg">
+                            </ng-template>
+
+                        </ng-container>
                     </div>
                 </div>
             </div>

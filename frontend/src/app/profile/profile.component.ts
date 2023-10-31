@@ -3,11 +3,6 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 
-type user_data = {
-  username: string,
-  icon: string,
-}
-
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -18,21 +13,26 @@ export class ProfileComponent {
   data = {
     username: "",
     icon: "../../assets/images/profilepic.png",
+    rating: 0,
   }
 
   constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router) {
     
     //Load user information
-    const access_token: string|null = localStorage.getItem("access_token")
+    const access_token: string|null = sessionStorage.getItem("access_token")
     if(!access_token){return;}
-    const user: user_data|null = jwtHelper.decodeToken(access_token)
+    const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
-    console.log(user)
+    
     //Update user info fields
     this.data.username = user.username;
-    if(user.icon){
-      this.data.icon = "data:;base64," + user.icon;
-    }
+    
+    flaskService.getProfile(user.user_id).subscribe((profileData: any) => {
+      this.data.rating = profileData.rating;
+      if(profileData.icon){
+        this.data.icon = "data:;base64," + profileData.icon;
+      }
+    })
 
   }
 
