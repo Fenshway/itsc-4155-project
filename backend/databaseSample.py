@@ -1,4 +1,5 @@
-from models.model import User, db, app # This are always necessary when calling the database
+from models.model import User, db # This are always necessary when calling the database
+from backend.app import app
 from sqlalchemy import inspect, text, exc # This one too to check for douplicates and handle them
 
 
@@ -28,7 +29,7 @@ print('--------------------------------------------------------------')
 
 # This is the way to add a new user to the User table. (Keep in mind fav_game_id is optional here that's why it isn't shown)
 new_user = User(email='admin@quest.com', user_password='password', user_name='Admin')
-test_user = User(email='test@quest.com', user_password='password', user_name='Test', fav_game_id=69)
+test_user = User(email='test@quest.com', user_password='password', user_name='Test')
 with app.app_context():
     try:
         db.session.add(new_user)
