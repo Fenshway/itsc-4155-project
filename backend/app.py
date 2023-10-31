@@ -55,22 +55,17 @@ def register():
         new_user = User(user_name=username, email=email, user_password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        imageByteString = UserImage.query.filter_by(user_id=(new_user.user_id)).first()
-        image = ""
-        if(imageByteString):
-            image = base64.b64encode(imageByteString.data).decode("UTF-8")
         user_data = {
+            'user_id': existing_user.user_id,
             'username': new_user.user_name,
-            'icon': image,
-            'rating': new_user.user_rating,
         }
         access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
 
-
 #user login
 @app.route('/api/login', methods=['POST'])
 def login():
+    
     user = request.get_json()
 
     username = user.get('username')
@@ -83,14 +78,9 @@ def login():
     elif not bcrypt.check_password_hash(existing_user.user_password, password):
         return jsonify({'error': "Unable to login"}), 400
     else: 
-        imageByteString = UserImage.query.filter_by(user_id=(existing_user.user_id)).first()
-        image = ""
-        if(imageByteString):
-            image = base64.b64encode(imageByteString.data).decode("UTF-8")
         user_data = {
+            'user_id': existing_user.user_id,
             'username': existing_user.user_name,
-            'icon': image,
-            'rating': existing_user.user_rating,
         }
         access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
@@ -118,8 +108,25 @@ def testImage():
         return f'Uploaded: {file.filename}'
     return render_template('fetchImage.html')
 
-@app.route('/api/updateProfileIcon', methods=['POST'])
-def updateProfileIcon():
+@app.route('/api/profile/<user_id>', methods=['GET'])
+def getProfile(user_id):
+
+    user = User.query.filter_by(user_id=user_id).first_or_404()
+    imageByteString = UserImage.query.filter_by(user_id=user_id).first()
+    image = ""
+
+    if(imageByteString):
+        image = base64.b64encode(imageByteString.data).decode("UTF-8")
+
+    user_data = {
+        'icon': image,
+        'rating': user.user_rating or 0,
+    }
+
+    return jsonify(user_data)
+
+@app.route('/api/profile', methods=['POST'])
+def updateProfile():
     
     #Checking if file is valid
     if not 'file' in request.files:
@@ -132,11 +139,18 @@ def updateProfileIcon():
     
     if not user:
         return jsonify({})
+    
+    #Deleting any existing file
+    existingFile = UserImage.query.filter_by(user_id=user.user_id).first()
+    if existingFile:
+        db.session.delete(existingFile)
 
     #Uploading file
     file = request.files['file']
     upload = UserImage(user_id=user.user_id, filename=file.filename, data=file.read())
     db.session.add(upload)
+
+    #Database commit
     db.session.flush()
     db.session.commit()
     

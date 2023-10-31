@@ -87,6 +87,7 @@ body > * {
 
 .rating-stars > img {
     width: 50px;
+    filter: saturate(75);
 }
 
 .name-header {

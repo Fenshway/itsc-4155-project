@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 
 function getHttpOptions() {
   return {
-    headers: {"Authorization": localStorage.getItem("access_token") || ""}
+    headers: {"Authorization": sessionStorage.getItem("access_token") || ""}
   }
 }
 
@@ -34,7 +34,11 @@ export class FlaskdataService {
   }
 
   updateProfilePicture(formData: FormData) {
-    return this.http.post(`${this.apiBaseUrl}/api/updateProfileIcon`, formData, getHttpOptions());
+    return this.http.post(`${this.apiBaseUrl}/api/profile`, formData, getHttpOptions());
+  }
+
+  getProfile(user_id: number) {
+    return this.http.get(`${this.apiBaseUrl}/api/profile/` + user_id, getHttpOptions());
   }
 
 }
