@@ -6,6 +6,7 @@ import { FlaskdataService } from '../services/flaskdata.service';
 type user_data = {
   username: string,
   icon: string,
+  rating: number,
 }
 
 @Component({
@@ -18,6 +19,7 @@ export class ProfileComponent {
   data = {
     username: "",
     icon: "../../assets/images/profilepic.png",
+    rating: 0,
   }
 
   constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router) {
@@ -27,12 +29,15 @@ export class ProfileComponent {
     if(!access_token){return;}
     const user: user_data|null = jwtHelper.decodeToken(access_token)
     if(!user){return;}
-    console.log(user)
+    
     //Update user info fields
     this.data.username = user.username;
+    this.data.rating = user.rating;
     if(user.icon){
       this.data.icon = "data:;base64," + user.icon;
     }
+    console.log(user)
+    //Update rating
 
   }
 

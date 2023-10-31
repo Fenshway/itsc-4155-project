@@ -35,7 +35,7 @@ body > * {
     height: 90%;
     cursor: pointer;
     border: none;
-    background-color: none;
+    background-color: transparent;
 }
 
 .icon {
@@ -43,19 +43,34 @@ body > * {
     aspect-ratio: 1/1;
     border-radius: 20%;
     object-fit: cover;
+    transition: .1s filter linear;
 }
 
-/*
-.icon-update {
+.left-content > button {
     position: relative;
-    left: 70%;
-    top: 3%;
-    width: 35%;
 }
-*/
+
+.icon-update {
+    position: absolute;
+    width: 40%;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    pointer-events: none;
+    margin: none;
+    padding: none;
+    display: none;
+    filter: invert();
+}
+
+.icon:hover + .icon-update {
+    display: inline;
+}
 
 .icon:hover {
-
+    filter: brightness(50%)
 }
 
 .right-content {

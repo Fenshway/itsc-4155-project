@@ -3,7 +3,7 @@ import os
 import base64
 from io import BytesIO
 from dotenv import load_dotenv
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from models.model import UserImage, User, db
@@ -23,7 +23,6 @@ bcrypt = Bcrypt(app)
 
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET')
 jwt = JWTManager(app)
-
 
 @app.route('/')
 def index():
@@ -63,6 +62,7 @@ def register():
         user_data = {
             'username': new_user.user_name,
             'icon': image,
+            'rating': new_user.user_rating,
         }
         access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
@@ -90,6 +90,7 @@ def login():
         user_data = {
             'username': existing_user.user_name,
             'icon': image,
+            'rating': existing_user.user_rating,
         }
         access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
