@@ -56,7 +56,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         user_data = {
-            'user_id': existing_user.user_id,
+            'user_id': new_user.user_id,
             'username': new_user.user_name,
         }
         access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
