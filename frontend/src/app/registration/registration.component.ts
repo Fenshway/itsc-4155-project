@@ -2,8 +2,19 @@ import { Component } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
-import { catchError } from 'rxjs';
 import { UserServiceService } from '../services/user-service.service';
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
+
+function passwordMatchValidator(control: AbstractControl) {
+  const password = control.get('password')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+
+  if (password === confirmPassword) {
+    return null;
+  } else {
+    return { passwordMismatch: true };
+  }
+}
 
 @Component({
   selector: 'app-registration',
@@ -11,16 +22,29 @@ import { UserServiceService } from '../services/user-service.service';
   styleUrls: ['./registration.component.css']
 })
 export class RegistrationComponent {
-  user: any = {
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  };
+
+  registerForm = new FormGroup({
+    username: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3)
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8)
+    ]),
+    confirmPassword: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8)
+    ])
+  }, { validators: passwordMatchValidator });
   
   passwordsMatch = true;
-  passwordLength = true;
   registrationError?: string;
+  formSubmitted = false;
 
   constructor(
     private flaskService: FlaskdataService, 
@@ -31,25 +55,23 @@ export class RegistrationComponent {
 
   onSubmit() {
     // Reset validation flags
-    this.passwordsMatch = true;
-    this.passwordLength = true;
+    if (this.registerForm.valid) {
+      const username = this.registerForm.get('username')?.value;
+      const email = this.registerForm.get('email')?.value;
+      const password = this.registerForm.get('password')?.value;
 
-    // Check if passwords match
-    if (this.user.password !== this.user.confirmPassword) {
-      console.error('Passwords do not match');
-      this.passwordsMatch = false;
-      return;
-    }
-    
-    // Check password length
-    if (this.user.password.length < 8 || this.user.password.length > 64) {
-      console.error('Password must be at least 8 characters');
-      this.passwordLength = false;
-      return;
-    }
+      const user = { username, email, password }
+
+      //Temp code for passwords not matching. Good for now
+      this.passwordsMatch = true;
+      if (this.registerForm.get('password')?.value !== this.registerForm.get('confirmPassword')?.value) {
+        console.error('Passwords do not match');
+        this.passwordsMatch = false;
+        return;
+      }
 
     // Registration request
-    this.flaskService.register(this.user).subscribe({
+    this.flaskService.register(user).subscribe({
       next: (result: any) => {
         console.log(result)
         if (result && result.access_token) {
@@ -77,5 +99,8 @@ export class RegistrationComponent {
         console.error('Registration failed')
       }
     })
+  } else {
+    console.log('form validation failed')
+  }
   }
 }

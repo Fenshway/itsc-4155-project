@@ -1,10 +1,10 @@
 <div *ngIf="!userSessionActive()">
     <app-general-nav></app-general-nav>
-    <router-outlet></router-outlet>
 </div>
 <div *ngIf="userSessionActive()">
     <app-user-nav></app-user-nav>
-    <router-outlet></router-outlet>
 </div>
+
+<router-outlet></router-outlet>
 
 

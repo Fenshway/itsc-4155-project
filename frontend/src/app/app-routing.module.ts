@@ -13,7 +13,6 @@ const routes: Routes = [
 
   { path: '', redirectTo: '/home', pathMatch: 'full'},
   { path: 'home', component: ViewLobbiesComponent},
-  { path: 'welcome', component: GeneralHomeComponent},
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},

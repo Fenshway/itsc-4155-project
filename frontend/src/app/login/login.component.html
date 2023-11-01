@@ -1,23 +1,3 @@
-<!--<body>
-  <div class="container">
-    <form #userLogin="ngForm" (ngSubmit)="onSubmit()" autocomplete="off">
-      <h2>Login</h2>
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input [(ngModel)]="user.username" type="text" class="form-control" name="username" placeholder="Username">
-        <div *ngIf="username.errors?.[required]">Username is required</div>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input [(ngModel)]="user.password" type="password" class="form-control" name="password" placeholder="Password"
-          required>
-        <div class="text-danger" *ngIf="loginError">{{loginError}}</div>
-      </div>
-      <button type="submit" class="btn btn-outline-success mt-3">Login</button>
-    </form>
-  </div>
-</body>-->
-
 <body>
   <div class="container">
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit(); formSubmitted=true;" autocomplete="off">
