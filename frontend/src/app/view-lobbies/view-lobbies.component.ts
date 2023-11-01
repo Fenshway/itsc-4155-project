@@ -1,5 +1,6 @@
 import { Component} from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-view-lobbies',
@@ -8,9 +9,13 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 })
 export class ViewLobbiesComponent {
 
-  jwt: string | null;
+  constructor(
+    private jwtHelper: JwtHelperService,
+    private userService: UserServiceService
+    
+  ) {}
 
-  constructor(private jwtHelper: JwtHelperService) {
-    this.jwt = sessionStorage.getItem('access_token')
+  userSessionActive() {
+    return this.userService.user
   }
 }

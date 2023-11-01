@@ -9,7 +9,7 @@ import { GeneralNavComponent } from './general-nav/general-nav.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { LoginComponent } from './login/login.component';
 import { CreateLobbyComponent } from './create-lobby/create-lobby.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserSidenavComponent } from './user-sidenav/user-sidenav.component';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ProfileComponent } from './profile/profile.component';
@@ -67,6 +67,7 @@ export function tokenGetter() {
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter

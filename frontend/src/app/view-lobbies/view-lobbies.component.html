@@ -1,10 +1,10 @@
 <body>
     
-<div class="in-session" *ngIf="jwt">
+<div class="in-session" *ngIf="userSessionActive()">
     <p>Game library soon to come</p>
 </div>
 
-<div class="not-in-session" *ngIf="!jwt">
+<div class="not-in-session" *ngIf="!userSessionActive()">
     welcome to Quest
 </div>
 
