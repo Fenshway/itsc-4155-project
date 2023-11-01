@@ -74,9 +74,9 @@ def login():
     existing_user = User.query.filter_by(user_name=username).first()
 
     if not existing_user:
-        return jsonify({'error': "Unable to login"}), 400
+        return jsonify({'error': "Error logging in. Please check username and password"}), 400
     elif not bcrypt.check_password_hash(existing_user.user_password, password):
-        return jsonify({'error': "Unable to login"}), 400
+        return jsonify({'error': "Error logging in. Please check username and password"}), 400
     else: 
         user_data = {
             'username': existing_user.user_name

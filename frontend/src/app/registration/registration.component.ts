@@ -17,6 +17,7 @@ export class RegistrationComponent {
     password: '',
     confirmPassword: ''
   };
+  
   passwordsMatch = true;
   passwordLength = true;
   registrationError?: string;
