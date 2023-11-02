@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
@@ -10,29 +10,25 @@ import { FlaskdataService } from '../services/flaskdata.service';
 })
 export class ProfileComponent {
 
+  session_user_id = -1
+
   data = {
+    user_id: 0,
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
   }
 
-  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router) {
+  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router, private route: ActivatedRoute) {
     
-    //Load user information
+    this.data.user_id = route.snapshot.paramMap.get("id") as unknown as number || 0;
+
     const access_token: string|null = sessionStorage.getItem("access_token")
     if(!access_token){return;}
     const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
-    
-    //Update user info fields
-    this.data.username = user.username;
-    
-    flaskService.getProfile(user.user_id).subscribe((profileData: any) => {
-      this.data.rating = profileData.rating;
-      if(profileData.icon){
-        this.data.icon = "data:;base64," + profileData.icon;
-      }
-    })
+
+    this.session_user_id = user.user_id;
 
   }
 
@@ -57,6 +53,18 @@ export class ProfileComponent {
     //Force open file input object
     fileInput.click();
 
+  }
+
+  ngOnInit() {
+
+    this.route.data.subscribe((profileData: any) => {
+      this.data.username = profileData.data.username;
+      this.data.rating = profileData.data.rating;
+      if(profileData.data.icon){
+        this.data.icon = "data:;base64," + profileData.data.icon;
+      }
+    });
+    
   }
 
 }

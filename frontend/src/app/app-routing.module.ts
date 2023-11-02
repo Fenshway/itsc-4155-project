@@ -8,6 +8,7 @@ import { LobbyComponent } from './lobby/lobby.component';
 import { ViewLobbiesComponent } from './view-lobbies/view-lobbies.component';
 import { GeneralHomeComponent } from './general-home/general-home.component';
 import { isAuthenticatedGuard } from './is-authenticated.guard';
+import ProfileResolver from './profile/profile.resolver'
 
 const routes: Routes = [
 
@@ -16,7 +17,7 @@ const routes: Routes = [
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},
-  { path: 'profile', component: ProfileComponent},
+  { path: 'profile/:id', component: ProfileComponent, resolve: {data: ProfileResolver}},
   { path: 'lobby', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
 ];
 
