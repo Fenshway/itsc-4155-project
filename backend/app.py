@@ -119,10 +119,11 @@ def getProfile(user_id):
         image = base64.b64encode(imageByteString.data).decode("UTF-8")
 
     user_data = {
+        'username': user.user_name,
         'icon': image,
         'rating': user.user_rating or 0,
     }
-
+    
     return jsonify(user_data)
 
 @app.route('/api/profile', methods=['POST'])
