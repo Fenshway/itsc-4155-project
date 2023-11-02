@@ -31,11 +31,14 @@ body > * {
     margin-right: 15px;
 }
 
-.left-content > button {
+.left-content > .icon-wrapper {
     height: 90%;
-    cursor: pointer;
     border: none;
     background-color: transparent;
+}
+
+.icon-updatable {
+    cursor: pointer;
 }
 
 .icon {
@@ -65,11 +68,11 @@ body > * {
     filter: invert();
 }
 
-.icon:hover + .icon-update {
+.icon-updatable:hover + .icon-update {
     display: inline;
 }
 
-.icon:hover {
+.icon-updatable:hover {
     filter: brightness(50%)
 }
 

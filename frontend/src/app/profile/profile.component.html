@@ -2,9 +2,21 @@
 
         <div id="profile-header">
             <div class="left-content">
-                <button (click)="initProfileIconChange()"><img class="icon" src="{{data.icon}}">
-                    <img class="icon-update" src="../../assets/images/profilepicupdate.png">
-                </button>
+
+                <ng-container *ngIf="session_user_id == data.user_id; then profile_icon_updatable; else profile_icon">
+                </ng-container>
+
+                <ng-template #profile_icon_updatable>
+                    <button class="icon-wrapper" (click)="initProfileIconChange()">
+                        <img class="icon icon-updatable" src="{{data.icon}}">
+                        <img class="icon-update" src="../../assets/images/profilepicupdate.png">
+                    </button>
+                </ng-template>
+
+                <ng-template #profile_icon>
+                    <img class="icon icon-wrapper" src="{{data.icon}}">
+                </ng-template>
+
             </div>
             <div class="right-content">
                 <div class="name-header">

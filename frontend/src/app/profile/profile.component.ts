@@ -10,7 +10,10 @@ import { FlaskdataService } from '../services/flaskdata.service';
 })
 export class ProfileComponent {
 
+  session_user_id = -1
+
   data = {
+    user_id: 0,
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
@@ -18,15 +21,14 @@ export class ProfileComponent {
 
   constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router, private route: ActivatedRoute) {
     
-    /*Load user information
+    this.data.user_id = route.snapshot.paramMap.get("id") as unknown as number || 0;
+
     const access_token: string|null = sessionStorage.getItem("access_token")
     if(!access_token){return;}
     const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
-    
-    //Update user info fields
-    this.data.username = user.username;
-    */
+
+    this.session_user_id = user.user_id;
 
   }
 
