@@ -1,5 +1,10 @@
 body {
-    background-color: rgb(42, 42, 42);
+    /* Adds picture to background */
+    background-image: url('../../assets/images/valorantpic1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .container {
@@ -17,12 +22,13 @@ h2 {
 }
 
 form {
-    background-color: rgb(18, 18, 18);
+    background-color: rgba(18, 18, 18, 0.8);
     padding: 100px;
     border-radius: 5px;
-    width: 800px;
+    width: 600px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 10px;
+    backdrop-filter: blur(5px);
 }
 
 .form-group {
