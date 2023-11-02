@@ -20,10 +20,14 @@
             </div>
             <div class="right-content">
                 <div class="name-header">
-                    <h1>{{data.username}}</h1>
-                    <select class="status" name="status" id="status">
+                    <span>
+                        <span id="online-status" class="online-status-online"></span>
+                        <h1>{{data.username}}</h1>
+                    </span>
+                    <select *ngIf="session_user_id == data.user_id" class="status" name="status" id="status">
                         <option value = "online">Online</option>
                         <option value = "dnd">Do Not Disturb</option>
+                        <option value = "idle">Idle</option>
                         <option value = "invisible">Invisible</option>
                     </select>
                 </div>

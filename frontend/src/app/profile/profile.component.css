@@ -20,6 +20,7 @@ body > * {
     text-align: center;
     justify-content:center;
     padding: 20px;
+    padding-bottom: 0px;
     /*background-color: rgba(49, 49, 49, 0.74);*/
     width: 90%;
     height: 350px;
@@ -93,6 +94,31 @@ body > * {
     filter: saturate(75);
 }
 
+#online-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    border: 1px solid rgb(87, 87, 87);
+}
+
+.online-status-online {
+    background-color: green;
+}
+
+.online-status-away {
+    background-color: yellow;
+}
+
+.online-status-invisible {
+    background-color: grey;
+}
+
+.online-status-dnd {
+    background-color: red;
+}
+
 .name-header {
     display: flex;
     flex-direction: row;
@@ -101,8 +127,12 @@ body > * {
     text-align: left;
 }
 
-.name-header > h1 {
+.name-header > span {
     padding-right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .status {
