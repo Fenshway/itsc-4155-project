@@ -10,6 +10,8 @@ import { FlaskdataService } from '../services/flaskdata.service';
 })
 export class ProfileComponent {
 
+  editingLibrary = false
+  addingToLibrary = false
   session_user_id = -1
 
   data = {
@@ -65,6 +67,18 @@ export class ProfileComponent {
       }
     });
     
+  }
+
+  toggleEditLibrary() {
+    this.editingLibrary = !this.editingLibrary;
+  }
+
+  enableAddingToLibrary() {
+    this.addingToLibrary = true;
+  }
+
+  disableAddingToLibrary() {
+    this.addingToLibrary = false;
   }
 
 }

@@ -133,6 +133,12 @@ def updateProfile():
     if not 'file' in request.files:
         return jsonify({})
     
+    file = request.files['file']
+    mimetype = file.content_type
+    
+    if not mimetype in ['image/png', 'image/jpeg']:
+        return jsonify({})
+    
     #Checking for authentication
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
@@ -147,7 +153,6 @@ def updateProfile():
         db.session.delete(existingFile)
 
     #Uploading file
-    file = request.files['file']
     upload = UserImage(user_id=user.user_id, filename=file.filename, data=file.read())
     db.session.add(upload)
 

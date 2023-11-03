@@ -20,16 +20,20 @@
             </div>
             <div class="right-content">
                 <div class="name-header">
-                    <h1>{{data.username}}</h1>
-                    <select class="status" name="status" id="status">
+                    <span>
+                        <span id="online-status" class="online-status-online" title="Online"></span>
+                        <h1>{{data.username}}</h1>
+                    </span>
+                    <select *ngIf="session_user_id == data.user_id" class="status" name="status" id="status">
                         <option value = "online">Online</option>
                         <option value = "dnd">Do Not Disturb</option>
+                        <option value = "idle">Idle</option>
                         <option value = "invisible">Invisible</option>
                     </select>
                 </div>
                 <div class="rating-section">
                     <h2>Player Rating</h2>
-                    <div class="rating-stars">
+                    <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">
                             <ng-container *ngIf="1 == 1; then star_empty">
                             </ng-container>
@@ -57,18 +61,29 @@
         </div>
 
         <div id="game-library">
-            <h1>Game Library</h1>
-            <div id="games-display">
-                <div class="game-container">
-                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
-                </div>
-                <div class="game-container">
-                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
-                </div>
-                <div class="game-container">
-                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
-                </div>
+            <div id="library-header">
+                <h1>Game Library</h1>
+                <button *ngIf="session_user_id == data.user_id" (click)="toggleEditLibrary()">
+                    <img [src]="editingLibrary ? '../../assets/images/exit.png' : '../../assets/images/edit.png'">
+                </button>
             </div>
+            <div id="games-display">
+                <div *ngFor="let idx of [1, 2, 3, 4, 5]" class="game-container">
+                    <img class="game-icon" src="../../assets/images/csgo-banner.png">
+                    <button *ngIf="session_user_id == data.user_id && editingLibrary">
+                        <img class="game-remove" src="../../assets/images/exit.png">
+                    </button>
+                </div>
+                <button *ngIf="session_user_id == data.user_id && editingLibrary" class="game-add-container" (click)="enableAddingToLibrary()">
+                    <img src="../../assets/images/profilepicupdate.png">
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="addingToLibrary" id="game-library-popup" (click)="disableAddingToLibrary()">
+            <button>
+                <img class="exit-button" src="../../assets/images/exit.png">
+            </button>
         </div>
 
 </body>
