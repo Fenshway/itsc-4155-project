@@ -65,11 +65,11 @@
             <div id="games-display">
                 <div *ngFor="let idx of [1, 2, 3, 4, 5]" class="game-container">
                     <img class="game-icon" src="../../assets/images/csgo-banner.png">
-                    <button>
+                    <button *ngIf="session_user_id == data.user_id">
                         <img class="game-remove" src="../../assets/images/profilepicupdate.png">
                     </button>
                 </div>
-                <button class="game-add-container">
+                <button *ngIf="session_user_id == data.user_id" class="game-add-container">
                     <img src="../../assets/images/profilepicupdate.png">
                 </button>
             </div>
