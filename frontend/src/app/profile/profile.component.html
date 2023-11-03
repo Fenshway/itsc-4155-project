@@ -61,18 +61,29 @@
         </div>
 
         <div id="game-library">
-            <h1>Game Library</h1>
+            <div id="library-header">
+                <h1>Game Library</h1>
+                <button *ngIf="session_user_id == data.user_id" (click)="toggleEditLibrary()">
+                    <img [src]="editingLibrary ? '../../assets/images/exit.png' : '../../assets/images/edit.png'">
+                </button>
+            </div>
             <div id="games-display">
                 <div *ngFor="let idx of [1, 2, 3, 4, 5]" class="game-container">
                     <img class="game-icon" src="../../assets/images/csgo-banner.png">
-                    <button *ngIf="session_user_id == data.user_id">
-                        <img class="game-remove" src="../../assets/images/profilepicupdate.png">
+                    <button *ngIf="session_user_id == data.user_id && editingLibrary">
+                        <img class="game-remove" src="../../assets/images/exit.png">
                     </button>
                 </div>
-                <button *ngIf="session_user_id == data.user_id" class="game-add-container">
+                <button *ngIf="session_user_id == data.user_id && editingLibrary" class="game-add-container" (click)="enableAddingToLibrary()">
                     <img src="../../assets/images/profilepicupdate.png">
                 </button>
             </div>
+        </div>
+
+        <div *ngIf="addingToLibrary" id="game-library-popup" (click)="disableAddingToLibrary()">
+            <button>
+                <img class="exit-button" src="../../assets/images/exit.png">
+            </button>
         </div>
 
 </body>
