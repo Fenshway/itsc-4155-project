@@ -7,6 +7,7 @@ body {
     flex-direction: column;
     align-items: center;
     background-color: rgba(18, 18, 18, 0.034);
+    height: fit-content;
 }
 
 body > * {
@@ -163,7 +164,7 @@ h1, h2 {
     padding: 20px;
     /*background-color: rgba(49, 49, 49, 0.74);*/
     width: 90%;
-    height: 350px;
+    height: fit-content;
 }
 
 #game-library > h1 {
@@ -173,6 +174,8 @@ h1, h2 {
 #games-display {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1 0 calc(33%);
     justify-content: center;
     border-top: 2px solid rgba(0, 0, 0, 0.37);
     border-bottom: 2px solid rgba(0, 0, 0, 0.37);
@@ -181,17 +184,67 @@ h1, h2 {
     padding-bottom: 10px;
 }
 
-.game-container {
+.game-container, .game-add-container {
     margin-left: 10px;
     margin-right: 10px;
-}
-
-.game-icon {
+    margin-bottom: 10px;
     width: 200px;
-    height: 300px;
-    border: 2px solid black;
+    height: 265px;
+    display: inline;
     border-top-left-radius: 15px;
     border-bottom-right-radius: 15px;
     border-top-right-radius: 15px;
-    object-fit: cover;
+    position: relative;
+}
+
+.game-icon {
+    width: 100%;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.game-container > button {
+    position: absolute;
+    width: 40%;
+    top: 0;
+    bottom: 75%;
+    right: 0;
+    left: 75%;
+    margin: auto;
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    border: none;
+    transition: .25s transform;
+}
+
+.game-container > button:hover {
+    transform: scale(1.2);
+}
+
+.game-remove {
+    filter: invert();
+    transform: rotate(45deg);
+    width: 100%;
+}
+
+.game-container {
+    border: 2px solid black;
+}
+
+.game-add-container {
+    border: 2px dotted black;
+    background-color: rgba(0, 0, 0, 0.363);
+    transition: .25s transform, .25s background-color;
+}
+
+.game-add-container:hover {
+    transform: scale(1.025);
+    background-color: rgba(0, 0, 0, 0.521);
+}
+
+.game-add-container > img {
+    filter: invert();
+    width: 50%;
 }
