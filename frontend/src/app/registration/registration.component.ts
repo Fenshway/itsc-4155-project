@@ -62,14 +62,6 @@ export class RegistrationComponent {
 
       const user = { username, email, password }
 
-      //Temp code for passwords not matching. Good for now
-      this.passwordsMatch = true;
-      if (this.registerForm.get('password')?.value !== this.registerForm.get('confirmPassword')?.value) {
-        console.error('Passwords do not match');
-        this.passwordsMatch = false;
-        return;
-      }
-
     // Registration request
     this.flaskService.register(user).subscribe({
       next: (result: any) => {
