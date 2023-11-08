@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
-from models.model import UserImage, User, db
+from models.model import UserImage, User, db, Games
 
 load_dotenv()
 
@@ -166,6 +166,12 @@ def updateProfile():
     return jsonify({
         'icon': image,
     })
+
+@app.route('/api/games', methods=['GET'])
+def get_games_library():
+    games = Games.query.all()
+    game_library = [{'game_id': game.game_id, 'game_name': game.game_name, 'img_path': game.img_path} for game in games]
+    return jsonify (game_library)
 
 if __name__ == '__main__':
     app.run(debug=True)

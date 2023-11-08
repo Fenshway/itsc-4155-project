@@ -41,4 +41,8 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/profile/` + user_id, getHttpOptions());
   }
 
+  getGames() {
+    return this.http.get(`${this.apiBaseUrl}/api/games`, getHttpOptions());
+  }
+
 }

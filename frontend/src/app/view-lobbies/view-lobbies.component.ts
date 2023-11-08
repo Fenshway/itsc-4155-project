@@ -1,6 +1,6 @@
-import { Component} from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { Component } from '@angular/core';
 import { UserServiceService } from '../services/user-service.service';
+import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
   selector: 'app-view-lobbies',
@@ -8,14 +8,18 @@ import { UserServiceService } from '../services/user-service.service';
   styleUrls: ['./view-lobbies.component.css']
 })
 export class ViewLobbiesComponent {
+  gameData: any[] = [];
 
   constructor(
-    private jwtHelper: JwtHelperService,
-    private userService: UserServiceService
-    
+    private userService: UserServiceService,
+    private flaskService: FlaskdataService
   ) {}
 
-  userSessionActive() {
-    return this.userService.user
+  ngOnInit(): void {
+    this.flaskService.getGames()
+    .subscribe((data: any) => {
+      this.gameData = data;
+    });
   }
+
 }
