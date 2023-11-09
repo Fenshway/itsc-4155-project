@@ -1,4 +1,4 @@
-<mat-toolbar color="accent" class="mat-elevation-z8">
+<mat-toolbar *ngIf="userSessionActive()" color="accent" class="mat-elevation-z8">
     <button (click)="drawer.toggle()" mat-icon-button>
         <mat-icon>menu</mat-icon>
     </button>
@@ -13,6 +13,15 @@
         <mat-icon>notifications</mat-icon>
     </button>
 </mat-toolbar>
+
+<mat-toolbar *ngIf="!userSessionActive()" color="accent" class="mat-elevation-z8 general">
+    <a routerLink="home"><img src="../../assets/images/questwhite.png" alt="questlogo"></a>
+    <span class="example-spacer"></span>
+    <button routerLink="login" mat-button>Log In</button>
+    <div class="toolbar-divider"></div>
+    <button routerLink="register" mat-raised-button class="custom-profile-button">Register</button>
+</mat-toolbar>
+
 <mat-drawer-container autosize>
     <mat-drawer #drawer opened="false" mode="over" position="start" class="custom-drawer">
     <mat-nav-list>

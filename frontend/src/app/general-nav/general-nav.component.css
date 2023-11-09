@@ -1,30 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
-.example-spacer {
+.general .example-spacer {
     flex: 1 1 auto;
 }
 
-.mat-toolbar {
+.general.mat-toolbar {
     background-color: rgb(18, 18, 18);
     color: rgb(253, 255, 252);
     height: 100px;
 }
 
-.mat-toolbar img {
+.general.mat-toolbar img {
     max-height: 80px;
     width: auto;
 }
 
-.custom-profile-button {
+.general .custom-profile-button {
     background-color: rgb(229, 56, 59) !important;
     color: rgb(253, 255, 252) !important;
 }
 
-.custom-profile-button:hover {
+.general .custom-profile-button:hover {
     background-color: rgb(118, 200, 147) !important;
 }
 
-.toolbar-divider {
+.general .toolbar-divider {
     width: 1px;
     background-color: transparent;
     margin: 0 20px;
