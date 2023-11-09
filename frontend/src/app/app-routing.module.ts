@@ -11,7 +11,6 @@ import { isAuthenticatedGuard } from './is-authenticated.guard';
 import ProfileResolver from './profile/profile.resolver'
 
 const routes: Routes = [
-
   { path: '', redirectTo: '/home', pathMatch: 'full'},
   { path: 'home', component: ViewLobbiesComponent},
   { path: 'register', component: RegistrationComponent},

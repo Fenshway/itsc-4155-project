@@ -32,4 +32,36 @@
 
 .custom-drawer {
     background-color: rgb(18,18,18);
-  }
+}
+
+/* general nav */
+
+.general .example-spacer {
+    flex: 1 1 auto;
+}
+
+.general.mat-toolbar {
+    background-color: rgb(18, 18, 18);
+    color: rgb(253, 255, 252);
+    height: 100px;
+}
+
+.general.mat-toolbar img {
+    max-height: 80px;
+    width: auto;
+}
+
+.general .custom-profile-button {
+    background-color: rgb(229, 56, 59) !important;
+    color: rgb(253, 255, 252) !important;
+}
+
+.general .custom-profile-button:hover {
+    background-color: rgb(118, 200, 147) !important;
+}
+
+.general .toolbar-divider {
+    width: 1px;
+    background-color: transparent;
+    margin: 0 20px;
+}
