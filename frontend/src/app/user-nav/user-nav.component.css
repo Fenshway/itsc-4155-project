@@ -8,6 +8,11 @@
     background-color: rgb(18, 18, 18);
     color: rgb(253, 255, 252);
     height: 100px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
 }
 
 .mat-toolbar img {
