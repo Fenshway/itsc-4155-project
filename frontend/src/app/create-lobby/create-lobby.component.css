@@ -71,3 +71,20 @@ input.form-control {
 .form-group {
     margin: 10px 0;
 }
+
+mat-form-field {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  /* Apply styles to the input inside mat-form-field */
+  mat-form-field input {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Apply styles to the mat-error element */
+  mat-error {
+    color: red;
+    font-size: 14px;
+  }

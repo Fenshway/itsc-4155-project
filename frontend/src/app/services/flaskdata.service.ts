@@ -30,7 +30,7 @@ export class FlaskdataService {
   }
 
   createLobby(lobbyData: any) {
-    return this.http.post(`${this.apiBaseUrl}/api/login`, lobbyData, getHttpOptions());
+    return this.http.post(`${this.apiBaseUrl}/api/create-lobby`, lobbyData, getHttpOptions());
   }
 
   updateProfilePicture(formData: FormData) {

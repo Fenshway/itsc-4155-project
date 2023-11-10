@@ -1,18 +1,36 @@
 <body>
     <div class="container">
-        <form>
+        <form [formGroup]="createLobbyForm" (ngSubmit)="onSubmit()">
             <h2>Create a Lobby</h2>
+
+            <label for="game">Game</label>
+
+            <mat-form-field>
+                <input matInput placeholder="Game" formControlName="game" [matAutocomplete]="auto" (keyup.enter)="onEnter()">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGameSelected($event)">
+                    <mat-option *ngFor="let game of gameData" [value]="game.game_name">
+                        {{ game.game_name }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- <div class="form-group col">
+                <select class="form-control">
+                    <option *ngFor="let game of gameData" value="game.game_name">{{game.game_name}}</option>
+                </select>
+            </div> -->
+
             <div class="form-group col">
                 <label for="title">Title</label>
-                <input type="text" class="form-control" id="title" placeholder="Title" required>
+                <input formControlName="title" type="text" class="form-control" id="title" placeholder="Title">
             </div>
             <div class="form-group col">
                 <label for="description">Description</label>
-                <textarea class="form-control" id="description" rows="3" placeholder="Description"></textarea>
+                <textarea formControlName="description" class="form-control" id="description" rows="3" placeholder="Description"></textarea>
             </div>
             <div class="form-group col">
-                <label for="size">Lobby Size</label>
-                <input type="number" class="form-control" id="size" min="2" max="10" placeholder="2-10" required>
+                <label for="lobbySize">Lobby Size</label>
+                <input formControlName="lobbySize" type="number" class="form-control" id="lobbySize" min="2" max="10" placeholder="2-10">
             </div>
             <button type="submit" class="btn btn-outline-success mt-3">Create</button>
         </form>
