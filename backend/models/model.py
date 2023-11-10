@@ -112,7 +112,7 @@ class Lobby_Players(db.Model):
     lobby_id = db.Column(db.Integer, db.ForeignKey('Lobby.lobby_id'))
     players = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=True)
 
-    def __init__(self, id, lobby_id, players=None):
+    def __init__(self, lobby_id, players=None):
         self.lobby_id = lobby_id 
         self.players = players 
 
