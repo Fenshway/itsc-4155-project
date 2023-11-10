@@ -167,8 +167,7 @@ def get_games_library():
     game_library = [{'game_id': game.game_id, 'game_name': game.game_name, 'img_path': game.img_path} for game in games]
     return jsonify (game_library)
 
-#TODO - add title to db
-#TODO - lobby takes game id but we send the title
+#TODO - Set up lobby with Lobby_Players
 @app.route('/api/create-lobby', methods=['POST'])
 def create_lobby():
     lobby = request.get_json()
@@ -187,14 +186,15 @@ def create_lobby():
     new_lobby = Lobby(
         game_id=game.game_id,
         host_id=host_id,
+        title=lobby_title,
         num_players=lobby_size,
-        discription=lobby_description,
+        description=lobby_description,
     )
 
     db.session.add(new_lobby)
     db.session.commit()
     
-    pass
+    return jsonify({'message': "Lobby created successfully"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)

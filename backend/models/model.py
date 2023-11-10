@@ -96,12 +96,12 @@ class Lobby(db.Model):
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-    def __init__(self, game_id, host_id, num_players, description, date):
+    def __init__(self, game_id, host_id, num_players, title, description):
         self.game_id = game_id
         self.host_id = host_id
         self.num_players = num_players
+        self.title = title
         self.description = description
-        self.date = date
 
     def __repr__(self):
         return '<host_id {}>'.format(self.host_id)
