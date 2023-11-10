@@ -92,6 +92,7 @@ class Lobby(db.Model):
     game_id = db.Column(db.Integer, db.ForeignKey('Games.game_id'))
     host_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     num_players = db.Column(db.Integer)
+    title = db.Column(db.String(50))
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
