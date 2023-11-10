@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
-from models.model import UserImage, User, db, Games, Lobby
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players
 
 load_dotenv()
 
@@ -192,6 +192,12 @@ def create_lobby():
     )
 
     db.session.add(new_lobby)
+    db.session.commit()
+    
+    db.session.refresh(new_lobby)
+    new_LPlayer = Lobby_Players(lobby_id=new_lobby.lobby_id, players_id=host_id)
+
+    db.session.add(new_LPlayer)
     db.session.commit()
     
     return jsonify({'message': "Lobby created successfully"}), 201
