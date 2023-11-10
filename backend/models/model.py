@@ -108,20 +108,20 @@ class Lobby(db.Model):
 
 class Lobby_Players(db.Model):
     __tablename__ = 'Lobby_Players'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    LPlayers_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     lobby_id = db.Column(db.Integer, db.ForeignKey('Lobby.lobby_id'))
-    players = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=True)
+    players_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=True)
 
-    def __init__(self, lobby_id, players=None):
+    def __init__(self, lobby_id, players_id=None):
         self.lobby_id = lobby_id 
-        self.players = players 
+        self.players_id = players_id
 
     def __repr__(self):
         return '<lobby_id {}>'.format(self.lobby_id)
 
 class Chat(db.Model):
     __tablename__ = 'Chat'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    chat_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     lobby_id = db.Column(db.Integer, db.ForeignKey('Lobby.lobby_id'))
     user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     messages = db.Column(db.String(10000))
