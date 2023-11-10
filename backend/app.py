@@ -167,7 +167,6 @@ def get_games_library():
     game_library = [{'game_id': game.game_id, 'game_name': game.game_name, 'img_path': game.img_path} for game in games]
     return jsonify (game_library)
 
-#TODO - Set up lobby with Lobby_Players
 @app.route('/api/create-lobby', methods=['POST'])
 def create_lobby():
     lobby = request.get_json()
@@ -182,6 +181,13 @@ def create_lobby():
     game = Games.query.filter_by(game_name=lobby_game).first()
     if game is None:
         return jsonify({'error': "Invalid game name"}), 400
+    
+    #FOR LATER USE
+    '''
+    lobbyExists = Lobby.query.filter_by(host_id=host_id).first()
+    if lobbyExists:
+        return jsonify({'error': "User may only host one lobby at a time"}), 400
+    '''
 
     new_lobby = Lobby(
         game_id=game.game_id,
@@ -201,6 +207,46 @@ def create_lobby():
     db.session.commit()
     
     return jsonify({'message': "Lobby created successfully"}), 201
+
+#TODO: Fix anything that needs to be added for frontend
+@app.route('/api/join-lobby', methods=['POST'])
+def join_lobby():
+    lobbyJoin = request.get_json()
+
+    lobby_title = lobbyJoin.get('title')
+    host_id = lobbyJoin.get('hostId') #ID of the user who is hosting the lobby to be joined
+    currUser_id = lobbyJoin.get('userId') #This should be the ID of the user who will be joining
+    
+    #Get the lobby_id based on the title and host_id matching
+    lobby = Lobby.query.filter_by(title=lobby_title, host_id=host_id).first()
+    new_LPlayer = Lobby_Players(lobby_id=lobby.lobby_id, players_id=currUser_id)
+
+    db.session.add(new_LPlayer)
+    db.session.commit()
+    
+    return jsonify({'message': "Lobby joined successfully"}), 201
+
+#TODO: Fix anything that needs to be added for frontend
+@app.route('/api/leave-lobby', methods=['POST'])
+def join_lobby():
+    lobbyLeave = request.get_json()
+
+    lobby_title = lobbyLeave.get('title')
+    host_id = lobbyLeave.get('hostId') #ID of the user who is hosting the lobby to be left
+    currUser_id = lobbyLeave.get('userId') #This should be the ID of the user who will be leaving
+    
+    #Get the lobby_id based on the title and host_id matching
+    lobby = Lobby.query.filter_by(title=lobby_title, host_id=host_id).first()
+
+    Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=currUser_id).delete()
+    db.session.commit()
+
+    #If host leaves, delete Lobby too
+    if host_id == currUser_id:
+        Lobby.query.filter_by(title=lobby_title, host_id=host_id).delete()
+        db.session.commit()
+    
+    return jsonify({'message': "Lobby left successfully"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
