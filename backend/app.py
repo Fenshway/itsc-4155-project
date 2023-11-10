@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
-from models.model import UserImage, User, db, Games
+from models.model import UserImage, User, db, Games, Lobby
 
 load_dotenv()
 
@@ -84,12 +84,6 @@ def login():
         }
         access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
-
-# testing flask -> angular data
-@app.route('/api/testdata', methods=['GET'])
-def testdata():
-    greetings = 'hello from flask'
-    return jsonify(greetings)
 
 # Testing for Image Upload
 # TODO: Add a way to display upoaded image
@@ -172,6 +166,35 @@ def get_games_library():
     games = Games.query.all()
     game_library = [{'game_id': game.game_id, 'game_name': game.game_name, 'img_path': game.img_path} for game in games]
     return jsonify (game_library)
+
+#TODO - add title to db
+#TODO - lobby takes game id but we send the title
+@app.route('/api/create-lobby', methods=['POST'])
+def create_lobby():
+    lobby = request.get_json()
+
+    lobby_title = lobby.get('title')
+    lobby_game = lobby.get('game')
+    lobby_description = lobby.get('description')
+    lobby_size = lobby.get('lobbySize')
+    host_id = lobby.get('userId')
+
+    # Get game ID based on name
+    game = Games.query.filter_by(game_name=lobby_game).first()
+    if game is None:
+        return jsonify({'error': "Invalid game name"}), 400
+
+    new_lobby = Lobby(
+        game_id=game.game_id,
+        host_id=host_id,
+        num_players=lobby_size,
+        discription=lobby_description,
+    )
+
+    db.session.add(new_lobby)
+    db.session.commit()
+    
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
