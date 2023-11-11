@@ -29,6 +29,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { GeneralHomeComponent } from './general-home/general-home.component';
+import { GameLobbiesComponent } from './game-lobbies/game-lobbies.component';
 
 
 
@@ -49,7 +50,8 @@ export function tokenGetter() {
     ProfileComponent,
     LobbyComponent,
     ViewLobbiesComponent,
-    GeneralHomeComponent
+    GeneralHomeComponent,
+    GameLobbiesComponent
   ],
   imports: [
     MatSelectModule,
