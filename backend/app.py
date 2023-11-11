@@ -228,7 +228,7 @@ def join_lobby():
 
 #TODO: Fix anything that needs to be added for frontend
 @app.route('/api/leave-lobby', methods=['POST'])
-def join_lobby():
+def leave_lobby():
     lobbyLeave = request.get_json()
 
     lobby_title = lobbyLeave.get('title')
