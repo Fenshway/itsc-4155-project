@@ -1,5 +1,6 @@
 body {
     background-color: rgb(42, 42, 42);
+    height: 100vh;
 }
 
 .in-session {
@@ -8,6 +9,7 @@ body {
     align-items: flex-start;
     padding: 20px;
     box-sizing: border-box;
+    background-color: rgb(42, 42, 42);
 }
 
 .in-session div {
@@ -17,6 +19,7 @@ body {
     flex: 1 0 auto;
     margin-bottom: 5px;
     box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .in-session .placeholder {
@@ -41,22 +44,5 @@ body {
     margin-top: 10px;
     font-size: 1.2em;
     color: rgb(253, 255, 252);
-}
-
-.in-session img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-top: 100px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.in-session img:hover {
-    transform: translateY(-10px);
-}
-
-.in-session h2 {
-    margin-top: 10px;
-    font-size: 1.2em;
-    color: rgb(253, 255, 252);
+    font-family: 'Montserrat', sans-serif;
 }
