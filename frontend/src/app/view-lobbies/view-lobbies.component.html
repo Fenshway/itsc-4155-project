@@ -1,11 +1,9 @@
 <body>
-    
-<div class="in-session">
-    <p>Game library soon to come testtest</p>
-    <div *ngFor="let game of gameData">
-        <img [src]="'../../assets/images/' + game.img_path" alt="{{ game.game_name }}">
-        <h2>{{game.game_name}}</h2>
+    <div class="in-session">
+        <div *ngFor="let game of gameData">
+            <img [src]="'../../assets/images/' + game.img_path" alt="{{ game.game_name }}">
+            <h2>{{game.game_name}}</h2>
+        </div>
+        <div class="placeholder" *ngFor="let i of [1,2,3,4,5 - gameData.length % 5]"></div>
     </div>
-</div>
-
 </body>

@@ -30,6 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { GeneralHomeComponent } from './general-home/general-home.component';
+import { GameLobbiesComponent } from './game-lobbies/game-lobbies.component';
 import { LibraryPopupComponent } from './profile/components/library-popup/library-popup.component';
 import { LibraryGameSlotComponent } from './profile/components/library-game-slot/library-game-slot.component';
 
@@ -52,7 +53,8 @@ export function tokenGetter() {
     ViewLobbiesComponent,
     GeneralHomeComponent,
     LibraryPopupComponent,
-    LibraryGameSlotComponent
+    LibraryGameSlotComponent,
+    GameLobbiesComponent
   ],
   imports: [
     MatSelectModule,

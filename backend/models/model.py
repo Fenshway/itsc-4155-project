@@ -92,35 +92,36 @@ class Lobby(db.Model):
     game_id = db.Column(db.Integer, db.ForeignKey('Games.game_id'))
     host_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     num_players = db.Column(db.Integer)
+    title = db.Column(db.String(50))
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-    def __init__(self, game_id, host_id, num_players, description, date):
+    def __init__(self, game_id, host_id, num_players, title, description):
         self.game_id = game_id
         self.host_id = host_id
         self.num_players = num_players
+        self.title = title
         self.description = description
-        self.date = date
 
     def __repr__(self):
         return '<host_id {}>'.format(self.host_id)
 
 class Lobby_Players(db.Model):
     __tablename__ = 'Lobby_Players'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    LPlayers_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     lobby_id = db.Column(db.Integer, db.ForeignKey('Lobby.lobby_id'))
-    players = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=True)
+    players_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=True)
 
-    def __init__(self, id, lobby_id, players=None):
+    def __init__(self, lobby_id, players_id=None):
         self.lobby_id = lobby_id 
-        self.players = players 
+        self.players_id = players_id
 
     def __repr__(self):
         return '<lobby_id {}>'.format(self.lobby_id)
 
 class Chat(db.Model):
     __tablename__ = 'Chat'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    chat_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     lobby_id = db.Column(db.Integer, db.ForeignKey('Lobby.lobby_id'))
     user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     messages = db.Column(db.String(10000))
