@@ -108,11 +108,11 @@ def testImage():
         return f'Uploaded: {file.filename}'
     return render_template('fetchImage.html')
 
-@app.route('/api/profile/<user_id>', methods=['GET'])
-def getProfile(user_id):
+@app.route('/api/profile/<username>', methods=['GET'])
+def getProfile(username):
 
-    user = User.query.filter_by(user_id=user_id).first_or_404()
-    imageByteString = UserImage.query.filter_by(user_id=user_id).first()
+    user = User.query.filter_by(user_name=username).first_or_404()
+    imageByteString = UserImage.query.filter_by(user_id=user.user_id).first()
     image = ""
 
     if(imageByteString):

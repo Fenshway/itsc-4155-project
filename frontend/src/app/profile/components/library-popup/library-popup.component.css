@@ -1,0 +1,58 @@
+/* testing */
+.mat-mdc-dialog-container {
+    backdrop-filter: blur(5px);
+    background-color: black !important;
+}
+
+.library-popup {
+    
+}
+
+#library-popup-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    padding: 10px;
+}
+
+#library-close {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    width: 30px;
+    height: 30px;
+    transition: .25s transform;
+}
+
+#library-close > img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+}
+
+#library-close:hover {
+    transform: scale(1.2);
+}
+
+#library-title {
+    width: 90%;
+    height: fit-content;
+    margin: 0px;
+}
+
+#library-popup-wrapper {
+    display: flex;
+    width: 100%;
+    height: 90%;
+    border-top: 2px solid rgba(0, 0, 0, 0.199);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+}

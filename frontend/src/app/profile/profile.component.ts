@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
+import { LibraryPopupComponent } from './components/library-popup/library-popup.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile',
@@ -10,27 +12,45 @@ import { FlaskdataService } from '../services/flaskdata.service';
 })
 export class ProfileComponent {
 
-  editingLibrary = false
-  addingToLibrary = false
-  session_user_id = -1
+  private libraryPopup: MatDialogRef<LibraryPopupComponent>|undefined;
+  session_username:string = "";
+  library:any = [];
 
   data = {
-    user_id: 0,
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
   }
 
-  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private flaskService: FlaskdataService,
+    private jwtHelper: JwtHelperService,
+    private route: ActivatedRoute,
+    private dialog: MatDialog) {
     
-    this.data.user_id = route.snapshot.paramMap.get("id") as unknown as number || 0;
+    this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
     const access_token: string|null = sessionStorage.getItem("access_token")
     if(!access_token){return;}
     const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
 
-    this.session_user_id = user.user_id;
+    this.session_username = user.username;
+
+  }
+
+  ngOnInit() {
+
+    this.route.data.subscribe((profileData: any) => {
+      this.data.rating = profileData.data.rating;
+      if(profileData.data.icon){
+        this.data.icon = "data:;base64," + profileData.data.icon;
+      }
+    });
+    
+    this.flaskService.getGames().subscribe((data) => { //for data testing, remove later
+      this.library = data;
+    })
 
   }
 
@@ -57,28 +77,31 @@ export class ProfileComponent {
 
   }
 
-  ngOnInit() {
-
-    this.route.data.subscribe((profileData: any) => {
-      this.data.username = profileData.data.username;
-      this.data.rating = profileData.data.rating;
-      if(profileData.data.icon){
-        this.data.icon = "data:;base64," + profileData.data.icon;
-      }
-    });
-    
+  isProfileOwner() {
+    if(this.session_username == ""){
+      return false;
+    }
+    return this.data.username == this.session_username;
   }
 
   toggleEditLibrary() {
-    this.editingLibrary = !this.editingLibrary;
-  }
 
-  enableAddingToLibrary() {
-    this.addingToLibrary = true;
-  }
+    if(this.libraryPopup){
+      this.libraryPopup.close();
+    }else{
+      //Open library dialog popup
+      this.libraryPopup = this.dialog.open(LibraryPopupComponent, {
+        data: {},
+        panelClass: "library-popup",
+        width: "60%",
+      })
 
-  disableAddingToLibrary() {
-    this.addingToLibrary = false;
+      //Listen to dialog close
+      this.libraryPopup.afterClosed().subscribe(() => {
+        this.libraryPopup = undefined;
+      })
+    }
+
   }
 
 }

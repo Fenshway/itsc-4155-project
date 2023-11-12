@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},
-  { path: 'profile/:id', component: ProfileComponent, resolve: {data: ProfileResolver}},
+  { path: 'profile/:username', component: ProfileComponent, resolve: {data: ProfileResolver}},
   { path: 'lobby', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
 ];
 

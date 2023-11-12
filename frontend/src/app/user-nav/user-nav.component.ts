@@ -8,16 +8,14 @@ import { UserServiceService } from '../services/user-service.service';
 })
 export class UserNavComponent {
 
-  constructor(
-    private userService: UserServiceService
-    ) {}
+  constructor(public userService: UserServiceService) {}
 
   logout () {
-    localStorage.removeItem('access_token')
+    sessionStorage.removeItem('access_token')
   }
   
   userSessionActive() {
-    return this.userService.user
+    return this.userService.user;
   }
 
 }

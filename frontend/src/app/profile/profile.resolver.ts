@@ -3,7 +3,7 @@ import { FlaskdataService } from '../services/flaskdata.service';
 import { inject } from "@angular/core";
 
 const ProfileResolver: ResolveFn<any> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    return inject(FlaskdataService).getProfile(route.paramMap.get("id") as unknown as number || 0);
+    return inject(FlaskdataService).getProfile(route.paramMap.get("username") as string || "");
 }
 
 export default ProfileResolver;

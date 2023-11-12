@@ -27,10 +27,11 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { GeneralHomeComponent } from './general-home/general-home.component';
-
-
+import { LibraryPopupComponent } from './profile/components/library-popup/library-popup.component';
+import { LibraryGameSlotComponent } from './profile/components/library-game-slot/library-game-slot.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -49,7 +50,9 @@ export function tokenGetter() {
     ProfileComponent,
     LobbyComponent,
     ViewLobbiesComponent,
-    GeneralHomeComponent
+    GeneralHomeComponent,
+    LibraryPopupComponent,
+    LibraryGameSlotComponent
   ],
   imports: [
     MatSelectModule,
@@ -63,6 +66,7 @@ export function tokenGetter() {
     MatListModule,
     MatInputModule,
     MatFormFieldModule,
+    MatDialogModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -73,7 +77,8 @@ export function tokenGetter() {
         tokenGetter: tokenGetter
       }
     }),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+
   ],
   providers: [],
   bootstrap: [AppComponent], 

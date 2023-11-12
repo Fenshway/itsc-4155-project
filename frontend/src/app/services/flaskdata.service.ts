@@ -37,8 +37,8 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/profile`, formData, getHttpOptions());
   }
 
-  getProfile(user_id: number) {
-    return this.http.get(`${this.apiBaseUrl}/api/profile/` + user_id, getHttpOptions());
+  getProfile(username: string) {
+    return this.http.get(`${this.apiBaseUrl}/api/profile/` + username, getHttpOptions());
   }
 
   getGames() {
