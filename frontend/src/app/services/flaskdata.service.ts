@@ -33,8 +33,12 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/create-lobby`, lobbyData, getHttpOptions());
   }
 
-  updateProfilePicture(formData: FormData) {
-    return this.http.post(`${this.apiBaseUrl}/api/profile`, formData, getHttpOptions());
+  updateProfileIcon(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/profileIcon`, formData, getHttpOptions());
+  }
+
+  updateLibrary(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/library`, formData, getHttpOptions());
   }
 
   getProfile(username: string) {

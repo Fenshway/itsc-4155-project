@@ -52,6 +52,8 @@ export class ProfileComponent {
       this.library = data;
     })
 
+    this.toggleEditLibrary();
+
   }
 
   initProfileIconChange() {
@@ -66,7 +68,7 @@ export class ProfileComponent {
       if(!file){return;}
       const formData = new FormData();
       formData.set("file", file);
-      this.flaskService.updateProfilePicture(formData).subscribe((result: any) => {
+      this.flaskService.updateProfileIcon(formData).subscribe((result: any) => {
         if(!result || !result.icon){return;}
         this.data.icon = "data:;base64," + result.icon;
       })

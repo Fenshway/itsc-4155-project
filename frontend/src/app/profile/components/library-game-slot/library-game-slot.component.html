@@ -5,13 +5,13 @@
     </ng-container>
 
     <ng-template #adding>
-        <button *ngIf="isProfileOwner && enableEditing" title="Add to library">
+        <button *ngIf="isProfileOwner && enableEditing" title="Add to library" (click)="addToLibrary()">
             <img class="game-add" src="../../assets/images/plus-button.png">
         </button>
     </ng-template>
 
     <ng-template #removing>
-        <button *ngIf="isProfileOwner && enableEditing" title="Remove from library">
+        <button *ngIf="isProfileOwner && enableEditing" title="Remove from library" (click)="removeFromLibrary()">
             <img class="game-remove" src="../../assets/images/exit.png">
         </button>
     </ng-template>

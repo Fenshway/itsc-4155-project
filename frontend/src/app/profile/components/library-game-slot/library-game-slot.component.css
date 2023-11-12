@@ -26,12 +26,13 @@
     background-color: rgba(44, 44, 44, 0.658);
     border-radius: 100%;
     border: none;
-    transition: .25s transform;
+    transition: .25s transform, .25s background-color;
     padding: 0px;
 }
 
 .game-container > button:hover {
     transform: scale(1.1);
+    background-color: rgba(44, 44, 44, 0.863);
 }
 
 .game-container > button > img {

@@ -5,7 +5,6 @@
 }
 
 .library-popup {
-    
 }
 
 #library-popup-content {
@@ -55,4 +54,5 @@
     padding-top: 10px;
     padding-bottom: 10px;
     flex-wrap: wrap;
+    justify-content: center;
 }

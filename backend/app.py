@@ -120,13 +120,14 @@ def getProfile(username):
     
     return jsonify(user_data)
 
-@app.route('/api/profile', methods=['POST'])
-def updateProfile():
+@app.route('/api/profileUpdate/profileIcon', methods=['POST'])
+def updateProfileIcon():
     
-    #Checking if file is valid
+    #File upload
     if not 'file' in request.files:
         return jsonify({})
-    
+
+    #Checking if file is valid
     file = request.files['file']
     mimetype = file.content_type
     
@@ -160,6 +161,27 @@ def updateProfile():
     return jsonify({
         'icon': image,
     })
+
+@app.route('/api/profileUpdate/library', methods=['POST'])
+def updateProfileLibrary():
+    
+    data = request.form
+    gameId = int(data.get('gameId'))
+    action = int(data.get('action'))
+
+    if not gameId or not action:
+        return jsonify({})
+    
+    #Checking for authentication
+    # (TODO: add this check as a middleware for certain routes instead of rewriting multiple times)
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    
+    if not user:
+        return jsonify({})
+
+    return jsonify({})
 
 @app.route('/api/games', methods=['GET'])
 def get_games_library():
