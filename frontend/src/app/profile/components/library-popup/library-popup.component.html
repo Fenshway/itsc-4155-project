@@ -5,11 +5,12 @@
     </button>
     <div id="library-popup-wrapper">
         <app-library-game-slot
-            *ngFor="let gameQuery of library"
+            *ngFor="let gameQuery of profileObserver.getGames()"
+            [profileObserver]="profileObserver"
             gameId="{{gameQuery.game_id}}"
             gameName="{{gameQuery.game_name}}"
             gameImg="{{gameQuery.img_path}}"
-            type="adding"
+            type="{{profileObserver.isInLibrary(gameQuery.game_id) ? 'removing' : 'adding'}}"
             isProfileOwner="{{true}}"
             enableEditing="true">
         </app-library-game-slot>

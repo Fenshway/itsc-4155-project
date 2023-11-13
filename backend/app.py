@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
-from models.model import UserImage, User, db, Games, Lobby, Lobby_Players
+from sqlalchemy import column
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games
 
 load_dotenv()
 
@@ -106,9 +107,14 @@ def testImage():
 def getProfile(username):
 
     user = User.query.filter_by(user_name=username).first_or_404()
+    userGamesQuery = User_games.query.filter_by(user_id=user.user_id).all() or []
+    userGames = []
+    for query in userGamesQuery:
+        userGames.append(query.game_id)
+        
     imageByteString = UserImage.query.filter_by(user_id=user.user_id).first()
     image = ""
-
+    
     if(imageByteString):
         image = base64.b64encode(imageByteString.data).decode("UTF-8")
 
@@ -116,6 +122,7 @@ def getProfile(username):
         'username': user.user_name,
         'icon': image,
         'rating': user.user_rating or 0,
+        'library': userGames,
     }
     
     return jsonify(user_data)
@@ -165,11 +172,12 @@ def updateProfileIcon():
 @app.route('/api/profileUpdate/library', methods=['POST'])
 def updateProfileLibrary():
     
+    #Data validation
     data = request.form
     gameId = int(data.get('gameId'))
     action = int(data.get('action'))
-
-    if not gameId or not action:
+    
+    if gameId == None or action == None:
         return jsonify({})
     
     #Checking for authentication
@@ -177,9 +185,43 @@ def updateProfileLibrary():
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-    
+
     if not user:
         return jsonify({})
+    
+    #Updating library
+    existingLibraryGame = User_games.query.filter_by(user_id=user.user_id, game_id=gameId).first()
+    if action == 1:
+        
+        if existingLibraryGame:
+            return jsonify({})
+
+        #Adding to library
+        newLibraryGame = User_games(user_id=user.user_id, game_id=gameId)
+        db.session.add(newLibraryGame)
+
+        #Database commit
+        db.session.flush()
+        db.session.commit()
+
+        return jsonify({
+            'success': 1,
+        })
+
+    elif action == 0:
+        if not existingLibraryGame:
+            return jsonify({})
+
+        #Removing from library
+        db.session.delete(existingLibraryGame)
+
+        #Database commit
+        db.session.flush()
+        db.session.commit()
+
+        return jsonify({
+            'success': 1,
+        })
 
     return jsonify({})
 

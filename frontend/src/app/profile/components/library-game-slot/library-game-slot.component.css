@@ -23,16 +23,17 @@
     right: 5px;
     width: 40px;
     height: 40px;
-    background-color: rgba(44, 44, 44, 0.658);
+    background-color: rgba(44, 44, 44, 0.829);
     border-radius: 100%;
     border: none;
     transition: .25s transform, .25s background-color;
     padding: 0px;
+    border: 2px solid rgba(0, 0, 0, 0.555);
 }
 
 .game-container > button:hover {
     transform: scale(1.1);
-    background-color: rgba(44, 44, 44, 0.863);
+    background-color: rgba(44, 44, 44, 0.911);
 }
 
 .game-container > button > img {

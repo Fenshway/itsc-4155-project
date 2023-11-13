@@ -1,5 +1,6 @@
 import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
 import { FlaskdataService } from 'src/app/services/flaskdata.service';
+import ProfileObserver from '../../profile.observer';
 
 type gameData = [{
   "game_id": number,
@@ -13,11 +14,23 @@ type gameData = [{
   styleUrls: ['./library-game-slot.component.css'],
 })
 export class LibraryGameSlotComponent {
+  
+  public action: number = -1;
 
+  @Input() public profileObserver: ProfileObserver|undefined;
   @Input({ transform: numberAttribute }) public gameId: number = -1;
   @Input() public gameName: string = "";
   @Input() public gameImg: string = "";
-  @Input() public type: string = "";
+  @Input() public set type(value: string) {
+    switch(value) {
+      case "adding":
+        this.action = 1;
+        break;
+      case "removing":
+        this.action = 0;
+        break;
+    }
+  };
   @Input({ transform: booleanAttribute }) public isProfileOwner: boolean = false;
   @Input({ transform: booleanAttribute }) public enableEditing: boolean = false;
 
@@ -25,26 +38,33 @@ export class LibraryGameSlotComponent {
     private flaskService: FlaskdataService,
   ) {}
 
-  ngOnInit() {
-    
-  }
+  ngOnInit() {}
 
-  addToLibrary() {
+  updateLibrary() {
+
     const formData: FormData = new FormData();
-    formData.set("gameId", "1");
-    formData.set("action", "1");
-    this.flaskService.updateLibrary(formData).subscribe(() => {
+    const gameId: number = this.gameId;
+    const action: number = this.action;
+    formData.set("gameId", gameId.toString());
+    formData.set("action", action.toString());
+    this.profileObserver?.updateLibrary({GameId: this.gameId, Action: this.action});
 
-    });
-  }
+    let eventSuccess = false;
 
-  removeFromLibrary() {
-    const formData: FormData = new FormData();
-    formData.set("gameId", "1");
-    formData.set("action", "0");
-    this.flaskService.updateLibrary(formData).subscribe(() => {
-      
+    //Revert update upon event error
+    this.flaskService.updateLibrary(formData).subscribe((data: {success?: number}) => {
+      eventSuccess = true;
+      if(!data.success){
+        this.profileObserver?.updateLibrary({GameId: gameId, Action: (action === 1 ? 0 : 1)});
+      }
+
+    //Revert update upon backend error (url not reached)
+    }).add(() => {
+      if(!eventSuccess){
+        this.profileObserver?.updateLibrary({GameId: gameId, Action: (action === 1 ? 0 : 1)});
+      }
     });
+
   }
 
 }

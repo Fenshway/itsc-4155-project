@@ -68,13 +68,16 @@
                 </button>
             </div>
             <div id="games-display">
+                
                 <app-library-game-slot
-                    *ngFor="let gameQuery of library"
+                    *ngFor="let gameQuery of profileObserver?.getLibraryGames()"
+                    [profileObserver]="profileObserver"
                     gameId="{{gameQuery.game_id}}"
                     gameName="{{gameQuery.game_name}}"
                     gameImg="{{gameQuery.img_path}}"
                     enableEditing="false">
                 </app-library-game-slot>
+                
             </div>
         </div>
 

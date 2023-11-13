@@ -4,17 +4,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { LibraryPopupComponent } from './components/library-popup/library-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import ProfileObserver from './profile.observer';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
 
   private libraryPopup: MatDialogRef<LibraryPopupComponent>|undefined;
   session_username:string = "";
-  library:any = [];
+  profileObserver: ProfileObserver|undefined;
 
   data = {
     username: "",
@@ -27,7 +28,7 @@ export class ProfileComponent {
     private jwtHelper: JwtHelperService,
     private route: ActivatedRoute,
     private dialog: MatDialog) {
-    
+
     this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
     const access_token: string|null = sessionStorage.getItem("access_token")
@@ -41,18 +42,33 @@ export class ProfileComponent {
 
   ngOnInit() {
 
-    this.route.data.subscribe((profileData: any) => {
-      this.data.rating = profileData.data.rating;
-      if(profileData.data.icon){
-        this.data.icon = "data:;base64," + profileData.data.icon;
+    this.route.data.subscribe((resolverData: any) => {
+      
+      const profileData = resolverData.profile;
+      const gamesData = resolverData.games;
+      
+      this.data.rating = profileData.rating;
+      if(profileData.icon){
+        this.data.icon = "data:;base64," + profileData.icon;
       }
-    });
-    
-    this.flaskService.getGames().subscribe((data) => { //for data testing, remove later
-      this.library = data;
-    })
 
-    this.toggleEditLibrary();
+      //ProfileObserver
+      this.profileObserver = new ProfileObserver(gamesData, profileData.library);
+      this.profileObserver.observeLibrary((update: {GameId:number, Action:number}) => {
+        /*
+        const gamesDisplay = document.getElementById("games-display");
+        const newGameFrame = document.createElement(`
+          <app-library-game-slot
+            gameId="{{gameQuery.game_id}}"
+            gameName="{{gameQuery.game_name}}"
+            gameImg="{{gameQuery.img_path}}"
+            enableEditing="false">
+          </app-library-game-slot>
+        `);
+        */
+      });
+
+    });
 
   }
 
@@ -93,7 +109,9 @@ export class ProfileComponent {
     }else{
       //Open library dialog popup
       this.libraryPopup = this.dialog.open(LibraryPopupComponent, {
-        data: {},
+        data: {
+          profileObserver: this.profileObserver,
+        },
         panelClass: "library-popup",
         width: "60%",
       })
