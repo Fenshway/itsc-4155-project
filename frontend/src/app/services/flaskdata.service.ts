@@ -48,5 +48,9 @@ export class FlaskdataService {
   getGames() {
     return this.http.get(`${this.apiBaseUrl}/api/games`, getHttpOptions());
   }
+  
+  getLobbiesByGameName(gameName: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/get-lobbies-by-name`, gameName, getHttpOptions());
+  }
 
 }

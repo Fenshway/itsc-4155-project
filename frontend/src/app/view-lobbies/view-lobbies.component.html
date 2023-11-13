@@ -1,6 +1,6 @@
 <body>
     <div class="in-session">
-        <div *ngFor="let game of gameData">
+        <div class="clickable" *ngFor="let game of gameData" (click)="navigateToGameLobbies(game.game_name)">
             <img [src]="'../../assets/images/' + game.img_path" alt="{{ game.game_name }}">
             <h2>{{game.game_name}}</h2>
         </div>

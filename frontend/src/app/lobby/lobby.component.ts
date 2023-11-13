@@ -28,7 +28,7 @@ export class LobbyComponent {
         },
         error: (error: any) => {
           console.error('Failed to load lobby data:', error);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/directory']);
         }
       });
     });

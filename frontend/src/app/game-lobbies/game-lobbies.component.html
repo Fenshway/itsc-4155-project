@@ -1,1 +1,30 @@
 <p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+<p>game-lobbies works!</p>
+
+<div *ngFor="let lobby of lobbiesData">
+    <div>
+        <hr>
+        <p>Title: {{ lobby.title }}</p>
+        <p>Description: {{ lobby.description }}</p>
+        <p>Num Players: {{ lobby.num_players }}</p>
+        <p>Date: {{ lobby.date }}</p>
+        <hr>
+    </div>
+</div>
+
+<div *ngIf="lobbiesData && lobbiesData.length === 0">
+    <hr>
+    <div>No lobbies for this game</div>
+    <hr>
+</div>
