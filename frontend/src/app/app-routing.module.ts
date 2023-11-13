@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},
   { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}},
-  { path: 'lobby', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
+  { path: 'lobby/:id', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
 ];
 
 @NgModule({

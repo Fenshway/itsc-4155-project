@@ -33,6 +33,10 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/create-lobby`, lobbyData, getHttpOptions());
   }
 
+  getLobbyById(lobbyData: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/get-lobby`, lobbyData, getHttpOptions());
+  }
+
   updateProfileIcon(formData: FormData) {
     return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/profileIcon`, formData, getHttpOptions());
   }
