@@ -206,7 +206,8 @@ def create_lobby():
     db.session.add(new_LPlayer)
     db.session.commit()
     
-    return jsonify({'message': "Lobby created successfully"}), 201
+    response_data = {'lobby_id': new_lobby.lobby_id, 'message': "Lobby created successfully"}
+    return jsonify(response_data), 201
 
 #TODO: Fix anything that needs to be added for frontend
 @app.route('/api/join-lobby', methods=['POST'])
@@ -247,6 +248,28 @@ def leave_lobby():
         db.session.commit()
     
     return jsonify({'message': "Lobby left successfully"}), 201
+
+#TODO missing lobby players
+@app.route('/api/get-lobby', methods=['POST'])
+def get_lobby():
+    requested_lobby = request.get_json()
+    lobby_id = requested_lobby.get('requestedLobby')
+
+    lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
+
+    if lobby is None:
+        return jsonify({'error': "Cannot locate lobby"}), 400
+
+    send_lobby = {
+        'lobby_id': lobby.lobby_id,
+        'game_id': lobby.game_id,
+        'host_id': lobby.host_id,
+        'title': lobby.title,
+        'num_players': lobby.num_players,
+        'description': lobby.description
+    }
+
+    return jsonify({'lobby': send_lobby, 'message': "Joined lobby successfully"})
 
 if __name__ == '__main__':
     app.run(debug=True)
