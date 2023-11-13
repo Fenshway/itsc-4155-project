@@ -46,3 +46,7 @@ body {
     color: rgb(253, 255, 252);
     font-family: 'Montserrat', sans-serif;
 }
+
+.clickable {
+    cursor: pointer;
+}

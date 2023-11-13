@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
-from sqlalchemy import column
+from sqlalchemy import column, func
 from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games
 
 load_dotenv()
@@ -334,6 +334,37 @@ def get_lobby():
     }
 
     return jsonify({'lobby': send_lobby, 'message': "Joined lobby successfully"})
+
+
+@app.route('/api/get-lobbies-by-name', methods=['POST'])
+def get_lobbies_by_name():
+    requested_lobbies = request.get_json()
+    game_name = requested_lobbies.get('requestedLobbies')
+    print("game name: ", game_name)
+    formatted_game_name = game_name.replace("-", " ")
+    print("game name: ", formatted_game_name)
+
+    game = Games.query.filter(func.lower(Games.game_name) == formatted_game_name).first()
+
+    if game: 
+        lobbies = Lobby.query.filter_by(game_id=game.game_id).all()
+
+        lobbies_list = [
+            {
+                'lobby_id': lobby.lobby_id,
+                'game_id': lobby.game_id,
+                'host_id': lobby.host_id,
+                'num_players': lobby.num_players,
+                'title': lobby.title,
+                'description': lobby.description,
+                'date': lobby.date.isoformat()
+            }
+            for lobby in lobbies
+        ]
+
+        return jsonify(lobbies_list), 201
+    else:
+        return jsonify({'message': "Game not found"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

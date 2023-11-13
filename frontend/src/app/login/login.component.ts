@@ -53,7 +53,7 @@ export class LoginComponent {
   
           if (!this.jwtHelper.isTokenExpired(result.access_token)) {
             console.log('Login successful');
-            this.router.navigate(['/home']);
+            this.router.navigate(['/directory']);
           } else {
             console.error('Token is expired');
           }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { UserServiceService } from '../services/user-service.service';
 import { FlaskdataService } from '../services/flaskdata.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-lobbies',
@@ -11,8 +11,8 @@ export class ViewLobbiesComponent {
   gameData: any[] = [];
 
   constructor(
-    private userService: UserServiceService,
-    private flaskService: FlaskdataService
+    private flaskService: FlaskdataService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -20,6 +20,11 @@ export class ViewLobbiesComponent {
     .subscribe((data: any) => {
       this.gameData = data;
     });
+  }
+
+  navigateToGameLobbies(gameName: string): void {
+    const formattedGameName = gameName.toLowerCase().replace(/\s+/g, '-');
+    this.router.navigate([`directory/${formattedGameName}`]);
   }
 
 }
