@@ -1,0 +1,18 @@
+<div id="library-popup-content">
+    <h2 id="library-title">Update your game library:</h2>
+    <button id="library-close" (click)="close()">
+        <img src="../../assets/images/exit.png">
+    </button>
+    <div id="library-popup-wrapper">
+        <app-library-game-slot
+            *ngFor="let gameQuery of profileObserver.getGames()"
+            [profileObserver]="profileObserver"
+            gameId="{{gameQuery.game_id}}"
+            gameName="{{gameQuery.game_name}}"
+            gameImg="{{gameQuery.img_path}}"
+            type="{{profileObserver.isInLibrary(gameQuery.game_id) ? 'removing' : 'adding'}}"
+            isProfileOwner="{{true}}"
+            enableEditing="true">
+        </app-library-game-slot>
+    </div>
+</div>

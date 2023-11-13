@@ -2,35 +2,73 @@ import { Component } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
+import { LibraryPopupComponent } from './components/library-popup/library-popup.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import ProfileObserver from './profile.observer';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
 
-  editingLibrary = false
-  addingToLibrary = false
-  session_user_id = -1
+  private libraryPopup: MatDialogRef<LibraryPopupComponent>|undefined;
+  session_username:string = "";
+  profileObserver: ProfileObserver|undefined;
 
   data = {
-    user_id: 0,
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
   }
 
-  constructor(private flaskService: FlaskdataService, private jwtHelper: JwtHelperService, private router: Router, private route: ActivatedRoute) {
-    
-    this.data.user_id = route.snapshot.paramMap.get("id") as unknown as number || 0;
+  constructor(
+    private flaskService: FlaskdataService,
+    private jwtHelper: JwtHelperService,
+    private route: ActivatedRoute,
+    private dialog: MatDialog) {
+
+    this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
     const access_token: string|null = sessionStorage.getItem("access_token")
     if(!access_token){return;}
     const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
 
-    this.session_user_id = user.user_id;
+    this.session_username = user.username;
+
+  }
+
+  ngOnInit() {
+
+    this.route.data.subscribe((resolverData: any) => {
+      
+      const profileData = resolverData.profile;
+      const gamesData = resolverData.games;
+      
+      this.data.rating = profileData.rating;
+      if(profileData.icon){
+        this.data.icon = "data:;base64," + profileData.icon;
+      }
+
+      //ProfileObserver
+      this.profileObserver = new ProfileObserver(gamesData, profileData.library);
+      this.profileObserver.observeLibrary((update: {GameId:number, Action:number}) => {
+        /*
+        const gamesDisplay = document.getElementById("games-display");
+        const newGameFrame = document.createElement(`
+          <app-library-game-slot
+            gameId="{{gameQuery.game_id}}"
+            gameName="{{gameQuery.game_name}}"
+            gameImg="{{gameQuery.img_path}}"
+            enableEditing="false">
+          </app-library-game-slot>
+        `);
+        */
+      });
+
+    });
 
   }
 
@@ -46,7 +84,7 @@ export class ProfileComponent {
       if(!file){return;}
       const formData = new FormData();
       formData.set("file", file);
-      this.flaskService.updateProfilePicture(formData).subscribe((result: any) => {
+      this.flaskService.updateProfileIcon(formData).subscribe((result: any) => {
         if(!result || !result.icon){return;}
         this.data.icon = "data:;base64," + result.icon;
       })
@@ -57,28 +95,33 @@ export class ProfileComponent {
 
   }
 
-  ngOnInit() {
-
-    this.route.data.subscribe((profileData: any) => {
-      this.data.username = profileData.data.username;
-      this.data.rating = profileData.data.rating;
-      if(profileData.data.icon){
-        this.data.icon = "data:;base64," + profileData.data.icon;
-      }
-    });
-    
+  isProfileOwner() {
+    if(this.session_username == ""){
+      return false;
+    }
+    return this.data.username == this.session_username;
   }
 
   toggleEditLibrary() {
-    this.editingLibrary = !this.editingLibrary;
-  }
 
-  enableAddingToLibrary() {
-    this.addingToLibrary = true;
-  }
+    if(this.libraryPopup){
+      this.libraryPopup.close();
+    }else{
+      //Open library dialog popup
+      this.libraryPopup = this.dialog.open(LibraryPopupComponent, {
+        data: {
+          profileObserver: this.profileObserver,
+        },
+        panelClass: "library-popup",
+        width: "60%",
+      })
 
-  disableAddingToLibrary() {
-    this.addingToLibrary = false;
+      //Listen to dialog close
+      this.libraryPopup.afterClosed().subscribe(() => {
+        this.libraryPopup = undefined;
+      })
+    }
+
   }
 
 }
