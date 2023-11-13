@@ -37,12 +37,16 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/get-lobby`, lobbyData, getHttpOptions());
   }
 
-  updateProfilePicture(formData: FormData) {
-    return this.http.post(`${this.apiBaseUrl}/api/profile`, formData, getHttpOptions());
+  updateProfileIcon(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/profileIcon`, formData, getHttpOptions());
   }
 
-  getProfile(user_id: number) {
-    return this.http.get(`${this.apiBaseUrl}/api/profile/` + user_id, getHttpOptions());
+  updateLibrary(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/library`, formData, getHttpOptions());
+  }
+
+  getProfile(username: string) {
+    return this.http.get(`${this.apiBaseUrl}/api/profile/` + username, getHttpOptions());
   }
 
   getGames() {

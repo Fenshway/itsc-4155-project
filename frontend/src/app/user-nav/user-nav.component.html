@@ -8,7 +8,9 @@
     <div class="toolbar-divider"></div>
     <button routerLink="create-lobby" mat-button style="font-family: 'Montserrat', sans-serif">Create</button>
     <div class="toolbar-divider"></div>
-    <button routerLink="profile" mat-raised-button class="custom-profile-button" style="font-family: 'Montserrat', sans-serif">Profile</button>
+    <a href="/profile/{{userService.user.username}}">
+        <button routerLink="profile" mat-raised-button class="custom-profile-button">Profile</button>
+    </a>
     <button mat-icon-button>
         <mat-icon>notifications</mat-icon>
     </button>

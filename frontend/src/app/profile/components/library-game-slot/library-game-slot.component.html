@@ -1,0 +1,19 @@
+<div class="game-container"> <!-- gameId="{{gameId}}"-->
+    <img class="game-icon" src="../../assets/images/{{gameImg}}">
+
+    <ng-container *ngIf="action == 1; then adding; else removing"> 
+    </ng-container>
+
+    <ng-template #adding>
+        <button *ngIf="isProfileOwner && enableEditing" title="Add to library" (click)="updateLibrary()">
+            <img class="game-add" src="../../assets/images/plus-button.png" alt="Add to library">
+        </button>
+    </ng-template>
+
+    <ng-template #removing>
+        <button *ngIf="isProfileOwner && enableEditing" title="Remove from library" (click)="updateLibrary()">
+            <img class="game-remove" src="../../assets/images/exit.png" alt="Remove from library">
+        </button>
+    </ng-template>
+
+</div>

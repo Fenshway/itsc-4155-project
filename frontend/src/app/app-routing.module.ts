@@ -10,6 +10,7 @@ import { GeneralHomeComponent } from './general-home/general-home.component';
 import { GameLobbiesComponent } from './game-lobbies/game-lobbies.component';
 import { isAuthenticatedGuard } from './is-authenticated.guard';
 import ProfileResolver from './profile/profile.resolver'
+import GamesResolver from './profile/games.resolver'
 
 const routes: Routes = [
   { path: '', redirectTo: '/directory', pathMatch: 'full'},
@@ -17,9 +18,9 @@ const routes: Routes = [
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},
-  { path: 'profile/:id', component: ProfileComponent, resolve: {data: ProfileResolver}},
   { path: 'lobby/:id', component: LobbyComponent},
-  { path: 'directory/:gameName', component: GameLobbiesComponent }
+  { path: 'directory/:gameName', component: GameLobbiesComponent},
+  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}}
 ];
 
 @NgModule({
