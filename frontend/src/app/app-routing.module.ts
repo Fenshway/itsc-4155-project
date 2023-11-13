@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'create-lobby', component: CreateLobbyComponent},
   { path: 'profile/:id', component: ProfileComponent, resolve: {data: ProfileResolver}},
-  { path: 'lobby', component: LobbyComponent},
+  { path: 'lobby/:id', component: LobbyComponent},
 ];
 
 @NgModule({

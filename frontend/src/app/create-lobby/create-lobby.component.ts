@@ -24,10 +24,13 @@ export class CreateLobbyComponent {
     ]),
     lobbySize: new FormControl('', [
       Validators.required,
+      Validators.max(10),
+      Validators.min(2)
     ])
   });
 
   createLobbyError?: string;
+  formSubmitted = false;
 
   constructor(
     private flaskService: FlaskdataService,
@@ -63,7 +66,8 @@ export class CreateLobbyComponent {
           this.flaskService.createLobby(lobby).subscribe({
             next: (result: any) => {
               console.log('Lobby created successfully:', result);
-              this.router.navigate(['/lobby']);
+              const lobbyId = result.lobby_id;
+              this.router.navigate(['/lobby', lobbyId]);
             },
             error: (error: any) => {
               console.log(JSON.stringify(error));

@@ -1,6 +1,6 @@
 <body>
     <div class="container">
-        <form [formGroup]="createLobbyForm" (ngSubmit)="onSubmit()">
+        <form [formGroup]="createLobbyForm" (ngSubmit)="onSubmit(); formSubmitted=true;" autocomplete="off">
             <h2>Create a Lobby</h2>
 
             <label for="game">Game</label>
@@ -13,6 +13,7 @@
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
+            <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('game')?.hasError('required')">Game is required</div>
 
             <!-- <div class="form-group col">
                 <select class="form-control">
@@ -23,14 +24,19 @@
             <div class="form-group col">
                 <label for="title">Title</label>
                 <input formControlName="title" type="text" class="form-control" id="title" placeholder="Title">
+                <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('title')?.hasError('required')">Title is required</div>
             </div>
             <div class="form-group col">
                 <label for="description">Description</label>
                 <textarea formControlName="description" class="form-control" id="description" rows="3" placeholder="Description"></textarea>
+                <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('description')?.hasError('required')">Description is required</div>
             </div>
             <div class="form-group col">
                 <label for="lobbySize">Lobby Size</label>
                 <input formControlName="lobbySize" type="number" class="form-control" id="lobbySize" min="2" max="10" placeholder="2-10">
+                <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('lobbySize')?.hasError('required')">Lobby size is required</div>
+                <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('lobbySize')?.hasError('min')">Lobby size minimum is 2</div>
+                <div class="text-light" *ngIf="formSubmitted && createLobbyForm.get('lobbySize')?.hasError('max')">Lobby size maximum is 10</div>
             </div>
             <button type="submit" class="btn btn-outline-success mt-3">Create</button>
         </form>
