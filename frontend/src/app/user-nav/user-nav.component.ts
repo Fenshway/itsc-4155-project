@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { UserServiceService } from '../services/user-service.service';
+import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-user-nav',
@@ -8,12 +10,23 @@ import { UserServiceService } from '../services/user-service.service';
 })
 export class UserNavComponent {
 
-  constructor(public userService: UserServiceService) {}
+  constructor(
+    public userService: UserServiceService,
+    private router: Router,
+    private jwtHelper: JwtHelperService) {}
 
   logout () {
     sessionStorage.removeItem('access_token')
   }
   
+  gotoProfile() {
+    if(!this.userService.user) {
+      return;
+    }
+    const userData = this.jwtHelper.decodeToken(this.userService.user.access_token);
+    this.router.navigate([`/profile/${userData.username}`]);
+  }
+
   userSessionActive() {
     return this.userService.user;
   }

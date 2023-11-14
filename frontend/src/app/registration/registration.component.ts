@@ -69,7 +69,8 @@ export class RegistrationComponent {
         if (result && result.access_token) {
           this.userService.user = result;
           sessionStorage.setItem('access_token', result.access_token)
-  
+          const userData = this.jwtHelper.decodeToken(result.access_token);
+
           //testing. delete later
           console.log(this.jwtHelper.decodeToken(result.access_token.username))
   
@@ -77,7 +78,7 @@ export class RegistrationComponent {
             console.log('Registration and login successful');
             
 
-            this.router.navigate(['/profile']);
+            this.router.navigate([`/profile/${userData.username}`]);
           } else {
             console.error('Token is expired');
           }
