@@ -8,14 +8,27 @@ import { UserServiceService } from '../services/user-service.service';
 })
 export class UserNavComponent {
 
-  constructor(public userService: UserServiceService) {}
+  constructor(public userService: UserServiceService) { }
 
-  logout () {
+  logout() {
     sessionStorage.removeItem('access_token')
   }
-  
+
   userSessionActive() {
     return this.userService.user;
+  }
+
+  isBouncing: boolean = false;
+
+  ngOnInit() {
+    this.isBouncing = true;
+    setInterval(() => {
+      this.toggleBouncing();
+    }, 10000);
+  }
+
+  toggleBouncing() {
+    this.isBouncing = !this.isBouncing;
   }
 
 }
