@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+from sqlalchemy import event, DDL
 
 db = SQLAlchemy()
         
@@ -34,6 +35,20 @@ class UserImage(db.Model):
 
     def __repr__(self):
         return '<user_id {}>'.format(self.user_id)
+    
+class UserRating(db.Model):
+    __tablename__ = 'UserRating'
+    judge_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), primary_key=True) # Person giving the vote
+    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), primary_key=True) # Person reciving the vote
+    rateChange = db.Column(db.Integer, nullable=True) # The vote
+
+    def __init__(self, judge_id, user_id, rateChange):
+        self.judge_id = judge_id
+        self.user_id = user_id
+        self.rateChange = rateChange 
+
+    def __repr__(self):
+        return '<judge_id {}>'.format(self.judge_id)
 
 class Friends(db.Model):
     __tablename__ = 'Friends'
