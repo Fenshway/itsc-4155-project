@@ -1,6 +1,6 @@
 from models.model import User, db # This are always necessary when calling the database
 from backend.app import app
-from sqlalchemy import inspect, text, exc # This one too to check for douplicates and handle them
+from sqlalchemy import inspect, text, exc, event, DDL # This one too to check for douplicates and handle them
 
 
 '''# Drops all Tables along it's data(Run this if there's been a change to the tables create statement(models.py) ONLY)
@@ -110,6 +110,24 @@ with app.app_context():
     User_games.query.filter_by(game_id=l4d2_game.game_id).delete()
     Games.query.filter_by(game_name='Left 4 Dead 2').delete()
     db.session.commit()
+
+#------------------------Rating-add-test------------------------
+print('------------------------RATING_TEST------------------------')
+from models.model import UserRating
+with app.app_context():
+    try:
+        new_rating = UserRating(9, 10, -1) # User ID#9(username) is rating User ID#10(mherna61) with a downvote(-1)
+        db.session.add(new_rating)
+        db.session.commit()
+    except exc.IntegrityError:
+        db.session.rollback()
+
+    rated_user = User.query.filter_by(user_id=10).first()
+    rating_process = UserRating.query.filter_by(judge_id=9).first()
+
+    print(rated_user.user_name + ' rating is: ' + str(rated_user.user_rating))
+    print(str(rating_process.judge_id) + ' downvoted: ' + str(rating_process.user_id) + ' by ' + str(rating_process.rateChange) + ' points.')
+
 
 # How to create a Database on pgAdmin(postgresSQL)
 #   Right-click on Servers and select Register > Server
