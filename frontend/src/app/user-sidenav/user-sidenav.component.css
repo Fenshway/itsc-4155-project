@@ -56,7 +56,8 @@
   }
 
   .item a,
-  .submenu-item {
+  .submenu-item,
+  .item div {
     padding: 16px;
     display: inline-block;
     width: 100%;
@@ -69,7 +70,8 @@
 
   .item a:hover,
   .submenu-item:hover,
-  .submenu .menu-title:hover {
+  .submenu .menu-title:hover,
+  .item div:hover {
     background: rgba(255, 255, 255, 0.1);
   }
 
