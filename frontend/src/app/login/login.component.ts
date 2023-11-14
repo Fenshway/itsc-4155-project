@@ -46,7 +46,7 @@ export class LoginComponent {
         next: (result: any) => {
         if (result && result.access_token) {
           this.userService.user = result;
-          sessionStorage.setItem('access_token', result.access_token)
+          localStorage.setItem('access_token', result.access_token)
   
           //testing. delete later
           console.log(this.jwtHelper.decodeToken(result.access_token.username))

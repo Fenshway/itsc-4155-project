@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { UserServiceService } from '../services/user-service.service';
+import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-user-sidenav',
@@ -8,6 +11,12 @@ import { Component } from '@angular/core';
 export class UserSidenavComponent {
   sidebarClosed: boolean = false;
   activeSubMenu: string = '';
+
+  constructor(
+    private userService: UserServiceService,
+    private router: Router,
+    private jwtHelper: JwtHelperService
+  ) {}
 
   toggleSubMenu(subMenu: string, event: Event) {
     event.stopPropagation();
@@ -27,4 +36,12 @@ export class UserSidenavComponent {
   toggleSidebar() {
     this.sidebarClosed = !this.sidebarClosed;
   }
+
+  // logout() {
+  //   console.log('Click')
+  //   this.userService.clearUser();
+  //   localStorage.removeItem('access_token');
+  //   console.log('Logout succesful')
+  //   this.router.navigate(['/login']);
+  // }
 }
