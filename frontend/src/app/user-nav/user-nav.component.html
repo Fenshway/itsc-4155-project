@@ -9,8 +9,8 @@
     <button routerLink="create-lobby" mat-button style="font-family: 'Montserrat', sans-serif">Create</button>
     <div class="toolbar-divider"></div>
     <button (click)="gotoProfile()" mat-raised-button class="custom-profile-button">Profile</button>
-    <button mat-icon-button>
-        <mat-icon>notifications</mat-icon>
+    <button mat-icon-button [ngClass]="{'bouncing-icon': isBouncing}" (click)="toggleBouncing()">
+        <mat-icon>games</mat-icon>
     </button>
 </mat-toolbar>
 
@@ -19,22 +19,23 @@
     <span class="example-spacer"></span>
     <button routerLink="login" mat-button style="font-family: 'Montserrat', sans-serif">Log In</button>
     <div class="toolbar-divider"></div>
-    <button routerLink="register" mat-raised-button class="custom-profile-button" style="font-family: 'Montserrat', sans-serif">Register</button>
+    <button routerLink="register" mat-raised-button class="custom-profile-button"
+        style="font-family: 'Montserrat', sans-serif">Register</button>
 </mat-toolbar>
 
 <mat-drawer-container autosize>
     <mat-drawer #drawer opened="false" mode="over" position="start" class="custom-drawer">
-    <mat-nav-list>
-        <mat-list-item>
-            <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>group</mat-icon> Friends</button>
-        </mat-list-item>
-        <mat-list-item>
-            <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>help</mat-icon> Help</button>
-        </mat-list-item>
-        <mat-list-item>
-            <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>logout</mat-icon> Log Out</button>
-        </mat-list-item>
-    </mat-nav-list>
+        <mat-nav-list>
+            <mat-list-item>
+                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>group</mat-icon> Friends</button>
+            </mat-list-item>
+            <mat-list-item>
+                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>help</mat-icon> Help</button>
+            </mat-list-item>
+            <mat-list-item>
+                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>logout</mat-icon> Log Out</button>
+            </mat-list-item>
+        </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content>
         <div>

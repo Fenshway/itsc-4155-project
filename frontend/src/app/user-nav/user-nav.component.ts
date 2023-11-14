@@ -13,14 +13,14 @@ export class UserNavComponent {
   constructor(
     public userService: UserServiceService,
     private router: Router,
-    private jwtHelper: JwtHelperService) {}
+    private jwtHelper: JwtHelperService) { }
 
-  logout () {
+  logout() {
     sessionStorage.removeItem('access_token')
   }
-  
+
   gotoProfile() {
-    if(!this.userService.user) {
+    if (!this.userService.user) {
       return;
     }
     const userData = this.jwtHelper.decodeToken(this.userService.user.access_token);
@@ -29,6 +29,19 @@ export class UserNavComponent {
 
   userSessionActive() {
     return this.userService.user;
+  }
+
+  isBouncing: boolean = false;
+
+  ngOnInit() {
+    this.isBouncing = true;
+    setInterval(() => {
+      this.toggleBouncing();
+    }, 10000);
+  }
+
+  toggleBouncing() {
+    this.isBouncing = !this.isBouncing;
   }
 
 }
