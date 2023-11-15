@@ -1,32 +1,24 @@
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
+<body>
+    <div class="container">
 
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
+        <div class="title-row">
+            <h2>Title</h2>
+            <h2>Description</h2>
+            <h2>Num Players</h2>
+            <h2>Date</h2>
+        </div>
 
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-<p>game-lobbies works!</p>
-
-<div *ngFor="let lobby of lobbiesData">
-    <div>
-        <hr>
-        <p>Title: {{ lobby.title }}</p>
-        <p>Description: {{ lobby.description }}</p>
-        <!-- TODO:   current players/num players
-        TODO:   use created and current timedate to find out how long lobby has been open -->
-        <p>Num Players: {{ lobby.num_players }}</p>
-        <p>Date: {{ lobby.date }}</p>
-        <hr>
+        <div *ngFor="let lobby of lobbiesData" class="lobby">
+            <h2>{{ lobby.title }}</h2>
+            <p>{{ lobby.description }}</p>
+            <!-- TODO:   current players/num players
+            TODO:   use created and current timedate to find out how long lobby has been open -->
+            <p>{{ lobby.num_players }}</p>
+            <p>{{ lobby.date }}</p>
+        </div>
+      
+        <div *ngIf="lobbiesData && lobbiesData.length === 0" class="no-lobbies">
+            <div>Nothing to see here...</div>
+        </div>
     </div>
-</div>
-
-<div *ngIf="lobbiesData && lobbiesData.length === 0">
-    <hr>
-    <div>No lobbies for this game</div>
-    <hr>
-</div>
+</body>

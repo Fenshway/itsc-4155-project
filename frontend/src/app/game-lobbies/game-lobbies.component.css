@@ -1,0 +1,72 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: rgb(42, 42, 42);
+    height: 100vh;
+}
+
+.container {
+    max-width: 80%;
+    margin: 20px auto;
+    padding: 105px 20px;
+    border-radius: 8px;
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid rgb(253, 255, 252);
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+
+.title-row h2 {
+    color: rgb(229, 56, 59);
+    font-size: 25px;
+    font-weight: bold;
+    width: 20%;
+}
+
+.lobby {
+    border-radius: 2px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgb(253, 255, 252);
+    display: flex;
+    justify-content: space-between;
+}
+
+.lobby:hover {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform: scale(1.05); /* Adjust the scale value to control the pop-up effect */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lobby h2,
+.lobby p {
+    margin-top: 0;
+    width: 20%;
+    color: rgb(18, 18, 18);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lobby p {
+    margin: 5px 0;
+}
+
+.no-lobbies {
+    text-align: center;
+    color: rgb(253, 255, 252);
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgb(42, 42, 42);
+    border-radius: 8px;
+}
+
+.no-lobbies div {
+    font-size: 24px;
+    font-weight: bold;
+}
