@@ -16,10 +16,11 @@ class User(db.Model):
     user_image = db.relationship('UserImage', backref='user', cascade='all, delete, delete-orphan')
     user_games = db.relationship('User_games', backref='user', cascade='all, delete, delete-orphan')
 
-    def __init__(self, email, user_password, user_name):
+    def __init__(self, email, user_password, user_name, user_status=0):
         self.user_name = user_name
         self.email = email
         self.user_password = user_password
+        self.user_status = user_status
 
     def __repr__(self):
         return '<user_name {}>'.format(self.user_name)
