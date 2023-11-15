@@ -128,6 +128,23 @@ with app.app_context():
     print(rated_user.user_name + ' rating is: ' + str(rated_user.user_rating))
     print(str(rating_process.judge_id) + ' downvoted: ' + str(rating_process.user_id) + ' by ' + str(rating_process.rateChange) + ' points.')
 
+print('------------------------STATUS_TEST------------------------')
+with app.app_context():
+    admin = User.query.filter_by(user_name='Admin').first()
+    admin.user_status = 1 # Update status
+    db.session.commit()
+
+    admin = User.query.filter_by(user_name='Admin').first()
+    if admin.user_status == 0:
+        print('Admin is offline')
+    elif admin.user_status == 1:
+        print('Admin is online')
+    elif admin.user_status == 2:
+        print('Admin is in DND mode')
+    elif admin.user_status == 3:
+        print('Admin is idle')
+    elif admin.user_status == 4:
+        print('Admin is ivisible')
 
 # How to create a Database on pgAdmin(postgresSQL)
 #   Right-click on Servers and select Register > Server
