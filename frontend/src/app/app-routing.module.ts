@@ -20,7 +20,8 @@ const routes: Routes = [
   { path: 'create-lobby', component: CreateLobbyComponent},
   { path: 'lobby/:id', component: LobbyComponent},
   { path: 'directory/:gameName', component: GameLobbiesComponent},
-  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}}
+  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}},
+  { path: 'welcome', component: GeneralHomeComponent}
 ];
 
 @NgModule({
