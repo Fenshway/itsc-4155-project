@@ -35,4 +35,9 @@ export class GameLobbiesComponent {
       });
     })
   }
+
+  navigateToLobby(id: number): void {
+    this.router.navigate([`lobby/${id}`]);
+  }
+
 }

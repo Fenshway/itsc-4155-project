@@ -8,7 +8,7 @@
             <h2>Date</h2>
         </div>
 
-        <div *ngFor="let lobby of lobbiesData" class="lobby">
+        <div *ngFor="let lobby of lobbiesData" class="lobby" (click)="navigateToLobby(lobby.lobby_id)">
             <h2>{{ lobby.title }}</h2>
             <p>{{ lobby.description }}</p>
             <!-- TODO:   current players/num players
