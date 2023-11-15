@@ -53,7 +53,7 @@ export class CreateLobbyComponent {
       const description = this.createLobbyForm.get('description')?.value;
       const lobbySize = this.createLobbyForm.get('lobbySize')?.value;
   
-      const storedAccessToken = sessionStorage.getItem('access_token');
+      const storedAccessToken = localStorage.getItem('access_token');
   
       if (storedAccessToken) {
         const decodedToken = this.jwtHelper.decodeToken(storedAccessToken);
@@ -79,7 +79,7 @@ export class CreateLobbyComponent {
           console.error('User ID not found in access token');
         }
       } else {
-        console.error('Missing access token in sessionStorage');
+        console.error('Missing access token in localStorage');
       }
     }
   }

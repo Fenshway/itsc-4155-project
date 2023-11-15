@@ -15,10 +15,6 @@ export class UserNavComponent {
     private router: Router,
     private jwtHelper: JwtHelperService) { }
 
-  logout() {
-    sessionStorage.removeItem('access_token')
-  }
-
   gotoProfile() {
     if (!this.userService.user) {
       return;
@@ -42,6 +38,14 @@ export class UserNavComponent {
 
   toggleBouncing() {
     this.isBouncing = !this.isBouncing;
+  }
+
+  logout() {
+    console.log('Click')
+    this.userService.clearUser();
+    localStorage.removeItem('access_token');
+    console.log('Logout succesful')
+    this.router.navigate(['/login']);
   }
 
 }

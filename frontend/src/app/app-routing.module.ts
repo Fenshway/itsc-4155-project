@@ -14,13 +14,13 @@ import GamesResolver from './profile/games.resolver'
 
 const routes: Routes = [
   { path: '', redirectTo: '/directory', pathMatch: 'full'},
-  { path: 'directory', component: ViewLobbiesComponent},
+  { path: 'directory', component: ViewLobbiesComponent, canActivate: [isAuthenticatedGuard]},
   { path: 'register', component: RegistrationComponent},
   { path: 'login', component: LoginComponent},
-  { path: 'create-lobby', component: CreateLobbyComponent},
-  { path: 'lobby/:id', component: LobbyComponent},
-  { path: 'directory/:gameName', component: GameLobbiesComponent},
-  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}},
+  { path: 'create-lobby', component: CreateLobbyComponent, canActivate: [isAuthenticatedGuard]},
+  { path: 'lobby/:id', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
+  { path: 'directory/:gameName', component: GameLobbiesComponent, canActivate: [isAuthenticatedGuard]},
+  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}, canActivate: [isAuthenticatedGuard]},
   { path: 'welcome', component: GeneralHomeComponent}
 ];
 

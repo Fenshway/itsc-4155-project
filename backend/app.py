@@ -314,7 +314,7 @@ def leave_lobby():
     return jsonify({'message': "Lobby left successfully"}), 201
 
 #TODO missing lobby players
-@app.route('/api/get-lobby', methods=['POST'])
+@app.route('/api/get-lobby-by-id', methods=['POST'])
 def get_lobby():
     requested_lobby = request.get_json()
     lobby_id = requested_lobby.get('requestedLobby')
@@ -365,6 +365,21 @@ def get_lobbies_by_name():
         return jsonify(lobbies_list), 201
     else:
         return jsonify({'message': "Game not found"}), 400
+
+#Endpoint to set userservice if JWT in storage
+@app.route('/api/whoami', methods=['GET'])
+def whoami():
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    user_data = {
+        'user_id': user.user_id,
+        'username': user.user_name
+    }
+
+    return jsonify(user_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 
 function getHttpOptions() {
   return {
-    headers: {"Authorization": sessionStorage.getItem("access_token") || ""}
+    headers: {"Authorization": localStorage.getItem("access_token") || ""}
   }
 }
 
@@ -34,7 +34,7 @@ export class FlaskdataService {
   }
 
   getLobbyById(lobbyData: any) {
-    return this.http.post(`${this.apiBaseUrl}/api/get-lobby`, lobbyData, getHttpOptions());
+    return this.http.post(`${this.apiBaseUrl}/api/get-lobby-by-id`, lobbyData, getHttpOptions());
   }
 
   updateProfileIcon(formData: FormData) {
@@ -55,6 +55,10 @@ export class FlaskdataService {
   
   getLobbiesByGameName(gameName: any) {
     return this.http.post(`${this.apiBaseUrl}/api/get-lobbies-by-name`, gameName, getHttpOptions());
+  }
+
+  getUserInfo() {
+    return this.http.get(`${this.apiBaseUrl}/api/whoami`, getHttpOptions());
   }
 
 }

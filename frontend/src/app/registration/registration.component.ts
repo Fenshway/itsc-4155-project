@@ -68,7 +68,7 @@ export class RegistrationComponent {
         console.log(result)
         if (result && result.access_token) {
           this.userService.user = result;
-          sessionStorage.setItem('access_token', result.access_token)
+          localStorage.setItem('access_token', result.access_token)
           const userData = this.jwtHelper.decodeToken(result.access_token);
 
           //testing. delete later

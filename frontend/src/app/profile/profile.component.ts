@@ -31,7 +31,7 @@ export class ProfileComponent {
 
     this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
-    const access_token: string|null = sessionStorage.getItem("access_token")
+    const access_token: string|null = localStorage.getItem("access_token")
     if(!access_token){return;}
     const user: any = jwtHelper.decodeToken(access_token)
     if(!user){return;}
