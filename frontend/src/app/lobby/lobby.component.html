@@ -1,21 +1,35 @@
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
+<body>
+    <div class="lobby-container">
+        <div class="players-list">
+            <h2>Players in Lobby</h2>
+            <ul>
+                <li>Player 1</li>
+                <li>Player 2</li>
+                <li>Player 3</li>
+                <li>Player 4</li>
+                <li>Player 5</li>
+                <li>Player 6</li>
+                <li>Player 7</li>
+                <li>Player 8</li>
+                <li>Player 9</li>
+                <li>Player 10</li>
+            </ul>
+        </div>
 
-<p>lobby works!</p>
-<p>lobby works!</p>
-<p>lobby works!</p>
+        <div class="lobby-info">
+            <div *ngIf="lobbyData">
+                <h2>{{ lobbyData.lobby.title }}</h2>
+                <p>{{ lobbyData.lobby.description }}</p>
+                <p>Hosted by: {{ lobbyData.lobby.host_id }}</p>
+                <p>Number of Players: {{ lobbyData.lobby.num_players }}</p>
 
-<!-- Just temp code to display data -->
-<div *ngIf="lobbyData">
-    <h1>Below is lobby data</h1>
-    <h2>{{ lobbyData.lobby.title }}</h2>
-    <p>{{ lobbyData.lobby.description }}</p>
-    <p>Hosted by: {{ lobbyData.lobby.host_id }}</p>
-    <p>Number of Players: {{ lobbyData.lobby.num_players }}</p>
-</div>
+                <button class="leave-lobby-button">Leave Lobby</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-box">
+        <p class="coming-soon-message">Chat box feature coming soon!</p>
+        <!-- Chat box content -->
+    </div>
+</body>

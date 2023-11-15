@@ -1,0 +1,92 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: rgb(42, 42, 42);
+    margin: 0;
+    padding-top: 60px;
+    height: 100vh;
+}
+
+.lobby-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 80px auto 20px;
+}
+
+.players-list {
+    flex: 1;
+    padding: 20px;
+    background-color: rgb(253, 255, 252);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.players-list h2 {
+    font-weight: bold;
+    color: rgb(229, 56, 59);
+    font-size: 20px;
+}
+
+.players-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.players-list li {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.lobby-info {
+    flex: 2;
+    padding: 20px;
+    background-color: rgb(253, 255, 252);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    position: relative
+}
+
+.lobby-info h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.lobby-info p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.leave-lobby-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: rgb(229, 56, 59);
+    color: rgb(253, 255, 252);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.leave-lobby-button:hover {
+    background-color: rgb(118, 200, 147);
+}
+
+.chat-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: rgb(253, 255, 252);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1300px;
+    height: 300px;
+}
+
+/* Please delete after chat box is implemented */
+.coming-soon-message {
+    font-size: 20px;
+    color: rgb(42, 42, 42);
+    margin: 0;
+}
