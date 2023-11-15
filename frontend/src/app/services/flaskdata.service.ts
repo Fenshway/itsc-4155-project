@@ -34,7 +34,7 @@ export class FlaskdataService {
   }
 
   getLobbyById(lobbyData: any) {
-    return this.http.post(`${this.apiBaseUrl}/api/get-lobby`, lobbyData, getHttpOptions());
+    return this.http.post(`${this.apiBaseUrl}/api/get-lobby-by-id`, lobbyData, getHttpOptions());
   }
 
   updateProfileIcon(formData: FormData) {
