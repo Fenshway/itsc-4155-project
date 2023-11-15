@@ -36,6 +36,31 @@ export class GameLobbiesComponent {
     })
   }
 
+  timeSinceLobbyCreated(createdAt: string): string {
+    const createdDate = new Date(createdAt);
+    const currentDate = new Date()
+
+    const seconds = Math.floor((currentDate.getTime() - createdDate.getTime()) / 1000);
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    let timeSinceCreation = '';
+
+    if (hours > 0) {
+      timeSinceCreation += hours + 'h ';
+    }
+
+    if (minutes > 0 || hours === 0) {
+      timeSinceCreation += minutes + 'm';
+    }
+
+    if (timeSinceCreation === '') {
+      timeSinceCreation = 'Just now';
+    }
+    return timeSinceCreation;
+  }
+
   navigateToLobby(id: number): void {
     this.router.navigate([`lobby/${id}`]);
   }

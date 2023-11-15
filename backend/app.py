@@ -225,6 +225,7 @@ def updateProfileLibrary():
 
     return jsonify({})
 
+#Gets array of all game objects from database
 @app.route('/api/games', methods=['GET'])
 def get_games_library():
     games = Games.query.all()
@@ -357,7 +358,8 @@ def get_lobbies_by_name():
                 'num_players': lobby.num_players,
                 'title': lobby.title,
                 'description': lobby.description,
-                'date': lobby.date.isoformat()
+                'date': lobby.date.isoformat(),
+                'num_players_in_lobby': len(set(player.players_id for player in lobby.players))
             }
             for lobby in lobbies
         ]
