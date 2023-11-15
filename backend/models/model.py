@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy import event, DDL
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
         
@@ -110,6 +111,8 @@ class Lobby(db.Model):
     title = db.Column(db.String(50))
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+
+    players = relationship('Lobby_Players', backref='lobby', lazy='dynamic')
 
     def __init__(self, game_id, host_id, num_players, title, description):
         self.game_id = game_id

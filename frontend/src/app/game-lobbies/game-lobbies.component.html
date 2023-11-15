@@ -4,17 +4,15 @@
         <div class="title-row">
             <h2>Title</h2>
             <h2>Description</h2>
-            <h2>Num Players</h2>
-            <h2>Date</h2>
+            <h2>Players</h2>
+            <h2>Created</h2>
         </div>
 
         <div *ngFor="let lobby of lobbiesData" class="lobby" (click)="navigateToLobby(lobby.lobby_id)">
             <h2>{{ lobby.title }}</h2>
             <p>{{ lobby.description }}</p>
-            <!-- TODO:   current players/num players
-            TODO:   use created and current timedate to find out how long lobby has been open -->
-            <p>{{ lobby.num_players }}</p>
-            <p>{{ lobby.date }}</p>
+            <p>{{ lobby.num_players_in_lobby }} /{{ lobby.num_players }}</p>
+            <p>{{ timeSinceLobbyCreated(lobby.date) }} ago</p>
         </div>
       
         <div *ngIf="lobbiesData && lobbiesData.length === 0" class="no-lobbies">
