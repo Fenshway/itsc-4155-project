@@ -56,15 +56,35 @@ class UserRating(db.Model):
 class Friends(db.Model):
     __tablename__ = 'Friends'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     friend_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
     relationship = db.Column(db.String(15))
 
-    def __init__(self, friend_id, relationship):
+    user = db.relationship('User', backref = 'friends')
+    friend = db.relationship('User', backref = 'friends')
+
+    def __init__(self, user_id, friend_id, relationship):
+        self.user_id = user_id
         self.friend_id = friend_id
         self.relationship = relationship
 
     def __repr__(self):
         return '<friend_id {}>'.format(self.friend_id)
+
+class FriendRequest(db.Model):
+    __tablename__ = 'FriendRequests'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
+    status = db.Column(db.String(15), default='pending')
+
+    def __init__(self, sender_id, receiver_id):
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+
+    def __repr__(self):
+        return '<FriendRequest from {} to {}>'.format(self.sender_id, self.receiver_id)
+
 
 class Blocked(db.Model):
     __tablename__ = 'Blocked'
