@@ -148,4 +148,8 @@ export class ProfileComponent {
 
   }
 
+  changeRating(rating: number) {
+
+  }
+
 }

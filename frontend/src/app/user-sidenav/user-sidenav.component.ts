@@ -37,11 +37,11 @@ export class UserSidenavComponent {
     this.sidebarClosed = !this.sidebarClosed;
   }
 
-  // logout() {
-  //   console.log('Click')
-  //   this.userService.clearUser();
-  //   localStorage.removeItem('access_token');
-  //   console.log('Logout succesful')
-  //   this.router.navigate(['/login']);
-  // }
+  logout() {
+    console.log('Click')
+    this.userService.clearUser();
+    localStorage.removeItem('access_token');
+    console.log('Logout succesful')
+    this.router.navigate(['/login']);
+  }
 }
