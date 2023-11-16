@@ -114,13 +114,13 @@ def getProfile(username):
        return jsonify({})
 
     #Retrieving user data
-    user = User.query.filter_by(user_name=username).first_or_404()
-    userGamesQuery = User_games.query.filter_by(user_id=user.user_id).all() or []
+    requestedUser = User.query.filter_by(user_name=username).first_or_404()
+    userGamesQuery = User_games.query.filter_by(user_id=requestedUser.user_id).all() or []
     userGames = []
     for query in userGamesQuery:
         userGames.append(query.game_id)
         
-    imageByteString = UserImage.query.filter_by(user_id=user.user_id).first()
+    imageByteString = UserImage.query.filter_by(user_id=requestedUser.user_id).first()
     image = ""
     
     if(imageByteString):
@@ -133,22 +133,20 @@ def getProfile(username):
     #3 = friends
     #dont worry about this: 4 = blocked; route requester -> profile user
     #dont worry about this: 5 = blocked; profile user -> route requester
+    outgoingRelationshipData = Friends.query.filter_by(user_id = user.user_id, friend_id = requestedUser.user_id).first()
+    incomingRelationshipData = Friends.query.filter_by(user_id = requestedUser.user_id, friend_id = user.user_id).first()
     relationship = 0
-
-
-    #TODO: determine the current status between the route requester, and the profile user they're trying to load
-    if 1:
-        relationship = 1
-    elif 2:
-        relationship = 2
-    elif 3:
-        relationship = 3
+    if outgoingRelationshipData:
+        relationship = outgoingRelationshipData.relationship_stat
+    elif incomingRelationshipData:
+        if incomingRelationshipData.relationship_stat == 1:
+            relationship = 2
 
     user_data = {
-        'user_id': user.user_id,
-        'username': user.user_name,
+        'user_id': requestedUser.user_id,
+        'username': requestedUser.user_name,
         'icon': image,
-        'rating': user.user_rating or 0,
+        'rating': requestedUser.user_rating or 0,
         'library': userGames,
         'relationship': relationship,
     }
@@ -184,35 +182,30 @@ def updateRelationship():
 
     existingRequest = Friends.query.filter_by(id = user.user_id, friend_id = receieverId).first()
 
-    #TODO: i stopped here, below needs to be done
     if existingRequest:
-        return jsonify({'message': 'Friend request already sent'})
+        return jsonify({'success': 0, 'message': ' Friend request already sent'})
 
-    new_request = FriendRequest(sender_id = sender_id, receiver_id = receiver_id)
-    db.session.add(new_request)
+    friendship = Friends(user_id = user.user_id, friend_id = receieverId, relationship = str(relationshipId))
+    db.session.add(friendship)
     db.session.commit()
 
-    if new_request:
-        return jsonify({'message': 'Friend request sent sucessfully'})
+    if relationshipId == 3:
+        friendship.relationship_stat = 'accepted'
+        friendship_1 = Friends(user_id = user.user_id, friend_id = receieverId, relationship= 'accepted')
+        friendship_2 = Friends(user_id = receieverId, friend_id = user.user_id , relationship = 'accepted')
 
-    friend_request = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id)
-
-    if response == 'accept':
-        friend_request.status = 'accepted'
-        friendship_1 = Friends(user_id = sender_id, friend_id = receiver_id , relationship = 'accepted')
-        friendship_2 = Friends(user_id = receiver_id, friend_id = sender_id , relationship = 'accepted')
-        
 
         db.session.add(friendship_1)
         db.session.add(friendship_2)
         db.session.commit()
-        return jsonify({'message': 'Friend request accepted'})
-    
-    elif response == 'reject':
-        friend_request.status = 'rejected'
+        db.session.delete(existingRequest)
         db.session.commit()
-        return jsonify({'message': 'Friend request rejected'})
-    db.session.delete(friend_request)
+        return jsonify({'success': 1, 'message': 'Friend request accepted'})
+
+    elif relationshipId == 1 or relationshipId == 2:
+        friendship.relationship_stat = 'pending'
+        db.session.commit()
+        return jsonify({'success': 1, 'message': 'Friend request sent'})
 
 #Used for updating profiel icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
