@@ -33,4 +33,19 @@ export class LobbyComponent {
       });
     });
   }
+
+  leaveLobby(): void {
+    this.route.params.subscribe(params => {
+      const lobbyId = +params['id'];
+      const lobbyToLeave = { lobbyToLeave: lobbyId };
+      this.flaskService.leaveLobby(lobbyToLeave).subscribe({
+        next: (result: any)=>{
+          this.router.navigate([`directory`]);
+        },
+        error: (error: any)=>{
+          console.log(JSON.stringify(error))
+        }
+      });
+    });
+  }
 }

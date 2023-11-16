@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class GameLobbiesComponent {
 
   lobbiesData: any;
+  joinLobbyError?: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,7 +63,18 @@ export class GameLobbiesComponent {
   }
 
   navigateToLobby(id: number): void {
-    this.router.navigate([`lobby/${id}`]);
+    const lobbyId = { lobbyId: id }
+    this.flaskService.joinLobby(lobbyId).subscribe({
+      next: (result: any)=>{
+        this.router.navigate([`lobby/${id}`]);
+      },
+      error: (error: any)=>{
+        console.log(JSON.stringify(error))
+        this.joinLobbyError = error.error.error;
+      }
+    })
+
+
   }
 
 }
