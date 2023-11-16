@@ -16,7 +16,6 @@ class User(db.Model):
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     user_image = db.relationship('UserImage', backref='user_img', cascade='all, delete, delete-orphan')
     user_games = db.relationship('User_games', backref='user_gam', cascade='all, delete, delete-orphan')
-    #user_friends = db.relationship('Friends', backref='user', cascade='all, delete, delete-orphan')
 
     def __init__(self, email, user_password, user_name, user_rating=0, user_status=0):
         self.user_name = user_name
@@ -31,7 +30,6 @@ class User(db.Model):
     def can_rate(self):
         time_since_creation = datetime.now(timezone.utc) - self.date_created
         return time_since_creation.total_seconds() >= 300
-        #return time_since_creation
 
 class UserImage(db.Model):
     __tablename__ = 'UserImage'
