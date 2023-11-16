@@ -62,7 +62,7 @@ export class ProfileComponent {
       //ProfileObserver
       this.profileObserver = new ProfileObserver(gamesData, profileData.library);
 
-    });
+    }).unsubscribe();
 
   }
 

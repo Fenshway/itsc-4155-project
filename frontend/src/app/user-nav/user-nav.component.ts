@@ -19,11 +19,20 @@ export class UserNavComponent {
     ) {}
 
   gotoProfile() {
-    if (!this.userService.user) {
+    if(!this.userService.user) {
       return;
     }
     const userData = this.jwtHelper.decodeToken(this.userService.user.access_token);
-    this.router.navigate([`/profile/${userData.username}`]);
+    let reloadPage = false;
+    const urlRootPath:string = this.router.url.split('/')[1];
+    if(urlRootPath === "profile") {
+      reloadPage = true;
+    }
+    this.router.navigate([`/profile`, userData.username]).then(() => {
+      if(reloadPage) {
+        window.location.reload();
+      }
+    });
   }
 
   userSessionActive() {
