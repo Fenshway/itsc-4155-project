@@ -24,15 +24,43 @@
                         <span id="online-status" class="online-status-online" title="Online"></span>
                         <h1>{{data.username}}</h1>
                     </span>
-                    <select *ngIf="isProfileOwner()" class="status" name="status" id="status">
-                        <option value = "online">Online</option>
-                        <option value = "dnd">Do Not Disturb</option>
-                        <option value = "idle">Idle</option>
-                        <option value = "invisible">Invisible</option>
-                    </select>
+
+                    <ng-container *ngIf="isProfileOwner(); then statusContainer; else friendStatusContainer">
+                    </ng-container>
+
+                    <ng-template #statusContainer>
+                        <select class="status" name="status" id="status">
+                            <option value = "online">Online</option>
+                            <option value = "dnd">Do Not Disturb</option>
+                            <option value = "idle">Idle</option>
+                            <option value = "invisible">Invisible</option>
+                        </select>
+                    </ng-template>
+
+                    <ng-template #friendStatusContainer>
+
+                        <button *ngIf="data.friendStatus == 1" id="friend-request-add" class="friend-status-container">
+                            Add friend
+                        </button>
+
+                        <button *ngIf="data.friendStatus == 2" id="friend-request-remove" class="friend-status-container">
+                            Unfriend
+                        </button>
+
+                        <button *ngIf="data.friendStatus == 3" id="friend-request-accept" class="friend-status-container">
+                            Accept Request
+                        </button>
+
+                        <div *ngIf="data.friendStatus == 4" id="friend-request-pending">
+                            Request Pending
+                        </div>
+
+                    </ng-template>
+
                 </div>
                 <div class="rating-section">
-                    <h2>Player Rating</h2>
+                    <h2>{{data.rating}} Rating</h2>
+                    <!--
                     <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">
                             <ng-container *ngIf="1 == 1; then star_empty">
@@ -56,6 +84,7 @@
 
                         </ng-container>
                     </div>
+                    -->
                 </div>
             </div>
         </div>

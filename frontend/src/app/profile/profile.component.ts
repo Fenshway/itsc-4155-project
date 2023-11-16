@@ -21,6 +21,7 @@ export class ProfileComponent {
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
+    friendStatus: 1,
   }
 
   constructor(

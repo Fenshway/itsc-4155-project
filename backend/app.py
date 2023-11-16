@@ -127,14 +127,14 @@ def getProfile(username):
     
     return jsonify(user_data)
 
+#Used for updating profiel icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
 def updateProfileIcon():
     
-    #File upload
+    #Checking if file is valid
     if not 'file' in request.files:
         return jsonify({})
 
-    #Checking if file is valid
     file = request.files['file']
     mimetype = file.content_type
     
@@ -169,6 +169,7 @@ def updateProfileIcon():
         'icon': image,
     })
 
+#Used for updating profile game library
 @app.route('/api/profileUpdate/library', methods=['POST'])
 def updateProfileLibrary():
     
