@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
-from sqlalchemy import event, DDL
 from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
@@ -13,14 +12,17 @@ class User(db.Model):
     user_password = db.Column(db.String(150))
     user_rating = db.Column(db.Integer, nullable=True)
     user_status = db.Column(db.Integer, nullable=True)
-    user_image = db.relationship('UserImage', backref='user', cascade='all, delete, delete-orphan')
-    user_games = db.relationship('User_games', backref='user', cascade='all, delete, delete-orphan')
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_image = db.relationship('UserImage', backref='user_img', cascade='all, delete, delete-orphan')
+    user_games = db.relationship('User_games', backref='user_gam', cascade='all, delete, delete-orphan')
+    #user_friends = db.relationship('Friends', backref='user', cascade='all, delete, delete-orphan')
 
-    def __init__(self, email, user_password, user_name, user_status=0):
+    def __init__(self, email, user_password, user_name, user_rating=0, user_status=0):
         self.user_name = user_name
         self.email = email
         self.user_password = user_password
         self.user_status = user_status
+        self.user_rating = user_rating
 
     def __repr__(self):
         return '<user_name {}>'.format(self.user_name)
@@ -56,35 +58,19 @@ class UserRating(db.Model):
 class Friends(db.Model):
     __tablename__ = 'Friends'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
-    friend_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
-    relationship = db.Column(db.String(15))
+    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
+    friend_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
+    relationship_stat = db.Column(db.String(15))
+    user_ref = relationship('User', backref= 'friends_usr', foreign_keys='Friends.friend_id')
+    friend_ref = relationship('User', backref= 'friends_frnd', foreign_keys='Friends.user_id')
 
-    user = db.relationship('User', backref = 'friends')
-    friend = db.relationship('User', backref = 'friends')
-
-    def __init__(self, user_id, friend_id, relationship):
+    def __init__(self, user_id, friend_id, relationship_stat):
         self.user_id = user_id
         self.friend_id = friend_id
-        self.relationship = relationship
+        self.relationship_stat = relationship_stat
 
     def __repr__(self):
         return '<friend_id {}>'.format(self.friend_id)
-
-class FriendRequest(db.Model):
-    __tablename__ = 'FriendRequests'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
-    status = db.Column(db.String(15), default='pending')
-
-    def __init__(self, sender_id, receiver_id):
-        self.sender_id = sender_id
-        self.receiver_id = receiver_id
-
-    def __repr__(self):
-        return '<FriendRequest from {} to {}>'.format(self.sender_id, self.receiver_id)
-
 
 class Blocked(db.Model):
     __tablename__ = 'Blocked'
@@ -134,7 +120,7 @@ class Lobby(db.Model):
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-    players = relationship('Lobby_Players', backref='lobby', lazy='dynamic')
+    players = relationship('Lobby_Players', backref='lobby_player', lazy='dynamic')
 
     def __init__(self, game_id, host_id, num_players, title, description):
         self.game_id = game_id
