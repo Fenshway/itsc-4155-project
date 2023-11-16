@@ -409,14 +409,6 @@ def whoami():
     }
 
     return jsonify(user_data)
-@app.route('/api/view-friend-requests', methods = ['POST'])
-def view_friend_request():
-    friend = request.get._json()
-    sender_id = friend.get('sender_id')
-    receiver_id = friend.get('receiver_id')
-    response = friend.get('response')
-
-    
 
 @app.route('/api/profile/<username>', methods = ['POST'])
 def sendFriend():
