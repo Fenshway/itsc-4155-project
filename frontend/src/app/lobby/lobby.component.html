@@ -1,39 +1,27 @@
 <body>
     <div class="lobby-container">
-        <div class="players-list">
-            <h2>Players in Lobby</h2>
-            <ul>
-                <li>Player 1</li>
-                <li>Player 2</li>
-                <li>Player 3</li>
-                <li>Player 4</li>
-                <li>Player 5</li>
-                <li>Player 6</li>
-                <li>Player 7</li>
-                <li>Player 8</li>
-                <li>Player 9</li>
-                <li>Player 10</li>
-            </ul>
-        </div>
-
         <div class="lobby-info">
             <div *ngIf="lobbyData">
                 <h2>{{ lobbyData.lobby.title }}</h2>
                 <p>{{ lobbyData.lobby.description }}</p>
-                <p>Hosted by: {{ lobbyData.lobby.host_id }}</p>
-                <p>Number of Players: {{ lobbyData.lobby.num_players }}</p>
 
                 <button (click)="leaveLobby()" class="leave-lobby-button">Leave Lobby</button>
             </div>
+        </div>
+
+        <div class="players-list">
+            <h2>Players in Lobby</h2>
+            <ul>
+                <li *ngFor="let player of lobbyData.lobby.players">
+                    <span class="player-name">{{ player }}</span>
+                    <span class="player-rating">Placeholder</span>
+                </li>
+            </ul>
         </div>
     </div>
 
     <div class="chat-box">
         <p class="coming-soon-message">Chat box feature coming soon!</p>
         <!-- Chat box content -->
-    </div>
-
-    <div *ngFor="let player of lobbyData.lobby.players">
-        <p class="text-light">{{ player }}</p>
     </div>
 </body>
