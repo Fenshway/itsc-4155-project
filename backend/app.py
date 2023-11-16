@@ -7,7 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from sqlalchemy import column, func
-from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
 
 load_dotenv()
 
@@ -503,6 +503,65 @@ def whoami():
     }
 
     return jsonify(user_data)   
+
+@app.route('/api/profile/<username>', methods = ['POST'])
+def sendFriend():
+    friend = request.get_json()
+    sender_id = friend.get('sender_id')
+    receiver_id = friend.get('receiver_id')
+    response = friend.get('response')
+    
+    
+    existingRequest = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id).first()
+
+    if existingRequest:
+        return jsonify({'message': 'Friend request already sent'})
+
+    new_request = FriendRequest(sender_id = sender_id, receiver_id = receiver_id)
+    db.session.add(new_request)
+    db.session.commit()
+
+    if new_request:
+        return jsonify({'message': 'Friend request sent sucessfully'})
+
+    friend_request = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id)
+
+    if response == 'accept':
+        friend_request.status = 'accepted'
+        friendship_1 = Friends(user_id = sender_id, friend_id = receiver_id , relationship = 'accepted')
+        friendship_2 = Friends(user_id = receiver_id, friend_id = sender_id , relationship = 'accepted')
+        
+
+        db.session.add(friendship_1)
+        db.session.add(friendship_2)
+        db.session.commit()
+        return jsonify({'message': 'Friend request accepted'})
+    
+    elif response == 'reject':
+        friend_request.status = 'rejected'
+        db.session.commit()
+        return jsonify({'message': 'Friend request rejected'})
+    db.session.delete(friend_request)
+
+# Transfers the rates to the respective user in the DB
+@app.route('/api/games', methods=['GET'])
+def get_games_library():
+    rateInfo = request.get_json()
+    host_id = rateInfo.get('userId')
+    ratedUser_id = rateInfo.get('ratedId')
+    rating = rateInfo.get('rating') # It is ether 1 or -1
+
+    # Checks if the rating was already done by user A on user B
+    rate = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
+    if rate:
+        return jsonify({'error': "User already rated"}), 400
+
+    new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
+    db.session.add(new_rating)
+    db.session.commit()
+
+    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
+    return jsonify(response_data), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
