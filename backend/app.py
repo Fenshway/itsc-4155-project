@@ -150,6 +150,7 @@ def getProfile(username):
         'rating': requestedUser.user_rating or 0,
         'library': userGames,
         'relationship': relationship,
+        'status': requestedUser.user_status,
     }
     
     return jsonify(user_data)
@@ -220,7 +221,37 @@ def updateRelationship():
     else:
         return jsonify({})
 
-#Used for updating profiel icon
+#Used for updating profile status
+@app.route('/api/profileUpdate/status', methods=['POST'])
+def updateStatus():
+
+    #StatusIds:
+    #0 = online
+    #1 = invisible/offline
+    #2 = do not disturb
+    #3 = idle
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    
+    if not user:
+        return jsonify({})
+    
+    #Data validation
+    data = request.form
+    status = int(data.get('status'))
+    
+    if status == None or not status in [0, 1, 2, 3]:
+        return jsonify({})
+    
+    user.user_status = status
+    db.session.commit()
+
+    return jsonify({'success': 1})
+
+#Used for updating profile icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
 def updateProfileIcon():
     

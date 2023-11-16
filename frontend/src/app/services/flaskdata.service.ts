@@ -53,6 +53,10 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/library`, formData, getHttpOptions());
   }
 
+  updateStatus(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/status`, formData, getHttpOptions());
+  }
+
   getProfile(username: string) {
     return this.http.get(`${this.apiBaseUrl}/api/profile/` + username, getHttpOptions());
   }
