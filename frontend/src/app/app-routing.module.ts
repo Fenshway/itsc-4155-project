@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'create-lobby', component: CreateLobbyComponent, canActivate: [isAuthenticatedGuard]},
   { path: 'lobby/:id', component: LobbyComponent, canActivate: [isAuthenticatedGuard]},
   { path: 'directory/:gameName', component: GameLobbiesComponent, canActivate: [isAuthenticatedGuard]},
-  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}, canActivate: [isAuthenticatedGuard]},
+  { path: 'profile/:username', component: ProfileComponent, resolve: {profile: ProfileResolver, games: GamesResolver}, canActivate: [isAuthenticatedGuard], runGuardsAndResolvers: 'always'},
   { path: 'welcome', component: GeneralHomeComponent}
 ];
 
