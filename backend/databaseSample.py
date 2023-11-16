@@ -1,6 +1,6 @@
 from models.model import User, db # This are always necessary when calling the database
 from backend.app import app
-from sqlalchemy import inspect, text, exc, event, DDL # This one too to check for douplicates and handle them
+from sqlalchemy import inspect, text, exc # This one too to check for douplicates and handle them
 
 
 '''# Drops all Tables along it's data(Run this if there's been a change to the tables create statement(models.py) ONLY)
@@ -112,6 +112,7 @@ with app.app_context():
     db.session.commit()
 
 #------------------------Rating-add-test------------------------
+'''
 print('------------------------RATING_TEST------------------------')
 from models.model import UserRating
 with app.app_context():
@@ -127,6 +128,7 @@ with app.app_context():
 
     print(rated_user.user_name + ' rating is: ' + str(rated_user.user_rating))
     print(str(rating_process.judge_id) + ' downvoted: ' + str(rating_process.user_id) + ' by ' + str(rating_process.rateChange) + ' points.')
+'''
 
 print('------------------------STATUS_TEST------------------------')
 with app.app_context():
