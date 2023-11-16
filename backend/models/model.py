@@ -29,8 +29,9 @@ class User(db.Model):
         return '<user_name {}>'.format(self.user_name)
     
     def can_rate(self):
-        time_since_creation = datetime.utcnow() - self.date_created
-        return time_since_creation.total_seconds() >= 300
+        time_since_creation = func.now() - self.date_created
+        #return time_since_creation.total_seconds() >= 300
+        return time_since_creation
 
 class UserImage(db.Model):
     __tablename__ = 'UserImage'
@@ -65,7 +66,7 @@ class Friends(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
     friend_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
-    relationship_stat = db.Column(db.String(15))
+    relationship_stat = db.Column(db.Integer)
     user_ref = relationship('User', backref= 'friends_usr', foreign_keys='Friends.friend_id')
     friend_ref = relationship('User', backref= 'friends_frnd', foreign_keys='Friends.user_id')
 
