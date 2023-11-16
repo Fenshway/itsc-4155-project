@@ -150,6 +150,7 @@ def getProfile(username):
         'rating': requestedUser.user_rating or 0,
         'library': userGames,
         'relationship': relationship,
+        'status': requestedUser.user_status,
     }
     
     return jsonify(user_data)
@@ -220,7 +221,37 @@ def updateRelationship():
     else:
         return jsonify({})
 
-#Used for updating profiel icon
+#Used for updating profile status
+@app.route('/api/profileUpdate/status', methods=['POST'])
+def updateStatus():
+
+    #StatusIds:
+    #0 = online
+    #1 = invisible/offline
+    #2 = do not disturb
+    #3 = idle
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    
+    if not user:
+        return jsonify({})
+    
+    #Data validation
+    data = request.form
+    status = int(data.get('status'))
+    
+    if status == None or not status in [0, 1, 2, 3]:
+        return jsonify({})
+    
+    user.user_status = status
+    db.session.commit()
+
+    return jsonify({'success': 1})
+
+#Used for updating profile icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
 def updateProfileIcon():
     
@@ -537,20 +568,36 @@ def post_rating():
     host_id = user.user_id
 
     # Checks if the rating was already done by user A on user B
-    isRated = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
+    existingRating = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
     hostUser = User.query.filter_by(user_id=host_id).first()
 
     if not hostUser.can_rate():
         return jsonify({'error': "User too new"}), 400
-    elif isRated:
-        return jsonify({'error': "User already rated"}), 400
 
-    new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
-    db.session.add(new_rating)
-    db.session.commit()
+    success = False
+    if existingRating:
+        if existingRating.rateChange != rating:
+            db.session.delete(existingRating)
+            db.session.flush()
+            db.session.commit()
 
-    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
-    return jsonify(response_data), 201
+            if rating != 0:
+                new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
+                db.session.add(new_rating)
+                db.session.commit()
+
+            success = True
+    elif rating != 0:
+        new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
+        db.session.add(new_rating)
+        db.session.commit()
+        success = True
+
+    if success:
+        response_data = {'success': 1, 'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
+        return jsonify(response_data), 201
+    else:
+        return jsonify({'error': "Error updating rating"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

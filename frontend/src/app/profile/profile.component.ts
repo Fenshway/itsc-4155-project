@@ -24,6 +24,8 @@ export class ProfileComponent {
     rating: 0,
     relationship: -1,
     lastVerifiedRelationship: -1,
+    status: 0,
+    lastVerifiedStatus: 0,
   }
 
   constructor(
@@ -54,6 +56,7 @@ export class ProfileComponent {
       this.data.relationship = profileData.relationship;
       this.data.lastVerifiedRelationship = profileData.relationship;
       this.data.user_id = profileData.user_id;
+      this.data.status = profileData.status;
 
       if(profileData.icon){
         this.data.icon = "data:;base64," + profileData.icon;
@@ -158,6 +161,37 @@ export class ProfileComponent {
     this.flaskService.updateRating(formData).subscribe((data: {rating?: number}) => {
       if(data.rating){
         this.data.rating = data.rating;
+      }
+    });
+
+  }
+
+  changeStatus(event: any) {
+    
+    const status: number = event.target.value as number;
+
+    //Updating status
+    this.data.status = status;
+
+    //Sending status update request
+    const formData:FormData = new FormData();
+    formData.set("status", status.toString());
+
+    let eventSuccess = false;
+
+    //Revert update upon event error
+    this.flaskService.updateStatus(formData).subscribe((data: {success?: number}) => {
+      eventSuccess = true;
+      if(!data.success){
+        this.data.status = this.data.lastVerifiedStatus;
+      }else{
+        this.data.lastVerifiedStatus = status;
+      }
+
+    //Revert update upon backend error (url not reached)
+    }).add(() => {
+      if(!eventSuccess){
+        this.data.status = this.data.lastVerifiedStatus;
       }
     });
 

@@ -109,11 +109,11 @@ body > :not(#game-library-popup) {
     background-color: green;
 }
 
-.online-status-away {
+.online-status-idle {
     background-color: yellow;
 }
 
-.online-status-invisible {
+.online-status-offline {
     background-color: grey;
 }
 
