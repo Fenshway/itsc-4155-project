@@ -347,10 +347,14 @@ def get_lobby():
     lobby_players = Lobby_Players.query.filter_by(lobby_id=lobby_id).all()
     user_ids = [lobby_player.players_id for lobby_player in lobby_players]
     users = User.query.filter(User.user_id.in_(user_ids)).all()
-    usernames = [user.user_name for user in users]
 
-    # Add usernames to the lobby_info dictionary
+    # Add usernames to the lobby_info dict
+    usernames = [user.user_name for user in users]
     send_lobby['players'] = usernames
+
+    # Add user ratings to the lobby_info dict
+    user_ratings = [user.user_rating for user in users]
+    send_lobby['ratings'] = user_ratings
 
     return jsonify({'lobby': send_lobby, 'message': "Joined lobby successfully"})
 
