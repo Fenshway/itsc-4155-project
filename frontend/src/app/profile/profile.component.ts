@@ -18,9 +18,12 @@ export class ProfileComponent {
   profileObserver: ProfileObserver|undefined;
 
   data = {
+    user_id: -1,
     username: "",
     icon: "../../assets/images/profilepic.png",
     rating: 0,
+    relationship: -1,
+    lastVerifiedRelationship: -1,
   }
 
   constructor(
@@ -48,25 +51,16 @@ export class ProfileComponent {
       const gamesData = resolverData.games;
       
       this.data.rating = profileData.rating;
+      this.data.relationship = profileData.relationship;
+      this.data.lastVerifiedRelationship = profileData.relationship;
+      this.data.user_id = profileData.user_id;
+
       if(profileData.icon){
         this.data.icon = "data:;base64," + profileData.icon;
       }
 
       //ProfileObserver
       this.profileObserver = new ProfileObserver(gamesData, profileData.library);
-      this.profileObserver.observeLibrary((update: {GameId:number, Action:number}) => {
-        /*
-        const gamesDisplay = document.getElementById("games-display");
-        const newGameFrame = document.createElement(`
-          <app-library-game-slot
-            gameId="{{gameQuery.game_id}}"
-            gameName="{{gameQuery.game_name}}"
-            gameImg="{{gameQuery.img_path}}"
-            enableEditing="false">
-          </app-library-game-slot>
-        `);
-        */
-      });
 
     });
 
@@ -96,7 +90,7 @@ export class ProfileComponent {
   }
 
   isProfileOwner() {
-    if(this.session_username == ""){
+    if(this.session_username === ""){
       return false;
     }
     return this.data.username == this.session_username;
@@ -121,6 +115,51 @@ export class ProfileComponent {
         this.libraryPopup = undefined;
       })
     }
+
+  }
+
+  changeFriendStatus(relationshipId: number) {
+
+    //Updating relationship
+    this.data.relationship = relationshipId;
+
+    //Sending relationship update request
+    const formData:FormData = new FormData();
+    formData.set("user_id", this.data.user_id.toString());
+    formData.set("relationship", relationshipId.toString());
+
+    let eventSuccess = false;
+
+    //Revert update upon event error
+    this.flaskService.updateRelationship(formData).subscribe((data: {success?: number}) => {
+      eventSuccess = true;
+      if(!data.success){
+        this.data.relationship = this.data.lastVerifiedRelationship;
+      }else{
+        this.data.lastVerifiedRelationship = relationshipId;
+      }
+
+    //Revert update upon backend error (url not reached)
+    }).add(() => {
+      if(!eventSuccess){
+        this.data.relationship = this.data.lastVerifiedRelationship;
+      }
+    });
+
+  }
+
+  changeRating(rating: number) {
+
+    //Sending rating update request
+    const formData:FormData = new FormData();
+    formData.set("user_id", this.data.user_id.toString());
+    formData.set("vote", rating.toString());
+
+    this.flaskService.updateRating(formData).subscribe((data: {rating?: number}) => {
+      if(data.rating){
+        this.data.rating = data.rating;
+      }
+    });
 
   }
 

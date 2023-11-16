@@ -121,6 +121,38 @@ body > :not(#game-library-popup) {
     background-color: red;
 }
 
+.friend-status-container {
+    border-radius: 5px;
+    transition: .25s background-color;
+    color: white;
+    border: none;
+}
+
+#friend-request-add, #friend-request-accept {
+    background-color: rgba(53, 165, 53, 0.815);
+}
+
+#friend-request-remove {
+    background-color: rgba(218, 56, 28, 0.815);
+}
+
+#friend-request-add:hover {
+    background-color: rgba(39, 124, 39, 0.815);
+}
+
+#friend-request-remove:hover {
+    background-color: rgba(180, 46, 22, 0.815);
+}
+
+#friend-request-pending {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
 .name-header {
     display: flex;
     flex-direction: row;
@@ -148,8 +180,35 @@ h1, h2 {
 
 .rating-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: left;
+    align-items: center;
+}
+
+.vote-button {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: .1s transform;
+}
+
+.vote-button:hover {
+    transform: scale(1.1);
+}
+
+.vote-button > img {
+    max-width: 200%;
+}
+
+#upvote {
+    margin-right: 5px;
+}
+
+#downvote {
+    margin-left: 5px;
 }
 
 .rating-section > h2 {

@@ -24,15 +24,45 @@
                         <span id="online-status" class="online-status-online" title="Online"></span>
                         <h1>{{data.username}}</h1>
                     </span>
-                    <select *ngIf="isProfileOwner()" class="status" name="status" id="status">
-                        <option value = "online">Online</option>
-                        <option value = "dnd">Do Not Disturb</option>
-                        <option value = "idle">Idle</option>
-                        <option value = "invisible">Invisible</option>
-                    </select>
+
+                    <ng-container *ngIf="isProfileOwner(); then statusContainer; else friendStatusContainer">
+                    </ng-container>
+
+                    <ng-template #statusContainer>
+                        <select class="status" name="status" id="status">
+                            <option value = "online">Online</option>
+                            <option value = "dnd">Do Not Disturb</option>
+                            <option value = "idle">Idle</option>
+                            <option value = "invisible">Invisible</option>
+                        </select>
+                    </ng-template>
+
+                    <ng-template #friendStatusContainer>
+
+                        <button *ngIf="data.relationship == 0" id="friend-request-add" class="friend-status-container" (click)="changeFriendStatus(1)">
+                            Add friend
+                        </button>
+
+                        <div *ngIf="data.relationship == 1" id="friend-request-pending">
+                            Request Pending
+                        </div>
+
+                        <button *ngIf="data.relationship == 2" id="friend-request-accept" class="friend-status-container" (click)="changeFriendStatus(3)">
+                            Accept Request
+                        </button>
+
+                        <button *ngIf="data.relationship == 3" id="friend-request-remove" class="friend-status-container" (click)="changeFriendStatus(0)">
+                            Unfriend
+                        </button>
+
+                    </ng-template>
+
                 </div>
                 <div class="rating-section">
-                    <h2>Player Rating</h2>
+                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)"><img src="../../assets/images/upvote.png"></button>
+                    <h2>{{data.rating}} Rating</h2>
+                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)"><img src="../../assets/images/downvote.png"></button>
+                    <!--
                     <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">
                             <ng-container *ngIf="1 == 1; then star_empty">
@@ -56,6 +86,7 @@
 
                         </ng-container>
                     </div>
+                    -->
                 </div>
             </div>
         </div>

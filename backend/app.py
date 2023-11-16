@@ -106,35 +106,128 @@ def testImage():
 @app.route('/api/profile/<username>', methods=['GET'])
 def getProfile(username):
 
-    user = User.query.filter_by(user_name=username).first_or_404()
-    userGamesQuery = User_games.query.filter_by(user_id=user.user_id).all() or []
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    if(not user):
+       return jsonify({})
+
+    #Retrieving user data
+    requestedUser = User.query.filter_by(user_name=username).first_or_404()
+    userGamesQuery = User_games.query.filter_by(user_id=requestedUser.user_id).all() or []
     userGames = []
     for query in userGamesQuery:
         userGames.append(query.game_id)
         
-    imageByteString = UserImage.query.filter_by(user_id=user.user_id).first()
+    imageByteString = UserImage.query.filter_by(user_id=requestedUser.user_id).first()
     image = ""
     
     if(imageByteString):
         image = base64.b64encode(imageByteString.data).decode("UTF-8")
 
+    #Determining relationship status
+    #0 = none
+    #1 = pending; route requester -> profile user
+    #2 = pending; profile user -> route requester
+    #3 = friends
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
+    outgoingRelationshipData = Friends.query.filter_by(user_id = user.user_id, friend_id = requestedUser.user_id).first()
+    incomingRelationshipData = Friends.query.filter_by(user_id = requestedUser.user_id, friend_id = user.user_id).first()
+    relationship = 0
+    if outgoingRelationshipData:
+        relationship = outgoingRelationshipData.relationship_stat
+        
+    elif incomingRelationshipData:
+        if incomingRelationshipData.relationship_stat == 1:
+            relationship = 2
+    
     user_data = {
-        'username': user.user_name,
+        'user_id': requestedUser.user_id,
+        'username': requestedUser.user_name,
         'icon': image,
-        'rating': user.user_rating or 0,
+        'rating': requestedUser.user_rating or 0,
         'library': userGames,
+        'relationship': relationship,
     }
     
     return jsonify(user_data)
 
+@app.route('/api/relationship', methods = ['POST'])
+def updateRelationship():
+
+    #relationshipId note:
+    #0 = none
+    #1 = pending; route requester -> profile user
+    #2 = pending; profile user -> route requester
+    #3 = friends
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    if(not user):
+        return jsonify({})
+
+    #Data validation
+    data = request.form
+    receieverId = int(data.get('user_id'))
+    relationshipId = int(data.get('relationship'))
+    
+    if receieverId == None or relationshipId == None:
+        return jsonify({})
+
+    existingOutgoingRequest = Friends.query.filter_by(user_id = user.user_id, friend_id = receieverId).first()
+    existingIncomingRequest = Friends.query.filter_by(user_id = receieverId, friend_id = user.user_id).first()
+    hasExistingRelationship = existingIncomingRequest != None or existingOutgoingRequest != None
+    hasMutualRelationship = existingIncomingRequest != None and existingOutgoingRequest != None
+    hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
+    success = False
+    
+    if relationshipId == 0 and hasMutualRelationship: #Unfriend operation
+        if existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
+            db.session.delete(existingOutgoingRequest)
+            db.session.flush()
+            db.session.commit()
+        
+            db.session.delete(existingIncomingRequest)
+            db.session.flush()
+            db.session.commit()
+            success = True
+
+    elif relationshipId == 1 and hasNoRelationship: #Send request operation
+        newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=1)
+        db.session.add(newRequest)
+        db.session.flush()
+        db.session.commit()
+        success = True
+
+    elif relationshipId == 3: #Accept friend request
+        if existingOutgoingRequest == None and existingIncomingRequest != None and existingIncomingRequest.relationship_stat == 1:
+            existingIncomingRequest.relationship_stat = 3
+            newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=3)
+            db.session.add(newRequest)
+            db.session.flush()
+            db.session.commit()
+            success = True
+    
+    if success:
+        return jsonify({'success': 1})
+    else:
+        return jsonify({})
+
+#Used for updating profiel icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
 def updateProfileIcon():
     
-    #File upload
+    #Checking if file is valid
     if not 'file' in request.files:
         return jsonify({})
 
-    #Checking if file is valid
     file = request.files['file']
     mimetype = file.content_type
     
@@ -169,6 +262,7 @@ def updateProfileIcon():
         'icon': image,
     })
 
+#Used for updating profile game library
 @app.route('/api/profileUpdate/library', methods=['POST'])
 def updateProfileLibrary():
     
@@ -418,54 +512,29 @@ def whoami():
         'username': user.user_name
     }
 
-    return jsonify(user_data)
-
-@app.route('/api/profile/<username>', methods = ['POST'])
-def sendFriend():
-    friend = request.get_json()
-    sender_id = friend.get('sender_id')
-    receiver_id = friend.get('receiver_id')
-    response = friend.get('response')
-    
-    
-    existingRequest = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id).first()
-
-    if existingRequest:
-        return jsonify({'message': 'Friend request already sent'})
-
-    new_request = FriendRequest(sender_id = sender_id, receiver_id = receiver_id)
-    db.session.add(new_request)
-    db.session.commit()
-
-    if new_request:
-        return jsonify({'message': 'Friend request sent sucessfully'})
-
-    friend_request = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id)
-
-    if response == 'accept':
-        friend_request.status = 'accepted'
-        friendship_1 = Friends(user_id = sender_id, friend_id = receiver_id , relationship = 'accepted')
-        friendship_2 = Friends(user_id = receiver_id, friend_id = sender_id , relationship = 'accepted')
-        
-
-        db.session.add(friendship_1)
-        db.session.add(friendship_2)
-        db.session.commit()
-        return jsonify({'message': 'Friend request accepted'})
-    
-    elif response == 'reject':
-        friend_request.status = 'rejected'
-        db.session.commit()
-        return jsonify({'message': 'Friend request rejected'})
-    db.session.delete(friend_request)
+    return jsonify(user_data)   
 
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])
 def post_rating():
-    rateInfo = request.get_json()
-    host_id = rateInfo.get('userId')
-    ratedUser_id = rateInfo.get('ratedId')
-    rating = rateInfo.get('rating') # It is ether 1 or -1
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    if(not user):
+        return jsonify({})
+
+    #Data validation
+    data = request.form
+    ratedUser_id = int(data.get('user_id'))
+    rating = int(data.get('vote'))
+
+    if not ratedUser_id or not rating or rating not in [0, 1, -1]:
+        return jsonify({})
+
+    host_id = user.user_id
 
     # Checks if the rating was already done by user A on user B
     isRated = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
@@ -480,7 +549,7 @@ def post_rating():
     db.session.add(new_rating)
     db.session.commit()
 
-    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
+    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
     return jsonify(response_data), 201
 
 if __name__ == '__main__':
