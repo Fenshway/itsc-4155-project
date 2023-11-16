@@ -456,8 +456,8 @@ def sendFriend():
     db.session.delete(friend_request)
 
 # Transfers the rates to the respective user in the DB
-@app.route('/api/games', methods=['GET'])
-def get_games_library():
+@app.route('/api/rating', methods=['POST'])
+def post_rating():
     rateInfo = request.get_json()
     host_id = rateInfo.get('userId')
     ratedUser_id = rateInfo.get('ratedId')
