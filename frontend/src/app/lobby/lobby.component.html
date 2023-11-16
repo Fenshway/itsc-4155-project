@@ -23,7 +23,7 @@
                 <p>Hosted by: {{ lobbyData.lobby.host_id }}</p>
                 <p>Number of Players: {{ lobbyData.lobby.num_players }}</p>
 
-                <button class="leave-lobby-button">Leave Lobby</button>
+                <button (click)="leaveLobby()" class="leave-lobby-button">Leave Lobby</button>
             </div>
         </div>
     </div>
@@ -31,5 +31,9 @@
     <div class="chat-box">
         <p class="coming-soon-message">Chat box feature coming soon!</p>
         <!-- Chat box content -->
+    </div>
+
+    <div *ngFor="let player of lobbyData.lobby.players">
+        <p class="text-light">{{ player }}</p>
     </div>
 </body>
