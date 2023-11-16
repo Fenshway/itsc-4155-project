@@ -150,6 +150,17 @@ export class ProfileComponent {
 
   changeRating(rating: number) {
 
+    //Sending rating update request
+    const formData:FormData = new FormData();
+    formData.set("user_id", this.data.user_id.toString());
+    formData.set("vote", rating.toString());
+
+    this.flaskService.updateRating(formData).subscribe((data: {rating?: number}) => {
+      if(data.rating){
+        this.data.rating = data.rating;
+      }
+    });
+
   }
 
 }

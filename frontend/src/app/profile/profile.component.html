@@ -59,9 +59,9 @@
 
                 </div>
                 <div class="rating-section">
-                    <button id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)"><img src="../../assets/images/upvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)"><img src="../../assets/images/upvote.png"></button>
                     <h2>{{data.rating}} Rating</h2>
-                    <button id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)"><img src="../../assets/images/downvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)"><img src="../../assets/images/downvote.png"></button>
                     <!--
                     <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">

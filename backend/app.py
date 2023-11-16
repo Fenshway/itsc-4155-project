@@ -186,7 +186,6 @@ def updateRelationship():
     hasExistingRelationship = existingIncomingRequest != None or existingOutgoingRequest != None
     hasMutualRelationship = existingIncomingRequest != None and existingOutgoingRequest != None
     hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
-    print(existingOutgoingRequest, user.user_id, receieverId)
     success = False
     
     if relationshipId == 0 and hasMutualRelationship: #Unfriend operation
@@ -518,10 +517,24 @@ def whoami():
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])
 def post_rating():
-    rateInfo = request.get_json()
-    host_id = rateInfo.get('userId')
-    ratedUser_id = rateInfo.get('ratedId')
-    rating = rateInfo.get('rating') # It is ether 1 or -1
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    if(not user):
+        return jsonify({})
+
+    #Data validation
+    data = request.form
+    ratedUser_id = int(data.get('user_id'))
+    rating = int(data.get('vote'))
+
+    if not ratedUser_id or not rating or rating not in [0, 1, -1]:
+        return jsonify({})
+
+    host_id = user.user_id
 
     # Checks if the rating was already done by user A on user B
     rate = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
@@ -532,7 +545,7 @@ def post_rating():
     db.session.add(new_rating)
     db.session.commit()
 
-    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
+    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
     return jsonify(response_data), 201
 
 if __name__ == '__main__':

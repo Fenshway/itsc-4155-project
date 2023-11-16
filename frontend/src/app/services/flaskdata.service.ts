@@ -45,6 +45,10 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/relationship`, formData, getHttpOptions());
   }
 
+  updateRating(formData: FormData) {
+    return this.http.post(`${this.apiBaseUrl}/api/rating`, formData, getHttpOptions());
+  }
+
   updateLibrary(formData: FormData) {
     return this.http.post(`${this.apiBaseUrl}/api/profileUpdate/library`, formData, getHttpOptions());
   }
