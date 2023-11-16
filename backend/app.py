@@ -537,8 +537,12 @@ def post_rating():
     host_id = user.user_id
 
     # Checks if the rating was already done by user A on user B
-    rate = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
-    if rate:
+    isRated = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
+    hostUser = User.query.filter_by(user_id=host_id).first()
+
+    if not hostUser.can_rate():
+        return jsonify({'error': "User too new"}), 400
+    elif isRated:
         return jsonify({'error': "User already rated"}), 400
 
     new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
