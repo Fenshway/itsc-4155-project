@@ -106,6 +106,14 @@ def testImage():
 @app.route('/api/profile/<username>', methods=['GET'])
 def getProfile(username):
 
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    if(not user):
+       return jsonify({})
+
+    #Retrieving user data
     user = User.query.filter_by(user_name=username).first_or_404()
     userGamesQuery = User_games.query.filter_by(user_id=user.user_id).all() or []
     userGames = []
@@ -118,11 +126,29 @@ def getProfile(username):
     if(imageByteString):
         image = base64.b64encode(imageByteString.data).decode("UTF-8")
 
+    #Determining relationship status
+    #0 = none
+    #1 = pending; route requester -> profile user
+    #2 = pending; profile user -> route requester
+    #3 = friends
+    #TODO: 4 = blocked; route requester -> profile user
+    #TODO: 5 = blocked; profile user -> route requester
+    relationship = 0
+
+    if 1:
+        relationship = 1
+    elif 2:
+        relationship = 2
+    elif 3:
+        relationship = 3
+
     user_data = {
+        'user_id': user.user_id,
         'username': user.user_name,
         'icon': image,
         'rating': user.user_rating or 0,
         'library': userGames,
+        'relationship': relationship,
     }
     
     return jsonify(user_data)

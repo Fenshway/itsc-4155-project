@@ -39,21 +39,21 @@
 
                     <ng-template #friendStatusContainer>
 
-                        <button *ngIf="data.friendStatus == 1" id="friend-request-add" class="friend-status-container">
+                        <button *ngIf="data.relationship == 0" id="friend-request-add" class="friend-status-container" (click)="changeFriendStatus(1)">
                             Add friend
                         </button>
 
-                        <button *ngIf="data.friendStatus == 2" id="friend-request-remove" class="friend-status-container">
-                            Unfriend
-                        </button>
+                        <div *ngIf="data.relationship == 1" id="friend-request-pending" class="friend-status-container">
+                            Request Pending
+                        </div>
 
-                        <button *ngIf="data.friendStatus == 3" id="friend-request-accept" class="friend-status-container">
+                        <button *ngIf="data.relationship == 2" id="friend-request-accept" (click)="changeFriendStatus(3)">
                             Accept Request
                         </button>
 
-                        <div *ngIf="data.friendStatus == 4" id="friend-request-pending">
-                            Request Pending
-                        </div>
+                        <button *ngIf="data.relationship == 3" id="friend-request-remove" class="friend-status-container" (click)="changeFriendStatus(0)">
+                            Unfriend
+                        </button>
 
                     </ng-template>
 
