@@ -11,7 +11,7 @@ flask --debug run
 
 cd frontend
 npm install (must have node.js installed)
-ng serve (if ng serve does not work, run this command: npm install -g @angular/cli
+ng serve (if ng serve does not work, run this command : npm install -g @angular/cli   ) then rerun ng serve
 
 
 localhost:4200
