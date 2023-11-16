@@ -138,10 +138,11 @@ def getProfile(username):
     relationship = 0
     if outgoingRelationshipData:
         relationship = outgoingRelationshipData.relationship_stat
+        
     elif incomingRelationshipData:
         if incomingRelationshipData.relationship_stat == 1:
             relationship = 2
-
+    
     user_data = {
         'user_id': requestedUser.user_id,
         'username': requestedUser.user_name,
@@ -170,7 +171,7 @@ def updateRelationship():
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
 
     if(not user):
-        return jsonify({'success': 0})
+        return jsonify({})
 
     #Data validation
     data = request.form
@@ -178,34 +179,47 @@ def updateRelationship():
     relationshipId = int(data.get('relationship'))
     
     if receieverId == None or relationshipId == None:
-        return jsonify({'success': 0})
+        return jsonify({})
 
-    existingRequest = Friends.query.filter_by(id = user.user_id, friend_id = receieverId).first()
+    existingOutgoingRequest = Friends.query.filter_by(user_id = user.user_id, friend_id = receieverId).first()
+    existingIncomingRequest = Friends.query.filter_by(user_id = receieverId, friend_id = user.user_id).first()
+    hasExistingRelationship = existingIncomingRequest != None or existingOutgoingRequest != None
+    hasMutualRelationship = existingIncomingRequest != None and existingOutgoingRequest != None
+    hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
+    print(existingOutgoingRequest, user.user_id, receieverId)
+    success = False
+    
+    if relationshipId == 0 and hasMutualRelationship: #Unfriend operation
+        if existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
+            db.session.delete(existingOutgoingRequest)
+            db.session.flush()
+            db.session.commit()
+        
+            db.session.delete(existingIncomingRequest)
+            db.session.flush()
+            db.session.commit()
+            success = True
 
-    if existingRequest:
-        return jsonify({'success': 0, 'message': ' Friend request already sent'})
-
-    friendship = Friends(user_id = user.user_id, friend_id = receieverId, relationship = str(relationshipId))
-    db.session.add(friendship)
-    db.session.commit()
-
-    if relationshipId == 3:
-        friendship.relationship_stat = 'accepted'
-        friendship_1 = Friends(user_id = user.user_id, friend_id = receieverId, relationship= 'accepted')
-        friendship_2 = Friends(user_id = receieverId, friend_id = user.user_id , relationship = 'accepted')
-
-
-        db.session.add(friendship_1)
-        db.session.add(friendship_2)
+    elif relationshipId == 1 and hasNoRelationship: #Send request operation
+        newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=1)
+        db.session.add(newRequest)
+        db.session.flush()
         db.session.commit()
-        db.session.delete(existingRequest)
-        db.session.commit()
-        return jsonify({'success': 1, 'message': 'Friend request accepted'})
+        success = True
 
-    elif relationshipId == 1 or relationshipId == 2:
-        friendship.relationship_stat = 'pending'
-        db.session.commit()
-        return jsonify({'success': 1, 'message': 'Friend request sent'})
+    elif relationshipId == 3: #Accept friend request
+        if existingOutgoingRequest == None and existingIncomingRequest != None and existingIncomingRequest.relationship_stat == 1:
+            existingIncomingRequest.relationship_stat = 3
+            newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=3)
+            db.session.add(newRequest)
+            db.session.flush()
+            db.session.commit()
+            success = True
+    
+    if success:
+        return jsonify({'success': 1})
+    else:
+        return jsonify({})
 
 #Used for updating profiel icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
