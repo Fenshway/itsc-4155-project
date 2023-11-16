@@ -1,6 +1,7 @@
 from models.model import User, db # This are always necessary when calling the database
 from backend.app import app
 from sqlalchemy import inspect, text, exc # This one too to check for douplicates and handle them
+import datetime
 
 
 '''# Drops all Tables along it's data(Run this if there's been a change to the tables create statement(models.py) ONLY)
@@ -154,6 +155,18 @@ with app.app_context():
 #   That's it, now input the info you got into a new .env file following the .env.sample template
 
 # Run this file to confirm it works, there should be no errors.
+
+print('------------------------Test on user\'s date creation------------------------')
+with app.app_context():
+    admin = User.query.filter_by(user_name='Admin').first()
+    print('Admin was created on: ' + str(admin.date_created))
+    print('Current date: ' + str(datetime.utcnow()))
+
+    isValid = admin.can_rate()
+    if isValid:
+        print('Admin can do that.')
+    else:
+        print('Admin can NOT do that!')
 
 
 '''
