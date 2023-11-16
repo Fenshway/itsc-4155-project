@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
         
@@ -29,9 +29,9 @@ class User(db.Model):
         return '<user_name {}>'.format(self.user_name)
     
     def can_rate(self):
-        time_since_creation = func.now() - self.date_created
-        #return time_since_creation.total_seconds() >= 300
-        return time_since_creation
+        time_since_creation = datetime.now(timezone.utc) - self.date_created
+        return time_since_creation.total_seconds() >= 300
+        #return time_since_creation
 
 class UserImage(db.Model):
     __tablename__ = 'UserImage'
