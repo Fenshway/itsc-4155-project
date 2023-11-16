@@ -7,7 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from sqlalchemy import column, func
-from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, FriendRequest
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends
 
 load_dotenv()
 
