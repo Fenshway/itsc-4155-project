@@ -65,4 +65,16 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/whoami`, getHttpOptions());
   }
 
+  leaveLobby(lobbyId: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/leave-lobby`, lobbyId, getHttpOptions());
+  }
+
+  joinLobby(lobbyId: any) {
+    return this.http.post(`${this.apiBaseUrl}/api/join-lobby`, lobbyId, getHttpOptions());
+  }
+
+  findMyLobby() {
+    return this.http.get(`${this.apiBaseUrl}/api/get-my-lobby`, getHttpOptions());
+  }
+
 }

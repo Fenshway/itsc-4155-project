@@ -320,6 +320,7 @@ def get_games_library():
     game_library = [{'game_id': game.game_id, 'game_name': game.game_name, 'img_path': game.img_path} for game in games]
     return jsonify (game_library)
 
+# Creates lobby
 @app.route('/api/create-lobby', methods=['POST'])
 def create_lobby():
     lobby = request.get_json()
@@ -366,14 +367,21 @@ def create_lobby():
 @app.route('/api/join-lobby', methods=['POST'])
 def join_lobby():
     lobbyJoin = request.get_json()
+    lobby_id = lobbyJoin.get('lobbyId')
 
-    lobby_title = lobbyJoin.get('title')
-    host_id = lobbyJoin.get('hostId') #ID of the user who is hosting the lobby to be joined
-    currUser_id = lobbyJoin.get('userId') #This should be the ID of the user who will be joining
-    
-    #Get the lobby_id based on the title and host_id matching
-    lobby = Lobby.query.filter_by(title=lobby_title, host_id=host_id).first()
-    new_LPlayer = Lobby_Players(lobby_id=lobby.lobby_id, players_id=currUser_id)
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    #Checks db to see if user is in a lobby
+    existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
+
+    #Returns error if player is in lobby
+    if existing_player:
+        return jsonify({'error': 'User is already in a lobby'}), 400
+
+    new_LPlayer = Lobby_Players(lobby_id=lobby_id, players_id=user.user_id)
 
     db.session.add(new_LPlayer)
     db.session.commit()
@@ -384,25 +392,26 @@ def join_lobby():
 @app.route('/api/leave-lobby', methods=['POST'])
 def leave_lobby():
     lobbyLeave = request.get_json()
+    lobby_id = lobbyLeave.get('lobbyToLeave')
 
-    lobby_title = lobbyLeave.get('title')
-    host_id = lobbyLeave.get('hostId') #ID of the user who is hosting the lobby to be left
-    currUser_id = lobbyLeave.get('userId') #This should be the ID of the user who will be leaving
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
     
     #Get the lobby_id based on the title and host_id matching
-    lobby = Lobby.query.filter_by(title=lobby_title, host_id=host_id).first()
+    lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
 
-    Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=currUser_id).delete()
+    Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=user.user_id).delete()
     db.session.commit()
 
     #If host leaves, delete Lobby too
-    if host_id == currUser_id:
-        Lobby.query.filter_by(title=lobby_title, host_id=host_id).delete()
+    if lobby.host_id == user.user_id:
+        Lobby.query.filter_by(lobby_id=lobby.lobby_id, host_id=user.user_id).delete()
         db.session.commit()
     
     return jsonify({'message': "Lobby left successfully"}), 201
 
-#TODO missing lobby players
+# Using lobby_id retrieves and sends lobby information and players
 @app.route('/api/get-lobby-by-id', methods=['POST'])
 def get_lobby():
     requested_lobby = request.get_json()
@@ -419,8 +428,17 @@ def get_lobby():
         'host_id': lobby.host_id,
         'title': lobby.title,
         'num_players': lobby.num_players,
-        'description': lobby.description
+        'description': lobby.description,
+        'date': lobby.date.isoformat()
     }
+    
+    lobby_players = Lobby_Players.query.filter_by(lobby_id=lobby_id).all()
+    user_ids = [lobby_player.players_id for lobby_player in lobby_players]
+    users = User.query.filter(User.user_id.in_(user_ids)).all()
+    usernames = [user.user_name for user in users]
+
+    # Add usernames to the lobby_info dictionary
+    send_lobby['players'] = usernames
 
     return jsonify({'lobby': send_lobby, 'message': "Joined lobby successfully"})
 
@@ -455,6 +473,21 @@ def get_lobbies_by_name():
         return jsonify(lobbies_list), 201
     else:
         return jsonify({'message': "Game not found"}), 400
+    
+# Finds lobby id so the user can navigate to the lobby that they are in
+@app.route('/api/get-my-lobby', methods=['GET'])
+def get_my_lobby():
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
+
+    if existing_player:
+        lobby_id = existing_player.lobby_id
+        return jsonify({'lobbyId': lobby_id}), 200
+    else :
+        return jsonify({'message': 'User is not in a lobby'}), 200
 
 #Endpoint to set userservice if JWT in storage
 @app.route('/api/whoami', methods=['GET'])

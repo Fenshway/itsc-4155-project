@@ -83,7 +83,7 @@ from models.model import User_games
 
 with app.app_context():
     try:
-        new_game = Games(game_name='Left 4 Dead 2', img_path='/backend/static/l4d2.png') # Image does not exists this is just for show
+        new_game = Games(game_name='Left 4 Dead 2', img_path='left4dead2-games.jpg') # Image does not exists this is just for show
         db.session.add(new_game)
         db.session.commit()
     except exc.IntegrityError:
@@ -103,12 +103,6 @@ with app.app_context():
     # After the game has been created and added to the table, we can now set it as favorite if we want
     admin_fav = User_games.query.filter_by(user_id=admin.user_id).first()
     admin_fav.fav_game = True
-    db.session.commit()
-
-    # Now we delete it to add the game later in a more proper context
-    # IMPORTANT when deleting a game or user, make sure to delete it from the User_game table too, otherwise we might run into an error or just have junk data
-    User_games.query.filter_by(game_id=l4d2_game.game_id).delete()
-    Games.query.filter_by(game_name='Left 4 Dead 2').delete()
     db.session.commit()
 
 #------------------------Rating-add-test------------------------

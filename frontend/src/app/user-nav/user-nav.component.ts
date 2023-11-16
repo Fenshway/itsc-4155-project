@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UserServiceService } from '../services/user-service.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
   selector: 'app-user-nav',
@@ -13,7 +14,9 @@ export class UserNavComponent {
   constructor(
     public userService: UserServiceService,
     private router: Router,
-    private jwtHelper: JwtHelperService) { }
+    private jwtHelper: JwtHelperService,
+    private flaskService: FlaskdataService
+    ) {}
 
   gotoProfile() {
     if (!this.userService.user) {
@@ -27,17 +30,33 @@ export class UserNavComponent {
     return this.userService.user;
   }
 
-  isBouncing: boolean = false;
+  isBouncing: boolean = true;
 
-  ngOnInit() {
-    this.isBouncing = true;
-    setInterval(() => {
-      this.toggleBouncing();
-    }, 10000);
-  }
+  // ngOnInit() {
+  //   this.isBouncing = true;
+  //   setInterval(() => {
+  //     this.toggleBouncing();
+  //   }, 10000);
+  // }
 
-  toggleBouncing() {
-    this.isBouncing = !this.isBouncing;
+  // toggleBouncing() {
+  //   this.isBouncing = !this.isBouncing;
+  // }
+
+
+  navigateToMyLobby(): void {
+
+    this.flaskService.findMyLobby().subscribe({
+      next: (data: any) => {
+        const actualLobbyId = data.lobbyId;
+        console.log(actualLobbyId)
+        this.router.navigate([`lobby/${actualLobbyId}`]);
+      },
+      error: (error: any) => {
+        console.error('You are not in a lobby:', error);
+        this.router.navigate(['/directory']);
+      }
+    });
   }
 
   logout() {
