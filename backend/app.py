@@ -7,7 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from sqlalchemy import column, func
-from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
 
 load_dotenv()
 
@@ -454,10 +454,26 @@ def sendFriend():
         db.session.commit()
         return jsonify({'message': 'Friend request rejected'})
     db.session.delete(friend_request)
-    
-    
 
-       
+# Transfers the rates to the respective user in the DB
+@app.route('/api/games', methods=['GET'])
+def get_games_library():
+    rateInfo = request.get_json()
+    host_id = rateInfo.get('userId')
+    ratedUser_id = rateInfo.get('ratedId')
+    rating = rateInfo.get('rating') # It is ether 1 or -1
+
+    # Checks if the rating was already done by user A on user B
+    rate = UserRating.query.filter_by(judge_id=host_id, user_id=ratedUser_id).first()
+    if rate:
+        return jsonify({'error': "User already rated"}), 400
+
+    new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
+    db.session.add(new_rating)
+    db.session.commit()
+
+    response_data = {'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
+    return jsonify(response_data), 201
 
 if __name__ == '__main__':
     app.run(debug=True)

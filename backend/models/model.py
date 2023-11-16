@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 db = SQLAlchemy()
         
@@ -27,6 +28,10 @@ class User(db.Model):
     def __repr__(self):
         return '<user_name {}>'.format(self.user_name)
     
+    def can_rate(self):
+        time_since_creation = datetime.utcnow() - self.date_created
+        return time_since_creation.total_seconds() >= 300
+
 class UserImage(db.Model):
     __tablename__ = 'UserImage'
     user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), primary_key=True)
