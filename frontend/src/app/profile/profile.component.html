@@ -43,11 +43,11 @@
                             Add friend
                         </button>
 
-                        <div *ngIf="data.relationship == 1" id="friend-request-pending" class="friend-status-container">
+                        <div *ngIf="data.relationship == 1" id="friend-request-pending">
                             Request Pending
                         </div>
 
-                        <button *ngIf="data.relationship == 2" id="friend-request-accept" (click)="changeFriendStatus(3)">
+                        <button *ngIf="data.relationship == 2" id="friend-request-accept" class="friend-status-container" (click)="changeFriendStatus(3)">
                             Accept Request
                         </button>
 

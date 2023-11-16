@@ -7,7 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from sqlalchemy import column, func
-from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, FriendRequest
+from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends
 
 load_dotenv()
 
@@ -131,10 +131,12 @@ def getProfile(username):
     #1 = pending; route requester -> profile user
     #2 = pending; profile user -> route requester
     #3 = friends
-    #TODO: 4 = blocked; route requester -> profile user
-    #TODO: 5 = blocked; profile user -> route requester
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
     relationship = 0
 
+
+    #TODO: determine the current status between the route requester, and the profile user they're trying to load
     if 1:
         relationship = 1
     elif 2:
@@ -152,6 +154,65 @@ def getProfile(username):
     }
     
     return jsonify(user_data)
+
+@app.route('/api/relationship', methods = ['POST'])
+def updateRelationship():
+
+    #relationshipId note:
+    #0 = none
+    #1 = pending; route requester -> profile user
+    #2 = pending; profile user -> route requester
+    #3 = friends
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    if(not user):
+        return jsonify({'success': 0})
+
+    #Data validation
+    data = request.form
+    receieverId = int(data.get('user_id'))
+    relationshipId = int(data.get('relationship'))
+    
+    if receieverId == None or relationshipId == None:
+        return jsonify({'success': 0})
+
+    existingRequest = Friends.query.filter_by(id = user.user_id, friend_id = receieverId).first()
+
+    #TODO: i stopped here, below needs to be done
+    if existingRequest:
+        return jsonify({'message': 'Friend request already sent'})
+
+    new_request = FriendRequest(sender_id = sender_id, receiver_id = receiver_id)
+    db.session.add(new_request)
+    db.session.commit()
+
+    if new_request:
+        return jsonify({'message': 'Friend request sent sucessfully'})
+
+    friend_request = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id)
+
+    if response == 'accept':
+        friend_request.status = 'accepted'
+        friendship_1 = Friends(user_id = sender_id, friend_id = receiver_id , relationship = 'accepted')
+        friendship_2 = Friends(user_id = receiver_id, friend_id = sender_id , relationship = 'accepted')
+        
+
+        db.session.add(friendship_1)
+        db.session.add(friendship_2)
+        db.session.commit()
+        return jsonify({'message': 'Friend request accepted'})
+    
+    elif response == 'reject':
+        friend_request.status = 'rejected'
+        db.session.commit()
+        return jsonify({'message': 'Friend request rejected'})
+    db.session.delete(friend_request)
 
 #Used for updating profiel icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
@@ -408,50 +469,7 @@ def whoami():
         'username': user.user_name
     }
 
-    return jsonify(user_data)
-
-@app.route('/api/profile/<username>', methods = ['POST'])
-def sendFriend():
-    friend = request.get_json()
-    sender_id = friend.get('sender_id')
-    receiver_id = friend.get('receiver_id')
-    response = friend.get('response')
-    
-    
-    existingRequest = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id).first()
-
-    if existingRequest:
-        return jsonify({'message': 'Friend request already sent'})
-
-    new_request = FriendRequest(sender_id = sender_id, receiver_id = receiver_id)
-    db.session.add(new_request)
-    db.session.commit()
-
-    if new_request:
-        return jsonify({'message': 'Friend request sent sucessfully'})
-
-    friend_request = FriendRequest.query.filter_by(sender_id = sender_id, receiver_id = receiver_id)
-
-    if response == 'accept':
-        friend_request.status = 'accepted'
-        friendship_1 = Friends(user_id = sender_id, friend_id = receiver_id , relationship = 'accepted')
-        friendship_2 = Friends(user_id = receiver_id, friend_id = sender_id , relationship = 'accepted')
-        
-
-        db.session.add(friendship_1)
-        db.session.add(friendship_2)
-        db.session.commit()
-        return jsonify({'message': 'Friend request accepted'})
-    
-    elif response == 'reject':
-        friend_request.status = 'rejected'
-        db.session.commit()
-        return jsonify({'message': 'Friend request rejected'})
-    db.session.delete(friend_request)
-    
-    
-
-       
+    return jsonify(user_data)   
 
 if __name__ == '__main__':
     app.run(debug=True)
