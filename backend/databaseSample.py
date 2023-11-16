@@ -1,7 +1,7 @@
 from models.model import User, db # This are always necessary when calling the database
 from backend.app import app
 from sqlalchemy import inspect, text, exc # This one too to check for douplicates and handle them
-import datetime
+from sqlalchemy.sql import func
 
 
 '''# Drops all Tables along it's data(Run this if there's been a change to the tables create statement(models.py) ONLY)
@@ -160,14 +160,16 @@ print('------------------------Test on user\'s date creation--------------------
 with app.app_context():
     admin = User.query.filter_by(user_name='Admin').first()
     print('Admin was created on: ' + str(admin.date_created))
-    print('Current date: ' + str(datetime.utcnow()))
+    print('Current date: ' + str(func.utcnow()))
 
+    print(admin.can_rate())
+    '''
     isValid = admin.can_rate()
     if isValid:
         print('Admin can do that.')
     else:
         print('Admin can NOT do that!')
-
+    '''
 
 '''
 # Extra and shouldn't be used unless it's for intended debugging purpose
