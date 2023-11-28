@@ -29,7 +29,7 @@ class User(db.Model):
     
     def can_rate(self):
         time_since_creation = datetime.now(timezone.utc) - self.date_created
-        return time_since_creation.total_seconds() >= 300
+        return time_since_creation.total_seconds() >= 2000
 
 class UserImage(db.Model):
     __tablename__ = 'UserImage'

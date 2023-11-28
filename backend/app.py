@@ -400,7 +400,7 @@ def create_lobby():
     response_data = {'lobby_id': new_lobby.lobby_id, 'message': "Lobby created successfully"}
     return jsonify(response_data), 201
 
-#TODO: Fix anything that needs to be added for frontend
+# Join lobby
 @app.route('/api/join-lobby', methods=['POST'])
 def join_lobby():
     lobbyJoin = request.get_json()
@@ -411,12 +411,16 @@ def join_lobby():
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
 
-    #Checks db to see if user is in a lobby
+    #Checks db to see if user is in a lobby 
     existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
-
-    #Returns error if player is in lobby
     if existing_player:
         return jsonify({'error': 'User is already in a lobby'}), 400
+    
+    #Checking open space in lobby
+    lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
+    players_in_lobby = len(set(player.players_id for player in lobby.players))
+    if players_in_lobby >= lobby.num_players:
+        return jsonify({'error': 'Lobby is full'}), 400
 
     new_LPlayer = Lobby_Players(lobby_id=lobby_id, players_id=user.user_id)
 
@@ -425,7 +429,7 @@ def join_lobby():
     
     return jsonify({'message': "Lobby joined successfully"}), 201
 
-#TODO: Fix anything that needs to be added for frontend
+# Leave lobby
 @app.route('/api/leave-lobby', methods=['POST'])
 def leave_lobby():
     lobbyLeave = request.get_json()
@@ -435,18 +439,26 @@ def leave_lobby():
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
     
-    #Get the lobby_id based on the title and host_id matching
+    # Get the lobby_id based on the title and host_id matching
     lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
 
-    Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=user.user_id).delete()
-    db.session.commit()
-
-    #If host leaves, delete Lobby too
-    if lobby.host_id == user.user_id:
-        Lobby.query.filter_by(lobby_id=lobby.lobby_id, host_id=user.user_id).delete()
+    if lobby:
+        # Delete the user from Lobby_Players
+        Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=user.user_id).delete()
         db.session.commit()
+
+        # If host leaves, delete Lobby too
+        if lobby.host_id == user.user_id:
+            # Deletes the players in lobby
+            Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id).delete()
+            db.session.commit()
+            # Deletes the lobby
+            Lobby.query.filter_by(lobby_id=lobby.lobby_id, host_id=user.user_id).delete()
+            db.session.commit()
     
-    return jsonify({'message': "Lobby left successfully"}), 201
+        return jsonify({'message': "Lobby left successfully"}), 201
+    else:
+        return jsonify({'error': "Lobby not found"}), 404
 
 # Using lobby_id retrieves and sends lobby information and players
 @app.route('/api/get-lobby-by-id', methods=['POST'])
@@ -572,7 +584,7 @@ def post_rating():
     hostUser = User.query.filter_by(user_id=host_id).first()
 
     if not hostUser.can_rate():
-        return jsonify({'error': "User too new"}), 400
+        return jsonify({'error': "Must wait 5 minutes bofore rating another user"}), 400
 
     success = False
     if existingRating:
