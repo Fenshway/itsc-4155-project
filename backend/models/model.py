@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'User'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_name = db.Column(db.String(150))
+    user_name = db.Column(db.String(150), unique=True)
     email = db.Column(db.String(150), unique=True)
     user_password = db.Column(db.String(150))
     user_rating = db.Column(db.Integer, nullable=True)
@@ -75,17 +75,6 @@ class Friends(db.Model):
 
     def __repr__(self):
         return '<friend_id {}>'.format(self.friend_id)
-
-class Blocked(db.Model):
-    __tablename__ = 'Blocked'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    blocked_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
-
-    def __init__(self, blocked_id):
-        self.blocked_id = blocked_id 
-
-    def __repr__(self):
-        return '<blocked_id  {}>'.format(self.blocked_id)
     
 class Games(db.Model):
     __tablename__ = 'Games'
