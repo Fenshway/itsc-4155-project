@@ -131,17 +131,24 @@ def getProfile(username):
     #1 = pending; route requester -> profile user
     #2 = pending; profile user -> route requester
     #3 = friends
-    #dont worry about this: 4 = blocked; route requester -> profile user
-    #dont worry about this: 5 = blocked; profile user -> route requester
+    #4 = blocked; route requester -> profile user
+    #5 = blocked; profile user -> route requester
+    #6 = blocked; route requester <-> profile user
     outgoingRelationshipData = Friends.query.filter_by(user_id = user.user_id, friend_id = requestedUser.user_id).first()
     incomingRelationshipData = Friends.query.filter_by(user_id = requestedUser.user_id, friend_id = user.user_id).first()
     relationship = 0
-    if outgoingRelationshipData:
+
+    if incomingRelationshipData and outgoingRelationshipData and incomingRelationshipData.relationship_stat == 4 and outgoingRelationshipData.relationship_stat == 4:
+        relationship = 6
+
+    elif outgoingRelationshipData:
         relationship = outgoingRelationshipData.relationship_stat
         
     elif incomingRelationshipData:
         if incomingRelationshipData.relationship_stat == 1:
             relationship = 2
+        elif incomingRelationshipData.relationship_stat == 4:
+            relationship = 5
     
     user_data = {
         'user_id': requestedUser.user_id,
@@ -163,8 +170,9 @@ def updateRelationship():
     #1 = pending; route requester -> profile user
     #2 = pending; profile user -> route requester
     #3 = friends
-    #dont worry about this: 4 = blocked; route requester -> profile user
-    #dont worry about this: 5 = blocked; profile user -> route requester
+    #4 = blocked; route requester -> profile user
+    #5 = blocked; profile user -> route requester
+    #6 = blocked; route requester <-> profile user
 
     #Checking for authentication
     auth_token = request.headers.get("Authorization")
@@ -189,25 +197,31 @@ def updateRelationship():
     hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
     success = False
     
-    if relationshipId == 0 and hasMutualRelationship: #Unfriend operation
-        if existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
-            db.session.delete(existingOutgoingRequest)
-            db.session.flush()
-            db.session.commit()
+    if relationshipId == 0:
         
+        #Unfriend operation
+        if hasMutualRelationship and existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
+            db.session.delete(existingOutgoingRequest)
             db.session.delete(existingIncomingRequest)
             db.session.flush()
             db.session.commit()
             success = True
+        
+        #Unblock operation
+        elif hasExistingRelationship and existingOutgoingRequest and existingOutgoingRequest.relationship_stat == 4:
+            db.session.delete(existingOutgoingRequest)
+            db.session.flush()
+            db.session.commit()
+            success = True
 
-    elif relationshipId == 1 and hasNoRelationship: #Send request operation
+    elif relationshipId == 1 and hasNoRelationship: #Send friend request operation
         newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=1)
         db.session.add(newRequest)
         db.session.flush()
         db.session.commit()
         success = True
 
-    elif relationshipId == 3: #Accept friend request
+    elif relationshipId == 3: #Accept friend request operation
         if existingOutgoingRequest == None and existingIncomingRequest != None and existingIncomingRequest.relationship_stat == 1:
             existingIncomingRequest.relationship_stat = 3
             newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=3)
@@ -216,6 +230,22 @@ def updateRelationship():
             db.session.commit()
             success = True
     
+    elif relationshipId == 4: #Block operation
+        
+        #Delete incoming request if it exists (and isn't a block)
+        if existingIncomingRequest and existingIncomingRequest.relationship_stat != 4:
+            db.session.delete(existingIncomingRequest)
+
+        #Delete outgoing request if it exists
+        if existingOutgoingRequest:
+            db.session.delete(existingOutgoingRequest)
+
+        newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=4)
+        db.session.add(newRequest)
+        db.session.flush()
+        db.session.commit()
+        success = True
+
     if success:
         return jsonify({'success': 1})
     else:
@@ -606,7 +636,7 @@ def post_rating():
         success = True
 
     if success:
-        response_data = {'success': 1, 'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
+        response_data = {'success': 1, 'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
         return jsonify(response_data), 201
     else:
         return jsonify({'error': "Error updating rating"}), 400

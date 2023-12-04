@@ -3,6 +3,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { LibraryPopupComponent } from './components/library-popup/library-popup.component';
+import { ReportPopupComponent } from './components/report-popup/report-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import ProfileObserver from './profile.observer';
 
@@ -14,6 +15,7 @@ import ProfileObserver from './profile.observer';
 export class ProfileComponent {
 
   private libraryPopup: MatDialogRef<LibraryPopupComponent>|undefined;
+  private reportPopup: MatDialogRef<ReportPopupComponent>|undefined;
   session_username:string = "";
   profileObserver: ProfileObserver|undefined;
 
@@ -66,6 +68,8 @@ export class ProfileComponent {
       this.profileObserver = new ProfileObserver(gamesData, profileData.library);
 
     }).unsubscribe();
+
+    this.reportUser();
 
   }
 
@@ -121,10 +125,10 @@ export class ProfileComponent {
 
   }
 
-  changeFriendStatus(relationshipId: number) {
+  changeFriendStatus(relationshipId: number, overrideId: number = relationshipId) {
 
     //Updating relationship
-    this.data.relationship = relationshipId;
+    this.data.relationship = overrideId;
 
     //Sending relationship update request
     const formData:FormData = new FormData();
@@ -132,14 +136,14 @@ export class ProfileComponent {
     formData.set("relationship", relationshipId.toString());
 
     let eventSuccess = false;
-
+    
     //Revert update upon event error
     this.flaskService.updateRelationship(formData).subscribe((data: {success?: number}) => {
       eventSuccess = true;
       if(!data.success){
         this.data.relationship = this.data.lastVerifiedRelationship;
       }else{
-        this.data.lastVerifiedRelationship = relationshipId;
+        this.data.lastVerifiedRelationship = overrideId;
       }
 
     //Revert update upon backend error (url not reached)
@@ -151,16 +155,51 @@ export class ProfileComponent {
 
   }
 
+  blockUser() {
+    
+    const overrideId: number = this.data.relationship === 5 ? 7 : 4;
+    this.changeFriendStatus(4, overrideId);
+    
+  }
+
+  unblockUser() {
+    
+    const overrideId: number = this.data.relationship === 7 ? 5 : 0;
+    this.changeFriendStatus(0, overrideId);
+
+  }
+
+  reportUser() {
+
+    if(this.reportPopup){return;}
+
+    //Open library dialog popup
+    this.reportPopup = this.dialog.open(ReportPopupComponent, {
+      data: {
+        username: this.data.username,
+      },
+      panelClass: "report-popup",
+      width: "50%",
+    })
+
+    //Listen to dialog close
+    this.reportPopup.afterClosed().subscribe(() => {
+      this.reportPopup = undefined;
+    })
+
+  }
+
   changeRating(rating: number) {
 
     //Sending rating update request
+    this.data.rating += rating;
     const formData:FormData = new FormData();
     formData.set("user_id", this.data.user_id.toString());
     formData.set("vote", rating.toString());
 
-    this.flaskService.updateRating(formData).subscribe((data: {rating?: number}) => {
-      if(data.rating){
-        this.data.rating = data.rating;
+    this.flaskService.updateRating(formData).subscribe((data: {success?: number}) => {
+      if(!data.success){
+        this.data.rating -= rating;
       }
     });
 
