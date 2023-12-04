@@ -28,15 +28,22 @@
 <mat-drawer-container autosize>
     <mat-drawer #drawer opened="false" mode="over" position="start" class="custom-drawer">
         <mat-nav-list>
-            <mat-list-item>
-                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>group</mat-icon> Friends</button>
-            </mat-list-item>
-            <mat-list-item>
-                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>help</mat-icon> Help</button>
-            </mat-list-item>
-            <mat-list-item>
-                <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>logout</mat-icon> Log Out</button>
-            </mat-list-item>
+            <div class="friends-header">
+                <span><mat-icon>group</mat-icon> Friends</span>
+            </div>
+            <div class="friends-list">
+                <!-- <mat-list-item *ngFor="let friend of userFriends">
+                    <button mat-button style="color: rgb(253, 255, 252);"><mat-icon>person</mat-icon> {{ friend.name }}</button>
+                </mat-list-item> -->
+            </div>
+            <div class="bottom-buttons">
+                <mat-list-item>
+                    <button mat-button style="color: rgb(253, 255, 252); font-family: 'Montserrat', sans-serif"><mat-icon>help</mat-icon> Help</button>
+                </mat-list-item>
+                <mat-list-item>
+                    <button (click)="logout()" mat-button style="color: rgb(253, 255, 252); font-family: 'Montserrat', sans-serif"><mat-icon>logout</mat-icon> Log Out</button>
+                </mat-list-item>
+            </div>
         </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content>

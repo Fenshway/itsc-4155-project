@@ -68,6 +68,31 @@
 
 .custom-drawer {
     background-color: rgb(18, 18, 18);
+    font-family: 'Montserrat', sans-serif;
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.friends-header {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    padding: 10px;
+    color: rgb(229, 56, 59);
+    
+}
+
+.friends-list {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.bottom-buttons {
+    margin-top: auto;
+}
+
+.bottom-buttons button:hover {
+    background-color: rgb(229, 56, 59);
 }
 
 /* general nav */
