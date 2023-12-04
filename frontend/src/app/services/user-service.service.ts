@@ -17,7 +17,7 @@ export class UserServiceService {
       this.flaskdataService.getUserInfo().subscribe({
         next: (result: any)=>{
           console.log(result)
-          this._user = result;
+          this._user = {result};
         },
         error: (error: any)=>{
           console.log(error)

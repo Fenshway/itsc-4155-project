@@ -6,12 +6,14 @@ from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
+from flask_socketio import SocketIO, emit, join_room
 from sqlalchemy import column, func
 from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
 
 load_dotenv()
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 db.init_app(app) # Initialize the Database
 
@@ -49,6 +51,8 @@ def register():
 
     if existing_email:
         return jsonify({'error': "Email already exists"}), 400
+    elif username == 'system':
+        return jsonify({'error': "Username is reserved"}), 400
     elif existing_user:
         return jsonify({'error': "Username is taken"}), 400
     else:
@@ -456,6 +460,9 @@ def join_lobby():
 
     db.session.add(new_LPlayer)
     db.session.commit()
+
+    # Notify socket.io server that user is joining lobby
+    socketio.emit('join', {'room': lobby_id, 'username': user.user_name}, room=lobby_id)
     
     return jsonify({'message': "Lobby joined successfully"}), 201
 
@@ -473,6 +480,9 @@ def leave_lobby():
     lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
 
     if lobby:
+        # Notify socket.io server that user is leaving lobby
+        socketio.emit('leave', {'room': lobby_id, 'username': user.user_name}, room=lobby_id)
+
         # Delete the user from Lobby_Players
         Lobby_Players.query.filter_by(lobby_id=lobby.lobby_id, players_id=user.user_id).delete()
         db.session.commit()
@@ -640,6 +650,35 @@ def post_rating():
         return jsonify(response_data), 201
     else:
         return jsonify({'error': "Error updating rating"}), 400
+    
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('join')
+def handle_join(data):
+    lobby = data['lobby']
+    username = data['username']
+
+    join_room(lobby)
+
+    # Notify others in the room that a user has joined
+    emit('message', {'username': 'System', 'message': f'{username} has joined the lobby.'}, room=lobby)
+
+@socketio.on('message')
+def handle_message(data):
+    print('socket io received')
+    lobby = data['lobby']
+    username = data['username']
+    message = data['message']
+
+    print(f'Received message in lobby {lobby} from {username}: {message}')
+
+    emit('message', {'username': username, 'message': message}, room=lobby)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(debug=True)
