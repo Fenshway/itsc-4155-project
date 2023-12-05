@@ -51,7 +51,6 @@ export class LobbyComponent {
 
           this.lobbyChatService.receiveJoinNotifications().subscribe(joinNotification => {
             console.log(`${joinNotification.username} has joined the lobby.`);
-            // You can update your UI or perform any other actions here
           });
 
         },
@@ -64,10 +63,8 @@ export class LobbyComponent {
   }
 
   sendMessage(): void {
-    console.log(this.username);
-    console.log(this.lobbyData.lobby.lobby_id);
-    console.log(this.messageToSend);
     this.lobbyChatService.sendMessage(this.lobbyData.lobby.lobby_id, this.username, this.messageToSend)
+    this.messageToSend = '';
   }
 
   leaveLobby(): void {
