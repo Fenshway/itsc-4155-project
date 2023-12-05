@@ -76,4 +76,14 @@ export class UserNavComponent {
     this.router.navigate(['/login']);
   }
 
+  dummyFriends = [
+    { name: 'Justin' },
+    { name: 'Xavier' },
+    { name: 'Miguel' },
+    { name: 'Nick' },
+    { name: 'Andrew' },
+    { name: 'Youngjin' }
+];
+
+
 }
