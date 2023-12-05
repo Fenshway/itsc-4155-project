@@ -1,13 +1,12 @@
 body {
-    margin-left: 5%;
-    margin-right: 5%;
+    margin: 0;
     padding-top: 5%;
     padding-bottom: 5%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(18, 18, 18, 0.034);
-    height: fit-content;
+    background-color: rgb(42, 42, 42);
+    height: 100vh;
     position: relative;
 }
 
@@ -106,19 +105,19 @@ body > :not(#game-library-popup) {
 }
 
 .online-status-online {
-    background-color: green;
+    background-color: rgb(118, 200, 147);
 }
 
 .online-status-idle {
-    background-color: yellow;
+    background-color: rgb(238, 252, 87);
 }
 
 .online-status-offline {
-    background-color: grey;
+    background-color: rgb(139, 140, 137);
 }
 
 .online-status-dnd {
-    background-color: red;
+    background-color: rgb(229, 56, 59);
 }
 
 .friend-status-container {
@@ -159,6 +158,7 @@ body > :not(#game-library-popup) {
     justify-content: space-between;
     align-items: center;
     text-align: left;
+    color: rgb(253, 255, 252);
 }
 
 .name-header > span {
@@ -183,6 +183,7 @@ h1, h2 {
     flex-direction: row;
     justify-content: left;
     align-items: center;
+    color: rgb(253, 255, 252);
 }
 
 .vote-button {
@@ -223,6 +224,7 @@ h1, h2 {
     justify-content: flex-start;
     padding: 20px;
     /*background-color: rgba(49, 49, 49, 0.74);*/
+    color: rgb(253, 255, 252);
     width: 90%;
     height: fit-content;
 }
