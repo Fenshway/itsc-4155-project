@@ -28,6 +28,7 @@ export class ProfileComponent {
     lastVerifiedRelationship: -1,
     status: 0,
     lastVerifiedStatus: 0,
+    rateChange: 0,
   }
 
   constructor(
@@ -59,6 +60,7 @@ export class ProfileComponent {
       this.data.lastVerifiedRelationship = profileData.relationship;
       this.data.user_id = profileData.user_id;
       this.data.status = profileData.status;
+      this.data.rateChange = profileData.rateChange;
 
       if(profileData.icon){
         this.data.icon = "data:;base64," + profileData.icon;
@@ -192,14 +194,18 @@ export class ProfileComponent {
   changeRating(rating: number) {
 
     //Sending rating update request
-    this.data.rating += rating;
+    const ratingChange: number = this.data.rateChange === rating ? -rating : (this.data.rateChange !== 0 ? rating * 2 : rating);
+    this.data.rateChange += ratingChange;
+    this.data.rating += ratingChange;
+
     const formData:FormData = new FormData();
     formData.set("user_id", this.data.user_id.toString());
-    formData.set("vote", rating.toString());
+    formData.set("vote", this.data.rateChange.toString());
 
     this.flaskService.updateRating(formData).subscribe((data: {success?: number}) => {
       if(!data.success){
-        this.data.rating -= rating;
+        this.data.rateChange -= ratingChange;
+        this.data.rating -= ratingChange;
       }
     });
 

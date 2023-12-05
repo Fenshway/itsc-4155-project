@@ -84,9 +84,15 @@
 
                 </div>
                 <div class="rating-section">
-                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)"><img src="../../assets/images/upvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)">
+                        <mat-icon *ngIf="data.rateChange == 1">thumb_up_alt</mat-icon>
+                        <mat-icon *ngIf="data.rateChange != 1">thumb_up_off_alt</mat-icon>
+                    </button>
                     <h2>{{data.rating}} Rating</h2>
-                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)"><img src="../../assets/images/downvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)">
+                        <mat-icon *ngIf="data.rateChange == -1">thumb_down_alt</mat-icon>
+                        <mat-icon *ngIf="data.rateChange != -1">thumb_down_off_alt</mat-icon>
+                    </button>
                     <!--
                     <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">

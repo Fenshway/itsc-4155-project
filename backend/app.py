@@ -154,6 +154,9 @@ def getProfile(username):
         elif incomingRelationshipData.relationship_stat == 4:
             relationship = 5
     
+    #Determining rating vote
+    vote = UserRating.query.filter_by(judge_id=user.user_id, user_id=requestedUser.user_id).first()
+    
     user_data = {
         'user_id': requestedUser.user_id,
         'username': requestedUser.user_name,
@@ -162,13 +165,14 @@ def getProfile(username):
         'library': userGames,
         'relationship': relationship,
         'status': requestedUser.user_status,
+        'rateChange': vote and vote.rateChange or 0,
     }
     
     return jsonify(user_data)
 
 @app.route('/api/relationship', methods = ['POST', 'GET'])
-def updateRelationship():
-
+def handleRelationships():
+    
     #Checking for authentication
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
@@ -260,14 +264,15 @@ def updateRelationship():
 
         userFriendsQuery = Friends.query.filter_by(user_id=user.user_id, relationship_stat=3).all() or []
         userFriends = []
+        
         for query in userFriendsQuery:
-            friendData = User.query.filter_by(user_id=query.friend_id)
+            friendData = User.query.filter_by(user_id=query.friend_id).first()
             userFriends.append({
-                'user_id': query.friend_id,
                 'username': friendData.user_name,
+                'status': friendData.user_status,
             })
 
-        return jsonify()
+        return jsonify(userFriends)
 
 #Used for updating profile status
 @app.route('/api/profileUpdate/status', methods=['POST'])
@@ -614,7 +619,7 @@ def whoami():
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])
 def post_rating():
-
+    
     #Checking for authentication
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
@@ -622,13 +627,12 @@ def post_rating():
 
     if(not user):
         return jsonify({})
-
+    
     #Data validation
     data = request.form
     ratedUser_id = int(data.get('user_id'))
     rating = int(data.get('vote'))
-
-    if not ratedUser_id or not rating or rating not in [0, 1, -1]:
+    if not ratedUser_id or rating == None or rating not in [0, 1, -1]:
         return jsonify({})
 
     host_id = user.user_id
@@ -651,7 +655,7 @@ def post_rating():
                 new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
                 db.session.add(new_rating)
                 db.session.commit()
-
+            
             success = True
     elif rating != 0:
         new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
@@ -660,7 +664,7 @@ def post_rating():
         success = True
 
     if success:
-        response_data = {'success': 1, 'Rated User ID: ': new_rating.user_id, 'message': "Rating processed"}
+        response_data = {'success': 1, 'message': "Rating processed"}
         return jsonify(response_data), 201
     else:
         return jsonify({'error': "Error updating rating"}), 400

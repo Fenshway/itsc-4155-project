@@ -193,8 +193,8 @@ h1, h2 {
 }
 
 .vote-button {
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -203,7 +203,7 @@ h1, h2 {
 }
 
 .vote-button:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .vote-button > img {
