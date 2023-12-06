@@ -47,11 +47,12 @@ def register():
 
     # Verify the username/email doesn't exsist.
     existing_email = User.query.filter_by(email=email).first()
-    existing_user = User.query.filter_by(user_name=username).first()
+    # Compares lowercase to lowercase
+    existing_user = User.query.filter(func.lower(User.user_name) == func.lower(username)).first()
 
     if existing_email:
         return jsonify({'error': "Email already exists"}), 400
-    elif username == 'system':
+    elif username == 'system' or username == 'System':
         return jsonify({'error': "Username is reserved"}), 400
     elif existing_user:
         return jsonify({'error': "Username is taken"}), 400
