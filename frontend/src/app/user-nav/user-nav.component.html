@@ -32,7 +32,7 @@
                 <span><mat-icon>group</mat-icon> Friends</span>
             </div>
             <div class="friends-list">
-                <mat-list-item *ngFor="let friend of userFriends">
+                <mat-list-item *ngFor="let friend of userService.user.friends">
                     <button (click)="gotoProfile(friend.username)" mat-button style="color: rgb(253, 255, 252);" title="View profile">
                         <span *ngIf="friend.status == 0" id="online-status" class="online-status-online" title="Online"></span>
                         <span *ngIf="friend.status == 1" id="online-status" class="online-status-offline" title="Offline"></span>

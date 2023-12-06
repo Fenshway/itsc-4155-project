@@ -170,6 +170,21 @@ def getProfile(username):
     
     return jsonify(user_data)
 
+def getFriends(user_id):
+    
+    userFriendsQuery = Friends.query.filter_by(user_id=user_id, relationship_stat=3).all() or []
+    userFriends = []
+    
+    for query in userFriendsQuery:
+        friendData = User.query.filter_by(user_id=query.friend_id).first()
+        userFriends.append({
+            'username': friendData.user_name,
+            'status': friendData.user_status,
+        })
+
+    return userFriends
+    
+
 @app.route('/api/relationship', methods = ['POST', 'GET'])
 def handleRelationships():
     
@@ -262,17 +277,7 @@ def handleRelationships():
         
     elif request.method == 'GET':
 
-        userFriendsQuery = Friends.query.filter_by(user_id=user.user_id, relationship_stat=3).all() or []
-        userFriends = []
-        
-        for query in userFriendsQuery:
-            friendData = User.query.filter_by(user_id=query.friend_id).first()
-            userFriends.append({
-                'username': friendData.user_name,
-                'status': friendData.user_status,
-            })
-
-        return jsonify(userFriends)
+        return jsonify(getFriends(user.user_id))
 
 #Used for updating profile status
 @app.route('/api/profileUpdate/status', methods=['POST'])
@@ -611,7 +616,8 @@ def whoami():
 
     user_data = {
         'user_id': user.user_id,
-        'username': user.user_name
+        'username': user.user_name,
+        'friends': getFriends(user.user_id),
     }
 
     return jsonify(user_data)   

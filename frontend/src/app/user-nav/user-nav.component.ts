@@ -11,8 +11,6 @@ import { FlaskdataService } from '../services/flaskdata.service';
 })
 export class UserNavComponent {
 
-  public userFriends: any = [];
-
   constructor(
     public userService: UserServiceService,
     private router: Router,
@@ -20,13 +18,7 @@ export class UserNavComponent {
     private flaskService: FlaskdataService
     ) {}
 
-  ngOnInit() {
-    
-    this.flaskService.getUserFriends().subscribe((friends) => {
-      this.userFriends = friends;
-    });
-
-  }
+  ngOnInit() {}
 
   gotoProfile(username: string) {
     
