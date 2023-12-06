@@ -92,11 +92,11 @@ body {
 }
 
 .chat-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    justify-content: flex-end;
     position: relative;
-    background-color: rgb(253, 255, 252);
+    background-color: rgb(18, 18, 18);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-top: 20px;
@@ -104,11 +104,23 @@ body {
     margin-right: auto;
     max-width: 1300px;
     height: 300px;
+    overflow-y: auto;
 }
 
-/* Please delete after chat box is implemented */
-.coming-soon-message {
-    font-size: 20px;
-    color: rgb(42, 42, 42);
-    margin: 0;
+.chat-box input {
+    width: calc(100% - 80px);
+}
+
+.chat-box button {
+    margin-left: 10px;
+    background-color: rgb(229, 56, 59);
+    color: rgb(253, 255, 252);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.chat-box button:hover {
+    background-color: rgb(118, 200, 147);
 }
