@@ -16,7 +16,18 @@ export class UserNavComponent {
     private router: Router,
     private jwtHelper: JwtHelperService,
     private flaskService: FlaskdataService
-    ) {}
+    ) {
+      this.flaskService.findOutIfInLobby().subscribe({
+        next: (data: any) => {
+          if (data.response === 'true') {
+            this.userService.setInLobby(true);
+          }
+        },
+        error: (error: any) => {
+          console.error('You are not in a lobby:', error);
+        }
+      });
+    }
 
   gotoProfile() {
     if(!this.userService.user) {
@@ -37,6 +48,10 @@ export class UserNavComponent {
 
   userSessionActive() {
     return this.userService.user;
+  }
+
+  userInLobby() {
+    return this.userService.isInLobby();
   }
 
   isBouncing: boolean = true;
@@ -69,7 +84,6 @@ export class UserNavComponent {
   }
 
   logout() {
-    console.log('Click')
     this.userService.clearUser();
     localStorage.removeItem('access_token');
     console.log('Logout succesful')

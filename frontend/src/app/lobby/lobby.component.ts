@@ -73,6 +73,7 @@ export class LobbyComponent {
       const lobbyToLeave = { lobbyToLeave: lobbyId };
       this.flaskService.leaveLobby(lobbyToLeave).subscribe({
         next: (result: any)=>{
+          this.userService.clearInLobby();
           this.router.navigate([`directory`]);
         },
         error: (error: any)=>{

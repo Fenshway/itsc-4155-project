@@ -7,6 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from flask_socketio import SocketIO, emit, join_room
+from datetime import timedelta
 from sqlalchemy import column, func
 from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
 
@@ -26,6 +27,9 @@ bcrypt = Bcrypt(app)
 
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET')
 jwt = JWTManager(app)
+
+# Expiration for jwt
+expires = timedelta(days=365)
 
 @app.route('/')
 def index():
@@ -65,7 +69,7 @@ def register():
             'user_id': new_user.user_id,
             'username': new_user.user_name,
         }
-        access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
+        access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data, expires_delta=expires)
         return jsonify({'access_token': access_token}), 200
 
 #user login
@@ -88,7 +92,7 @@ def login():
             'user_id': existing_user.user_id,
             'username': existing_user.user_name,
         }
-        access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
+        access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data, expires_delta=expires)
         return jsonify({'access_token': access_token}), 200
 
 # Testing for Image Upload
@@ -553,10 +557,10 @@ def get_my_lobby():
     else :
         return jsonify({'message': 'User is not in a lobby'}), 200
 
-#Endpoint to set userservice if JWT in storage
+# Endpoint to set userservice if JWT in storage
 @app.route('/api/whoami', methods=['GET'])
 def whoami():
-    #Checking for authentication
+    # Checking for authentication
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
@@ -567,6 +571,23 @@ def whoami():
     }
 
     return jsonify(user_data)   
+
+# Endpoint to see if user is in lobby
+@app.route('/api/in-lobby', methods=['GET'])
+def in_lobby():
+    print('hi')
+    # Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    # Check if the user is in the lobby
+    existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
+
+    if existing_player is not None:
+        return jsonify({'response': 'true'})
+    else:
+        return jsonify({'response': 'false'})
 
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])

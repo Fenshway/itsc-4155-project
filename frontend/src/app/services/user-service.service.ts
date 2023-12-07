@@ -7,6 +7,7 @@ import { FlaskdataService } from './flaskdata.service';
 export class UserServiceService {
 
   private _user?: any;
+  private _inLobby: boolean = false;
   
   constructor(
     private flaskdataService: FlaskdataService
@@ -36,6 +37,18 @@ export class UserServiceService {
 
   clearUser() {
     this._user = undefined;
+  }
+
+  isInLobby(): boolean {
+    return this._inLobby;
+  }
+
+  setInLobby(value: boolean): void {
+    this._inLobby = value;
+  }
+
+  clearInLobby() {
+    this._inLobby = false;
   }
 
 }
