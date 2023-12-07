@@ -6,6 +6,7 @@ import { LibraryPopupComponent } from './components/library-popup/library-popup.
 import { ReportPopupComponent } from './components/report-popup/report-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import ProfileObserver from './profile.observer';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-profile',
@@ -35,7 +36,8 @@ export class ProfileComponent {
     private flaskService: FlaskdataService,
     private jwtHelper: JwtHelperService,
     private route: ActivatedRoute,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private userService: UserServiceService) {
 
     this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
@@ -70,8 +72,6 @@ export class ProfileComponent {
       this.profileObserver = new ProfileObserver(gamesData, profileData.library);
 
     }).unsubscribe();
-
-    this.reportUser();
 
   }
 
@@ -130,6 +130,7 @@ export class ProfileComponent {
   changeFriendStatus(relationshipId: number, overrideId: number = relationshipId) {
 
     //Updating relationship
+    const previousRelationshipId: number = this.data.relationship;
     this.data.relationship = overrideId;
 
     //Sending relationship update request
@@ -138,7 +139,7 @@ export class ProfileComponent {
     formData.set("relationship", relationshipId.toString());
 
     let eventSuccess = false;
-    
+
     //Revert update upon event error
     this.flaskService.updateRelationship(formData).subscribe((data: {success?: number}) => {
       eventSuccess = true;
@@ -146,6 +147,18 @@ export class ProfileComponent {
         this.data.relationship = this.data.lastVerifiedRelationship;
       }else{
         this.data.lastVerifiedRelationship = overrideId;
+        if(overrideId === 3){ //Friend
+          this.userService.userData.friends.push({
+            "username": this.data.username,
+            "status": this.data.status,
+          });
+        }else if(previousRelationshipId === 3){ //Unfriend
+          const friendIndex: number = this.userService.userData.friends.findIndex((element: {username: string, status: number}) => {
+            return element.username === this.data.username;
+          });
+          if(friendIndex === -1){return;}
+          this.userService.userData.friends.splice(friendIndex, 1);
+        }
       }
 
     //Revert update upon backend error (url not reached)

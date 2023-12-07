@@ -193,7 +193,7 @@ def handleRelationships():
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-
+    
     if(not user):
         return jsonify({})
 
@@ -277,8 +277,10 @@ def handleRelationships():
             return jsonify({})
         
     elif request.method == 'GET':
-
-        return jsonify(getFriends(user.user_id))
+        
+        return jsonify({
+            'friends': getFriends(user.user_id),
+        })
 
 #Used for updating profile status
 @app.route('/api/profileUpdate/status', methods=['POST'])
@@ -614,11 +616,10 @@ def whoami():
     auth_token = request.headers.get("Authorization")
     decoded_token = decode_token(auth_token)
     user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-
+    
     user_data = {
         'user_id': user.user_id,
         'username': user.user_name,
-        'friends': getFriends(user.user_id),
     }
 
     return jsonify(user_data)   

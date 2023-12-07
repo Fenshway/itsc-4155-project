@@ -1,8 +1,9 @@
 <div id="report-popup-content">
-    <h2 id="report-title">Why do you want to report {{data.username}}?</h2>
+    <div id="report-top-content">
+        <h2 id="report-title">Why do you want to report {{data.username}}?</h2>
+    </div>
     <div id="report-bottom-content">
-        <textarea id="report-input" minlength="10" placeholder="Enter report here">
-        </textarea>
+        <textarea id="report-input" minlength="10" maxlength="200" placeholder="Enter report here"></textarea>
         <button id="report-submit">Submit</button>
     </div>
 </div>

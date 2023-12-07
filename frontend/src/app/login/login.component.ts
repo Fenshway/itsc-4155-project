@@ -45,9 +45,9 @@ export class LoginComponent {
       this.flaskService.login(user).subscribe({
         next: (result: any) => {
         if (result && result.access_token) {
-          this.userService.user = result;
           localStorage.setItem('access_token', result.access_token)
-  
+          this.userService.user = result;
+
           //testing. delete later
           console.log(this.jwtHelper.decodeToken(result.access_token.username))
   

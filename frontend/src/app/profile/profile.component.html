@@ -125,7 +125,7 @@
         <div id="game-library">
             <div id="library-header">
                 <h1>Game Library</h1>
-                <button *ngIf="isProfileOwner()" (click)="toggleEditLibrary()">
+                <button id="edit-library-button" *ngIf="isProfileOwner()" (click)="toggleEditLibrary()">
                     <img src="../../assets/images/edit.png">
                 </button>
             </div>
