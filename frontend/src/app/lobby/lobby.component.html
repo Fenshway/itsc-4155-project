@@ -21,11 +21,15 @@
     </div>
 
     <div class="chat-box">
-        <div class="text-light" *ngFor="let message of lobbyMessages">
-            <div>{{ message.username }}: </div>
-            <div>{{ message.message }} </div>
+        <div class="chat-container" #chatContainer>
+            <div *ngFor="let message of lobbyMessages" class="message-container">
+                <div class="username" [style.color]="userColors[message.username]">{{ message.username }}: </div>
+                <div class="message">{{ message.message }} </div>
+            </div>
         </div>
-        <input [(ngModel)]="messageToSend" placeholder="Enter a message..">
-        <button (click)="sendMessage()">Send</button>
+        <div class="input-container">
+            <input [(ngModel)]="messageToSend" placeholder="Enter a message..">
+            <button (click)="sendMessage()">Send</button>
+        </div>
     </div>
 </body>
