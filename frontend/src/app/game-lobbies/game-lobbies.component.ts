@@ -65,7 +65,7 @@ export class GameLobbiesComponent {
   }
 
   navigateToLobby(id: number): void {
-    const lobbyId = { lobbyId: id }
+    const lobbyId = { lobbyId: id, privateLobby: false }
     this.flaskService.joinLobby(lobbyId).subscribe({
       next: (result: any)=>{
         this.userService.setInLobby(true);

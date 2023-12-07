@@ -4,7 +4,7 @@
             <div *ngIf="lobbyData">
                 <h2>{{ lobbyData.lobby.title }}</h2>
                 <p>{{ lobbyData.lobby.description }}</p>
-
+                <p>Lobby Code: {{ lobbyCode }}</p>
                 <button (click)="leaveLobby()" class="leave-lobby-button">Leave Lobby</button>
             </div>
         </div>

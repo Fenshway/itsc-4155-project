@@ -4,7 +4,22 @@
     </button>
     <a routerLink="directory"><img src="../../assets/images/questwhite.png" alt="questlogo"></a>
     <span class="example-spacer"></span>
-    <button routerLink="directory" mat-button style="font-family: 'Montserrat', sans-serif">Join</button>
+    <!-- <button routerLink="directory" mat-button style="font-family: 'Montserrat', sans-serif">Join</button> -->
+
+    <button mat-button [matMenuTriggerFor]="joinMenu" style="font-family: 'Montserrat', sans-serif">Join</button>
+    <mat-menu #joinMenu="matMenu">
+        <form [formGroup]="joinPrivateLobbyForm" formSubmitted=true;>
+            <mat-form-field class="private-join">
+                <input formControlName="privateLobbyId" matInput placeholder="Enter Code" (click)="$event.stopPropagation()">
+            </mat-form-field>
+            <button (click)="joinPrivateLobby()" mat-button type="submit">Submit</button>
+            <div class="text-danger" *ngIf="formSubmitted && joinPrivateLobbyForm.get('privateLobbyId')?.hasError('required')">Lobby code is required</div>
+            <!-- <div class="text-danger" *ngIf="formSubmitted && joinPrivateLobbyForm.get('privateLobbyId')?.hasError('minlength')">Invalid lobby code</div>
+            <div class="text-danger" *ngIf="formSubmitted && joinPrivateLobbyForm.get('privateLobbyId')?.hasError('maxlength')">Invalid lobby code</div> -->
+            
+        </form>
+    </mat-menu>
+
     <div class="toolbar-divider"></div>
     <button routerLink="create-lobby" mat-button style="font-family: 'Montserrat', sans-serif">Create</button>
     <div class="toolbar-divider"></div>

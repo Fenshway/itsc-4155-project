@@ -3,6 +3,7 @@ import { UserServiceService } from '../services/user-service.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { FlaskdataService } from '../services/flaskdata.service';
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-user-nav',
@@ -10,6 +11,9 @@ import { FlaskdataService } from '../services/flaskdata.service';
   styleUrls: ['./user-nav.component.css']
 })
 export class UserNavComponent {
+
+  joinLobbyError?: string;
+  formSubmitted = false;
 
   constructor(
     public userService: UserServiceService,
@@ -28,6 +32,14 @@ export class UserNavComponent {
         }
       });
     }
+  
+  joinPrivateLobbyForm = new FormGroup({
+    privateLobbyId: new FormControl('', [
+      Validators.required,
+      // Validators.maxLength(4),
+      // Validators.minLength(4)
+    ])
+  });
 
   ngOnInit() {}
 
@@ -100,4 +112,23 @@ export class UserNavComponent {
     this.router.navigate(['/login']);
   }
 
+  joinPrivateLobby(): void {
+
+    if (this.joinPrivateLobbyForm.valid) {
+      const privateLobbyId = this.joinPrivateLobbyForm.get('privateLobbyId')?.value;
+
+      const lobbyId = { lobbyId: privateLobbyId, privateLobby: true }
+
+      this.flaskService.joinLobby(lobbyId).subscribe({
+        next: (result: any)=>{
+          this.userService.setInLobby(true);
+          this.router.navigate([`lobby/${privateLobbyId}`]);
+        },
+        error: (error: any)=>{
+          console.log(JSON.stringify(error))
+          this.joinLobbyError = error.error.error;
+        }
+      })
+    }
+  }
 }

@@ -31,6 +31,7 @@ export class CreateLobbyComponent {
 
   createLobbyError?: string;
   formSubmitted = false;
+  isPrivate: boolean = false;
 
   constructor(
     private flaskService: FlaskdataService,
@@ -59,9 +60,12 @@ export class CreateLobbyComponent {
         const decodedToken = this.jwtHelper.decodeToken(storedAccessToken);
   
         const userId = decodedToken?.user_id;
-  
+
+        this.isPrivate = (document.getElementById('flexCheckIndeterminate') as HTMLInputElement)?.checked;
+        const privateLobby = this.isPrivate;
+
         if (userId) {
-          const lobby = { title, game, description, lobbySize, userId };
+          const lobby = { title, game, description, lobbySize, userId, privateLobby };
   
           this.flaskService.createLobby(lobby).subscribe({
             next: (result: any) => {

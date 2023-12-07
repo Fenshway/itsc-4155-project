@@ -18,6 +18,7 @@ export class LobbyComponent implements AfterViewChecked {
   messageToSend: string = '';
   username: string = '';
   userColors: { [username: string]: string } = {};
+  lobbyCode: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +38,7 @@ export class LobbyComponent implements AfterViewChecked {
 
     this.route.params.subscribe(params => {
       const lobbyId = +params['id'];
+      this.lobbyCode = lobbyId;
       const requestedLobby = { requestedLobby: lobbyId };
 
       this.flaskService.getLobbyById(requestedLobby).subscribe({
