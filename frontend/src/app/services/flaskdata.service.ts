@@ -85,4 +85,8 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/get-my-lobby`, getHttpOptions());
   }
 
+  sendHelpMsg(credentials: any) {
+    return this.http.get(`${this.apiBaseUrl}/api/send-help_message`, getHttpOptions());
+  }
+  
 }

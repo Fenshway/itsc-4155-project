@@ -148,7 +148,6 @@ export class ProfileComponent {
         this.data.relationship = this.data.lastVerifiedRelationship;
       }
     });
-
   }
 
   changeRating(rating: number) {
@@ -163,7 +162,6 @@ export class ProfileComponent {
         this.data.rating = data.rating;
       }
     });
-
   }
 
   changeStatus(event: any) {

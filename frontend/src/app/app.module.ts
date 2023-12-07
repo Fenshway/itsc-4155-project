@@ -33,6 +33,7 @@ import { GeneralHomeComponent } from './general-home/general-home.component';
 import { GameLobbiesComponent } from './game-lobbies/game-lobbies.component';
 import { LibraryPopupComponent } from './profile/components/library-popup/library-popup.component';
 import { LibraryGameSlotComponent } from './profile/components/library-game-slot/library-game-slot.component';
+import { HelpCenterComponent } from './help-center/help-center.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -54,7 +55,8 @@ export function tokenGetter() {
     GeneralHomeComponent,
     LibraryPopupComponent,
     LibraryGameSlotComponent,
-    GameLobbiesComponent
+    GameLobbiesComponent,
+    HelpCenterComponent
   ],
   imports: [
     MatSelectModule,
