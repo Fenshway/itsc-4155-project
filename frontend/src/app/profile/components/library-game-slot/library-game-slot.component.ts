@@ -16,6 +16,7 @@ type gameData = [{
 export class LibraryGameSlotComponent {
   
   public action: number = -1;
+  private lastVerifiedAction: number = -1;
 
   @Input() public profileObserver: ProfileObserver|undefined;
   @Input({ transform: numberAttribute }) public gameId: number = -1;
@@ -24,10 +25,10 @@ export class LibraryGameSlotComponent {
   @Input() public set type(value: string) {
     switch(value) {
       case "adding":
-        this.action = 1;
+        this.action = this.lastVerifiedAction = 1;
         break;
       case "removing":
-        this.action = 0;
+        this.action = this.lastVerifiedAction = 0;
         break;
     }
   };
@@ -50,7 +51,7 @@ export class LibraryGameSlotComponent {
     this.profileObserver?.updateLibrary({GameId: this.gameId, Action: this.action});
 
     let eventSuccess = false;
-
+    
     //Revert update upon event error
     this.flaskService.updateLibrary(formData).subscribe((data: {success?: number}) => {
       eventSuccess = true;
@@ -60,8 +61,11 @@ export class LibraryGameSlotComponent {
 
     //Revert update upon backend error (url not reached)
     }).add(() => {
-      if(!eventSuccess){
+      if(!eventSuccess) {
+        this.action = this.lastVerifiedAction;
         this.profileObserver?.updateLibrary({GameId: gameId, Action: (action === 1 ? 0 : 1)});
+      }else{
+        this.lastVerifiedAction = action;
       }
     });
 

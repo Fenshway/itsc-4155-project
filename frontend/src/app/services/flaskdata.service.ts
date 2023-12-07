@@ -45,6 +45,10 @@ export class FlaskdataService {
     return this.http.post(`${this.apiBaseUrl}/api/relationship`, formData, getHttpOptions());
   }
 
+  getUserFriends() {
+    return this.http.get(`${this.apiBaseUrl}/api/relationship`, getHttpOptions()); 
+  }
+
   updateRating(formData: FormData) {
     return this.http.post(`${this.apiBaseUrl}/api/rating`, formData, getHttpOptions());
   }
