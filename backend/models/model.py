@@ -116,7 +116,7 @@ class Lobby(db.Model):
 
     players = relationship('Lobby_Players', backref='lobby_player', lazy='dynamic')
 
-    def __init__(self, game_id, host_id, num_players, title, description, priv):
+    def __init__(self, game_id, host_id, num_players, title, description, priv=False):
         self.game_id = game_id
         self.host_id = host_id
         self.num_players = num_players
