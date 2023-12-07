@@ -57,7 +57,7 @@ export function tokenGetter() {
     LibraryPopupComponent,
     LibraryGameSlotComponent,
     GameLobbiesComponent,
-    HelpCenterComponent
+    HelpCenterComponent,
     ReportPopupComponent
   ],
   imports: [
