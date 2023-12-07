@@ -96,4 +96,8 @@ export class FlaskdataService {
   findOutIfInLobby() {
     return this.http.get(`${this.apiBaseUrl}/api/in-lobby`, getHttpOptions());
   }
+
+  joinPrivateLobby() {
+    return this.http.get(`${this.apiBaseUrl}/api/join-private-lobby`, getHttpOptions());
+  }
 }

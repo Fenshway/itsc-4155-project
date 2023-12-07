@@ -432,6 +432,7 @@ def create_lobby():
     lobby_description = lobby.get('description')
     lobby_size = lobby.get('lobbySize')
     host_id = lobby.get('userId')
+    private_lobby = lobby.get('privateLobby')
 
     # Get game ID based on name
     game = Games.query.filter_by(game_name=lobby_game).first()
@@ -451,6 +452,7 @@ def create_lobby():
         title=lobby_title,
         num_players=lobby_size,
         description=lobby_description,
+        priv=private_lobby
     )
 
     db.session.add(new_lobby)
@@ -470,6 +472,8 @@ def create_lobby():
 def join_lobby():
     lobbyJoin = request.get_json()
     lobby_id = lobbyJoin.get('lobbyId')
+    lobby_access_key = lobbyJoin.get('privateLobby')
+    print(lobby_access_key)
 
     #Checking for authentication
     auth_token = request.headers.get("Authorization")
@@ -483,9 +487,14 @@ def join_lobby():
     
     #Checking open space in lobby
     lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
+
+    if lobby.priv == True and lobby_access_key == False:
+        return jsonify({'error': 'Lobby is private'}), 400
+
     players_in_lobby = len(set(player.players_id for player in lobby.players))
     if players_in_lobby >= lobby.num_players:
         return jsonify({'error': 'Lobby is full'}), 400
+    
 
     new_LPlayer = Lobby_Players(lobby_id=lobby_id, players_id=user.user_id)
 
