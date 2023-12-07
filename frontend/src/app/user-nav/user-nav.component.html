@@ -9,7 +9,7 @@
     <button routerLink="create-lobby" mat-button style="font-family: 'Montserrat', sans-serif">Create</button>
     <div class="toolbar-divider"></div>
     <button (click)="gotoProfile()" mat-raised-button class="custom-profile-button">Profile</button>
-    <button mat-icon-button [ngClass]="{'bouncing-icon': isBouncing}" (click)="navigateToMyLobby()">
+    <button *ngIf="userInLobby()" mat-icon-button (click)="navigateToMyLobby()">
         <mat-icon>games</mat-icon>
     </button>
 </mat-toolbar>

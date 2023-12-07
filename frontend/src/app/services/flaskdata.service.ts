@@ -85,4 +85,8 @@ export class FlaskdataService {
     return this.http.get(`${this.apiBaseUrl}/api/get-my-lobby`, getHttpOptions());
   }
 
+  findOutIfInLobby() {
+    return this.http.get(`${this.apiBaseUrl}/api/in-lobby`, getHttpOptions());
+  }
+
 }

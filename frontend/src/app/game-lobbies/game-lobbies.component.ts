@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-game-lobbies',
@@ -16,6 +17,7 @@ export class GameLobbiesComponent {
     private route: ActivatedRoute,
     private flaskService: FlaskdataService,
     private router: Router,
+    private userService: UserServiceService
   ) {}
   
 
@@ -66,6 +68,7 @@ export class GameLobbiesComponent {
     const lobbyId = { lobbyId: id }
     this.flaskService.joinLobby(lobbyId).subscribe({
       next: (result: any)=>{
+        this.userService.setInLobby(true);
         this.router.navigate([`lobby/${id}`]);
       },
       error: (error: any)=>{
