@@ -15,4 +15,10 @@ export class ReportPopupComponent {
     private flaskService: FlaskdataService) {
   }
 
+  onReport(message: string) {
+
+    this.dialog.closeAll();
+
+  }
+
 }

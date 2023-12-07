@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, request, render_template, jsonify, send_file, flash
 import os
 import base64
@@ -36,6 +37,30 @@ def index():
     from models.model import User
     print(User.query.all()) # Test [] when empty. This is how a query would be run from inside a Flask instance
     return render_template('index.html')
+
+#Authentication middleware
+def authMiddleware(callback):
+
+    @wraps(callback)
+    def decoratedFunction(*args, **kwargs):
+        
+        auth_token = request.headers.get("Authorization")
+        if not auth_token:
+            return jsonify({'error': "Authentication failed"}), 400
+        
+        decoded_token = None
+        try:
+            decoded_token = decode_token(auth_token)
+        except:
+           return jsonify({'error': "Authentication failed"}), 400
+        
+        user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+        setattr(request, "user", user)
+
+        return callback(*args, **kwargs)
+    
+    return decoratedFunction
+        
 
 #json user object. keys = username, email, password. Path used for account registration
 @app.route('/api/register', methods=['POST'])
@@ -113,14 +138,10 @@ def testImage():
     return render_template('fetchImage.html')
 
 @app.route('/api/profile/<username>', methods=['GET'])
+@authMiddleware
 def getProfile(username):
 
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-    if(not user):
-       return jsonify({})
+    user = getattr(request, "user")
 
     #Retrieving user data
     requestedUser = User.query.filter_by(user_name=username).first_or_404()
@@ -191,15 +212,10 @@ def getFriends(user_id):
     
 
 @app.route('/api/relationship', methods = ['POST', 'GET'])
+@authMiddleware
 def handleRelationships():
     
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-    
-    if(not user):
-        return jsonify({})
+    user = getattr(request, "user")
 
     if request.method == 'POST':
         #relationshipId note:
@@ -288,6 +304,7 @@ def handleRelationships():
 
 #Used for updating profile status
 @app.route('/api/profileUpdate/status', methods=['POST'])
+@authMiddleware
 def updateStatus():
 
     #StatusIds:
@@ -296,10 +313,7 @@ def updateStatus():
     #2 = do not disturb
     #3 = idle
 
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
     
     if not user:
         return jsonify({})
@@ -318,6 +332,7 @@ def updateStatus():
 
 #Used for updating profile icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
+@authMiddleware
 def updateProfileIcon():
     
     #Checking if file is valid
@@ -330,10 +345,7 @@ def updateProfileIcon():
     if not mimetype in ['image/png', 'image/jpeg']:
         return jsonify({})
     
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
     
     if not user:
         return jsonify({})
@@ -360,6 +372,7 @@ def updateProfileIcon():
 
 #Used for updating profile game library
 @app.route('/api/profileUpdate/library', methods=['POST'])
+@authMiddleware
 def updateProfileLibrary():
     
     #Data validation
@@ -370,11 +383,7 @@ def updateProfileLibrary():
     if gameId == None or action == None:
         return jsonify({})
     
-    #Checking for authentication
-    # (TODO: add this check as a middleware for certain routes instead of rewriting multiple times)
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
 
     if not user:
         return jsonify({})
@@ -469,16 +478,14 @@ def create_lobby():
 
 # Join lobby
 @app.route('/api/join-lobby', methods=['POST'])
+@authMiddleware
 def join_lobby():
     lobbyJoin = request.get_json()
     lobby_id = lobbyJoin.get('lobbyId')
     lobby_access_key = lobbyJoin.get('privateLobby')
     print(lobby_access_key)
 
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
 
     #Checks db to see if user is in a lobby 
     existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
@@ -620,11 +627,9 @@ def get_my_lobby():
 
 # Endpoint to set userservice if JWT in storage
 @app.route('/api/whoami', methods=['GET'])
+@authMiddleware
 def whoami():
-    # Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
     
     user_data = {
         'user_id': user.user_id,
@@ -635,12 +640,10 @@ def whoami():
 
 # Endpoint to see if user is in lobby
 @app.route('/api/in-lobby', methods=['GET'])
+@authMiddleware
 def in_lobby():
     print('hi')
-    # Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
 
     # Check if the user is in the lobby
     existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
@@ -652,12 +655,10 @@ def in_lobby():
 
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])
+@authMiddleware
 def post_rating():
     
-    #Checking for authentication
-    auth_token = request.headers.get("Authorization")
-    decoded_token = decode_token(auth_token)
-    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    user = getattr(request, "user")
 
     if(not user):
         return jsonify({})

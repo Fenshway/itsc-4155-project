@@ -41,6 +41,10 @@ export class UserServiceService {
     if(!value || !value.access_token){return;}
     const decodedData = this.jwtHelper.decodeToken(value.access_token);
     if(!decodedData){return;}
+    if(decodedData.error){
+      localStorage.removeItem("access_token");
+      return;
+    }
     this._user = value;
     this.userData = decodedData;
     this.userData["friends"] = [];
@@ -51,6 +55,7 @@ export class UserServiceService {
 
   clearUser() {
     this._user = undefined;
+    this.userData = undefined;
   }
 
   isInLobby(): boolean {
