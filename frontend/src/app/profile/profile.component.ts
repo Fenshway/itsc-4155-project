@@ -167,7 +167,6 @@ export class ProfileComponent {
         this.data.relationship = this.data.lastVerifiedRelationship;
       }
     });
-
   }
 
   blockUser() {
@@ -221,7 +220,6 @@ export class ProfileComponent {
         this.data.rating -= ratingChange;
       }
     });
-
   }
 
   changeStatus(event: any) {
