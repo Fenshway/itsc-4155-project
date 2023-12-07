@@ -112,15 +112,17 @@ class Lobby(db.Model):
     title = db.Column(db.String(50))
     description = db.Column(db.String(10000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+    priv = db.Column(db.Boolean, default=False)
 
     players = relationship('Lobby_Players', backref='lobby_player', lazy='dynamic')
 
-    def __init__(self, game_id, host_id, num_players, title, description):
+    def __init__(self, game_id, host_id, num_players, title, description, priv=False):
         self.game_id = game_id
         self.host_id = host_id
         self.num_players = num_players
         self.title = title
         self.description = description
+        self.priv = priv
 
     def __repr__(self):
         return '<host_id {}>'.format(self.host_id)
