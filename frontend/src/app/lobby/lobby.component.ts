@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { LobbyChatService } from '../services/lobby-chat.service';
@@ -10,11 +10,14 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.css']
 })
-export class LobbyComponent {
+export class LobbyComponent implements AfterViewChecked {
+  @ViewChild('chatContainer') private chatContainer!: ElementRef;
+
   lobbyData: any;
   lobbyMessages: { username: string, message: string }[] = [];
   messageToSend: string = '';
   username: string = '';
+  userColors: { [username: string]: string } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -26,13 +29,12 @@ export class LobbyComponent {
   ) {}
 
   ngOnInit(): void {
-    // Bad code but works for now
     const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
       const decodedToken = this.jwtHelper.decodeToken(accessToken);
       this.username = decodedToken?.username;
     }
-    //
+
     this.route.params.subscribe(params => {
       const lobbyId = +params['id'];
       const requestedLobby = { requestedLobby: lobbyId };
@@ -40,11 +42,10 @@ export class LobbyComponent {
       this.flaskService.getLobbyById(requestedLobby).subscribe({
         next: (data: any) => {
           this.lobbyData = data;
-          console.log(this.lobbyData)
 
           this.lobbyChatService.receiveMessages().subscribe(chatMessage => {
-            this.lobbyMessages.push({ username: chatMessage.username, message: chatMessage.message});
-            console.log('Chat Message', chatMessage);
+            this.setUserColor(chatMessage.username);
+            this.lobbyMessages.push({ username: chatMessage.username, message: chatMessage.message });
           });
 
           this.lobbyChatService.joinLobby(this.lobbyData.lobby.lobby_id, this.username);
@@ -52,7 +53,6 @@ export class LobbyComponent {
           this.lobbyChatService.receiveJoinNotifications().subscribe(joinNotification => {
             console.log(`${joinNotification.username} has joined the lobby.`);
           });
-
         },
         error: (error: any) => {
           console.error('Failed to load lobby data:', error);
@@ -62,9 +62,36 @@ export class LobbyComponent {
     });
   }
 
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   sendMessage(): void {
-    this.lobbyChatService.sendMessage(this.lobbyData.lobby.lobby_id, this.username, this.messageToSend)
+    this.lobbyChatService.sendMessage(this.lobbyData.lobby.lobby_id, this.username, this.messageToSend);
     this.messageToSend = '';
+  }
+
+  private setUserColor(username: string): void {
+    if (!this.userColors[username]) {
+      this.userColors[username] = this.getRandomColor();
+    }
+  }
+
+  private getRandomColor(): string {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
 
   leaveLobby(): void {
@@ -73,10 +100,11 @@ export class LobbyComponent {
       const lobbyToLeave = { lobbyToLeave: lobbyId };
       this.flaskService.leaveLobby(lobbyToLeave).subscribe({
         next: (result: any)=>{
+          this.userService.clearInLobby();
           this.router.navigate([`directory`]);
         },
         error: (error: any)=>{
-          console.log(JSON.stringify(error))
+          console.log(JSON.stringify(error));
         }
       });
     });
