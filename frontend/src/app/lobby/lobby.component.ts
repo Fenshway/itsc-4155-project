@@ -100,6 +100,7 @@ export class LobbyComponent implements AfterViewChecked {
       const lobbyToLeave = { lobbyToLeave: lobbyId };
       this.flaskService.leaveLobby(lobbyToLeave).subscribe({
         next: (result: any)=>{
+          this.userService.clearInLobby();
           this.router.navigate([`directory`]);
         },
         error: (error: any)=>{

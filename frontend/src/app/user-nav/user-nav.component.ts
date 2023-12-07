@@ -16,27 +16,52 @@ export class UserNavComponent {
     private router: Router,
     private jwtHelper: JwtHelperService,
     private flaskService: FlaskdataService
-    ) {}
-
-  gotoProfile() {
-    if(!this.userService.user) {
-      return;
+    ) {
+      this.flaskService.findOutIfInLobby().subscribe({
+        next: (data: any) => {
+          if (data.response === 'true') {
+            this.userService.setInLobby(true);
+          }
+        },
+        error: (error: any) => {
+          console.error('You are not in a lobby:', error);
+        }
+      });
     }
-    const userData = this.jwtHelper.decodeToken(this.userService.user.access_token);
+
+  ngOnInit() {}
+
+  gotoProfile(username: string) {
+    
     let reloadPage = false;
     const urlRootPath:string = this.router.url.split('/')[1];
     if(urlRootPath === "profile") {
       reloadPage = true;
     }
-    this.router.navigate([`/profile`, userData.username]).then(() => {
+    this.router.navigate([`/profile`, username]).then(() => {
       if(reloadPage) {
         window.location.reload();
       }
     });
+
+  }
+
+  gotoMyProfile() {
+
+    if(!this.userService.user) {
+      return;
+    }
+    const userData = this.jwtHelper.decodeToken(this.userService.user.access_token);
+    this.gotoProfile(userData.username);
+
   }
 
   userSessionActive() {
     return this.userService.user;
+  }
+
+  userInLobby() {
+    return this.userService.isInLobby();
   }
 
   isBouncing: boolean = true;
@@ -69,21 +94,10 @@ export class UserNavComponent {
   }
 
   logout() {
-    console.log('Click')
     this.userService.clearUser();
     localStorage.removeItem('access_token');
     console.log('Logout succesful')
     this.router.navigate(['/login']);
   }
-
-  dummyFriends = [
-    { name: 'Justin' },
-    { name: 'Xavier' },
-    { name: 'Miguel' },
-    { name: 'Nick' },
-    { name: 'Andrew' },
-    { name: 'Youngjin' }
-];
-
 
 }

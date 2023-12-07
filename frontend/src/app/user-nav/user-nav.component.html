@@ -8,8 +8,8 @@
     <div class="toolbar-divider"></div>
     <button routerLink="create-lobby" mat-button style="font-family: 'Montserrat', sans-serif">Create</button>
     <div class="toolbar-divider"></div>
-    <button (click)="gotoProfile()" mat-raised-button class="custom-profile-button">Profile</button>
-    <button mat-icon-button [ngClass]="{'bouncing-icon': isBouncing}" (click)="navigateToMyLobby()">
+    <button (click)="gotoMyProfile()" mat-raised-button class="custom-profile-button">Profile</button>
+    <button *ngIf="userInLobby()" mat-icon-button (click)="navigateToMyLobby()">
         <mat-icon>games</mat-icon>
     </button>
 </mat-toolbar>
@@ -30,9 +30,13 @@
                 <span><mat-icon>group</mat-icon> Friends</span>
             </div>
             <div class="friends-list">
-                <mat-list-item *ngFor="let friend of dummyFriends">
-                    <button mat-button style="color: rgb(253, 255, 252);">
-                        <mat-icon>person</mat-icon> {{ friend.name }}
+                <mat-list-item *ngFor="let friend of (userService.userData ? userService.userData.friends : [])">
+                    <button (click)="gotoProfile(friend.username)" mat-button style="color: rgb(253, 255, 252);" title="View profile">
+                        <span *ngIf="friend.status == 0" id="online-status" class="online-status-online" title="Online"></span>
+                        <span *ngIf="friend.status == 1" id="online-status" class="online-status-offline" title="Offline"></span>
+                        <span *ngIf="friend.status == 2" id="online-status" class="online-status-dnd" title="Do Not Disturb"></span>
+                        <span *ngIf="friend.status == 3" id="online-status" class="online-status-idle" title="Idle"></span>
+                        {{ friend.username }}
                     </button>
                 </mat-list-item>
             </div>

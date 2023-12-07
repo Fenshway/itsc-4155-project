@@ -143,13 +143,20 @@ body > :not(#game-library-popup) {
     background-color: rgba(180, 46, 22, 0.815);
 }
 
-#friend-request-pending {
+#friend-request-pending, #friend-request-blocked {
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 5px;
     padding-right: 5px;
     border: 1px solid black;
     border-radius: 5px;
+}
+
+#user-options-button {
+    margin-left: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .name-header {
@@ -187,17 +194,19 @@ h1, h2 {
 }
 
 .vote-button {
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     transition: .1s transform;
+    background: none;
+    filter: invert(1);
 }
 
 .vote-button:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .vote-button > img {
@@ -239,8 +248,8 @@ h1, h2 {
     flex-wrap: wrap;
     flex: 1 0 calc(33%);
     justify-content: center;
-    border-top: 2px solid rgba(0, 0, 0, 0.37);
-    border-bottom: 2px solid rgba(0, 0, 0, 0.37);
+    border-top: 2px solid rgba(255, 255, 255, 0.37);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.37);
     border-radius: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -316,7 +325,6 @@ h1, h2 {
 }
 
 .game-remove {
-    filter: invert();
     width: 100%;
 }
 
@@ -336,6 +344,9 @@ h1, h2 {
 }
 
 .game-add-container > img {
-    filter: invert();
     width: 50%;
+}
+
+#edit-library-button {
+    filter: invert(1);
 }

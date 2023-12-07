@@ -3,8 +3,10 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { LibraryPopupComponent } from './components/library-popup/library-popup.component';
+import { ReportPopupComponent } from './components/report-popup/report-popup.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import ProfileObserver from './profile.observer';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,6 +16,7 @@ import ProfileObserver from './profile.observer';
 export class ProfileComponent {
 
   private libraryPopup: MatDialogRef<LibraryPopupComponent>|undefined;
+  private reportPopup: MatDialogRef<ReportPopupComponent>|undefined;
   session_username:string = "";
   profileObserver: ProfileObserver|undefined;
 
@@ -26,13 +29,15 @@ export class ProfileComponent {
     lastVerifiedRelationship: -1,
     status: 0,
     lastVerifiedStatus: 0,
+    rateChange: 0,
   }
 
   constructor(
     private flaskService: FlaskdataService,
     private jwtHelper: JwtHelperService,
     private route: ActivatedRoute,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private userService: UserServiceService) {
 
     this.data.username = route.snapshot.paramMap.get("username") as string || "";
 
@@ -57,6 +62,7 @@ export class ProfileComponent {
       this.data.lastVerifiedRelationship = profileData.relationship;
       this.data.user_id = profileData.user_id;
       this.data.status = profileData.status;
+      this.data.rateChange = profileData.rateChange;
 
       if(profileData.icon){
         this.data.icon = "data:;base64," + profileData.icon;
@@ -121,10 +127,11 @@ export class ProfileComponent {
 
   }
 
-  changeFriendStatus(relationshipId: number) {
+  changeFriendStatus(relationshipId: number, overrideId: number = relationshipId) {
 
     //Updating relationship
-    this.data.relationship = relationshipId;
+    const previousRelationshipId: number = this.data.relationship;
+    this.data.relationship = overrideId;
 
     //Sending relationship update request
     const formData:FormData = new FormData();
@@ -139,7 +146,19 @@ export class ProfileComponent {
       if(!data.success){
         this.data.relationship = this.data.lastVerifiedRelationship;
       }else{
-        this.data.lastVerifiedRelationship = relationshipId;
+        this.data.lastVerifiedRelationship = overrideId;
+        if(overrideId === 3){ //Friend
+          this.userService.userData.friends.push({
+            "username": this.data.username,
+            "status": this.data.status,
+          });
+        }else if(previousRelationshipId === 3){ //Unfriend
+          const friendIndex: number = this.userService.userData.friends.findIndex((element: {username: string, status: number}) => {
+            return element.username === this.data.username;
+          });
+          if(friendIndex === -1){return;}
+          this.userService.userData.friends.splice(friendIndex, 1);
+        }
       }
 
     //Revert update upon backend error (url not reached)
@@ -150,16 +169,55 @@ export class ProfileComponent {
     });
   }
 
+  blockUser() {
+    
+    const overrideId: number = this.data.relationship === 5 ? 7 : 4;
+    this.changeFriendStatus(4, overrideId);
+    
+  }
+
+  unblockUser() {
+    
+    const overrideId: number = this.data.relationship === 7 ? 5 : 0;
+    this.changeFriendStatus(0, overrideId);
+
+  }
+
+  reportUser() {
+
+    if(this.reportPopup){return;}
+
+    //Open library dialog popup
+    this.reportPopup = this.dialog.open(ReportPopupComponent, {
+      data: {
+        username: this.data.username,
+      },
+      panelClass: "report-popup",
+      width: "50%",
+    })
+
+    //Listen to dialog close
+    this.reportPopup.afterClosed().subscribe(() => {
+      this.reportPopup = undefined;
+    })
+
+  }
+
   changeRating(rating: number) {
 
     //Sending rating update request
+    const ratingChange: number = this.data.rateChange === rating ? -rating : (this.data.rateChange !== 0 ? rating * 2 : rating);
+    this.data.rateChange += ratingChange;
+    this.data.rating += ratingChange;
+
     const formData:FormData = new FormData();
     formData.set("user_id", this.data.user_id.toString());
-    formData.set("vote", rating.toString());
+    formData.set("vote", this.data.rateChange.toString());
 
-    this.flaskService.updateRating(formData).subscribe((data: {rating?: number}) => {
-      if(data.rating){
-        this.data.rating = data.rating;
+    this.flaskService.updateRating(formData).subscribe((data: {success?: number}) => {
+      if(!data.success){
+        this.data.rateChange -= ratingChange;
+        this.data.rating -= ratingChange;
       }
     });
   }

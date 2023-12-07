@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UserServiceService } from '../services/user-service.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { FlaskdataService } from '../services/flaskdata.service';
 
 @Component({
   selector: 'app-user-sidenav',
@@ -15,7 +16,7 @@ export class UserSidenavComponent {
   constructor(
     private userService: UserServiceService,
     private router: Router,
-    private jwtHelper: JwtHelperService
+    private jwtHelper: JwtHelperService,
   ) {}
 
   toggleSubMenu(subMenu: string, event: Event) {

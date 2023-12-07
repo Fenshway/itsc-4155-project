@@ -13,8 +13,8 @@
             <h2>Players in Lobby</h2>
             <ul>
                 <li *ngFor="let player of lobbyData.lobby.players">
-                    <span class="player-name">{{ player }}</span>
-                    <span class="player-rating">Placeholder</span>
+                    <span class="player-name">{{ player.username }}</span>
+                    <span class="player-rating">{{ player.rating }}</span>
                 </li>
             </ul>
         </div>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="input-container">
-            <input [(ngModel)]="messageToSend" placeholder="Enter a message..">
+            <input [(ngModel)]="messageToSend" placeholder="Enter a message.." (keyup.enter)="sendMessage()">
             <button (click)="sendMessage()">Send</button>
         </div>
     </div>

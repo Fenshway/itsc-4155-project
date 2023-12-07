@@ -60,13 +60,39 @@
                             Unfriend
                         </button>
 
+                        <div *ngIf="data.relationship == 4 || data.relationship == 7" id="friend-request-blocked">
+                            Blocked
+                        </div>
+                        
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="User options" id="user-options-button">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+
+                        <mat-menu #menu="matMenu" xPosition="after" id="user-options">
+                            <button mat-menu-item (click)="reportUser()">
+                                <span>Report</span>
+                            </button>
+                            <button *ngIf="data.relationship != 4 && data.relationship != 7" mat-menu-item (click)="blockUser()">
+                                <span>Block</span>
+                            </button>
+                            <button *ngIf="data.relationship == 4 || data.relationship == 7" mat-menu-item (click)="unblockUser()">
+                                <span>Unblock</span>
+                            </button>
+                        </mat-menu>
+
                     </ng-template>
 
                 </div>
                 <div class="rating-section">
-                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)"><img src="../../assets/images/upvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="upvote" class="vote-button" title="Upvote" (click)="changeRating(1)">
+                        <mat-icon *ngIf="data.rateChange == 1">thumb_up_alt</mat-icon>
+                        <mat-icon *ngIf="data.rateChange != 1">thumb_up_off_alt</mat-icon>
+                    </button>
                     <h2>{{data.rating}} Rating</h2>
-                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)"><img src="../../assets/images/downvote.png"></button>
+                    <button *ngIf="!isProfileOwner()" id="downvote" class="vote-button" title="Downvote" (click)="changeRating(-1)">
+                        <mat-icon *ngIf="data.rateChange == -1">thumb_down_alt</mat-icon>
+                        <mat-icon *ngIf="data.rateChange != -1">thumb_down_off_alt</mat-icon>
+                    </button>
                     <!--
                     <div class="rating-stars" title="{{data.rating}} Stars">
                         <ng-container *ngFor="let star of [1,2,3,4,5]">
@@ -99,7 +125,7 @@
         <div id="game-library">
             <div id="library-header">
                 <h1>Game Library</h1>
-                <button *ngIf="isProfileOwner()" (click)="toggleEditLibrary()">
+                <button id="edit-library-button" *ngIf="isProfileOwner()" (click)="toggleEditLibrary()">
                     <img src="../../assets/images/edit.png">
                 </button>
             </div>

@@ -34,6 +34,7 @@ import { GameLobbiesComponent } from './game-lobbies/game-lobbies.component';
 import { LibraryPopupComponent } from './profile/components/library-popup/library-popup.component';
 import { LibraryGameSlotComponent } from './profile/components/library-game-slot/library-game-slot.component';
 import { HelpCenterComponent } from './help-center/help-center.component';
+import { ReportPopupComponent } from './profile/components/report-popup/report-popup.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -57,6 +58,7 @@ export function tokenGetter() {
     LibraryGameSlotComponent,
     GameLobbiesComponent,
     HelpCenterComponent
+    ReportPopupComponent
   ],
   imports: [
     MatSelectModule,
