@@ -7,11 +7,11 @@
             <p>If you encounter any issues or have suggestions, please feel free to report them using the form below. Our team will review your reports and get back to you with solutions as soon as possible.</p>
         </div>
         <div class="right-side">
-            <form>
-                <label for="emailUser">Email address</label>
-                <input type="email" id="emailUser" placeholder="name@example.com">
+            <form [formGroup]="messageForm" (ngSubmit)="onSubmit();">
+                <label for="email">Email address</label>
+                <input formControlName="email" type="email" id="email" placeholder="name@example.com">
                 <label for="message">Message</label>
-                <textarea id="message" rows="7"></textarea>
+                <textarea formControlName="message" id="message" rows="7"></textarea>
                 <button type="submit">Send Report</button>
             </form>
         </div>
