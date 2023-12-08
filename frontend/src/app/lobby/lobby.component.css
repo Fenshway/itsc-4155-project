@@ -41,6 +41,7 @@ body {
 
 .player-name {
     flex: 1;
+    cursor: pointer;
 }
 
 .player-rating {

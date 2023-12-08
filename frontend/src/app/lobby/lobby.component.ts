@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlaskdataService } from '../services/flaskdata.service';
 import { LobbyChatService } from '../services/lobby-chat.service';
@@ -19,6 +19,7 @@ export class LobbyComponent implements AfterViewChecked {
   username: string = '';
   userColors: { [username: string]: string } = {};
   lobbyCode: any;
+  @ViewChild('audioElement') private audioElement!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,7 +27,8 @@ export class LobbyComponent implements AfterViewChecked {
     private router: Router,
     private lobbyChatService: LobbyChatService,
     private userService: UserServiceService,
-    private jwtHelper: JwtHelperService
+    private jwtHelper: JwtHelperService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -48,12 +50,14 @@ export class LobbyComponent implements AfterViewChecked {
           this.lobbyChatService.receiveMessages().subscribe(chatMessage => {
             this.setUserColor(chatMessage.username);
             this.lobbyMessages.push({ username: chatMessage.username, message: chatMessage.message });
+            this.playMessageSound();
           });
 
           this.lobbyChatService.joinLobby(this.lobbyData.lobby.lobby_id, this.username);
 
           this.lobbyChatService.receiveJoinNotifications().subscribe(joinNotification => {
             console.log(`${joinNotification.username} has joined the lobby.`);
+            this.playMessageSound();
           });
         },
         error: (error: any) => {
@@ -62,6 +66,11 @@ export class LobbyComponent implements AfterViewChecked {
         }
       });
     });
+  }
+
+  private playMessageSound(): void {
+    const audio = this.audioElement.nativeElement as HTMLAudioElement;
+    audio.play();
   }
 
   ngAfterViewChecked() {
@@ -111,4 +120,19 @@ export class LobbyComponent implements AfterViewChecked {
       });
     });
   }
+
+  gotoProfile(username: string) {
+    
+    let reloadPage = false;
+    const urlRootPath:string = this.router.url.split('/')[1];
+    if(urlRootPath === "profile") {
+      reloadPage = true;
+    }
+    this.router.navigate([`/profile`, username]).then(() => {
+      if(reloadPage) {
+        window.location.reload();
+      }
+    });
+  }
+
 }
