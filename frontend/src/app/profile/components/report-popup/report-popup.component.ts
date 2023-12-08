@@ -17,6 +17,13 @@ export class ReportPopupComponent {
 
   onReport(message: string) {
 
+    const msg = { email: "imReporting@gmail.com", message: "User Report: " + message }
+    this.flaskService.sendHelpMsg(msg).subscribe({
+      next: (result: any) => {
+        console.log(result)
+      },
+    })
+
     this.dialog.closeAll();
 
   }

@@ -34,7 +34,6 @@ export class HelpCenterComponent {
   ) {}
 
   onSubmit() {
-    console.log('this works')
     if (this.messageForm.valid) {
       const email = this.messageForm.get('email')?.value;
       const message = this.messageForm.get('message')?.value;
