@@ -11,6 +11,7 @@ from flask_socketio import SocketIO, emit, join_room
 from datetime import timedelta
 from sqlalchemy import column, func
 from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
+from flask_mail import Mail, Message
 
 load_dotenv()
 
@@ -18,6 +19,14 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 db.init_app(app) # Initialize the Database
+
+app.config['MAIL_SERVER'] = "smtp.gmail.com"
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'quest.owner1@gmail.com'
+app.config['MAIL_PASSWORD'] = 'qghc tpzy tylg bhmu'
+mail = Mail(app)
 
 with app.app_context():
     db.create_all()
@@ -567,6 +576,10 @@ def get_lobby():
         'description': lobby.description,
         'date': lobby.date.isoformat()
     }
+
+    # Gets the host's username
+    host = User.query.get(lobby.host_id)
+    send_lobby['host'] = host.user_name
     
     lobby_players = Lobby_Players.query.filter_by(lobby_id=lobby_id).all()
     user_ids = [lobby_player.players_id for lobby_player in lobby_players]
@@ -703,6 +716,30 @@ def post_rating():
         return jsonify(response_data), 201
     else:
         return jsonify({'error': "Error updating rating"}), 400
+    
+@app.route('/api/send-help-message', methods = ['GET','POST'])
+def contact_page():
+    print('hi')
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        message = data.get('message')
+        print(email, message)
+        msg = Message('Form Submission from Quest help center',
+                  sender = 'quest.owner1@gmail.com',
+                  recipients = ['yjang6@uncc.edu'])
+
+    msg.body = """
+    Message from the forum:
+
+    From: {email}
+
+    The message is:
+    {message}
+    """.format(email = email, message = message)
+    mail.send(msg)
+
+    return jsonify({"message": "Thank you {email}! Your message has been submitted to the admin"})
     
 @socketio.on('connect')
 def handle_connect():

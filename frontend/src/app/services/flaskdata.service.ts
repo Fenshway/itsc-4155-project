@@ -90,14 +90,10 @@ export class FlaskdataService {
   }
 
   sendHelpMsg(credentials: any) {
-    return this.http.get(`${this.apiBaseUrl}/api/send-help_message`, getHttpOptions());
+    return this.http.post(`${this.apiBaseUrl}/api/send-help-message`, credentials, getHttpOptions());
   }
  
   findOutIfInLobby() {
     return this.http.get(`${this.apiBaseUrl}/api/in-lobby`, getHttpOptions());
-  }
-
-  joinPrivateLobby() {
-    return this.http.get(`${this.apiBaseUrl}/api/join-private-lobby`, getHttpOptions());
   }
 }

@@ -1,3 +1,4 @@
+<audio #audioElement id="messageSound" src="../../assets/message.mp3" preload="auto"></audio>
 <body>
     <div class="lobby-container">
         <div class="lobby-info">
@@ -5,6 +6,7 @@
                 <h2>{{ lobbyData.lobby.title }}</h2>
                 <p>{{ lobbyData.lobby.description }}</p>
                 <p>Lobby Code: {{ lobbyCode }}</p>
+                <p>Host: {{ lobbyData.lobby.host }}</p>
                 <button (click)="leaveLobby()" class="leave-lobby-button">Leave Lobby</button>
             </div>
         </div>
@@ -13,16 +15,21 @@
             <h2>Players in Lobby</h2>
             <ul>
                 <li *ngFor="let player of lobbyData.lobby.players">
-                    <span class="player-name">{{ player.username }}</span>
+                    <span (click)="gotoProfile(player.username)" class="player-name" [style.color]="player.username === lobbyData.lobby.host ? '#B8860B' : 'initial'">
+                        {{ player.username }}
+                    </span>
                     <span class="player-rating">{{ player.rating }}</span>
                 </li>
             </ul>
         </div>
     </div>
 
+    
+
     <div class="chat-box">
         <div class="chat-container" #chatContainer>
             <div *ngFor="let message of lobbyMessages" class="message-container">
+
                 <div class="username" [style.color]="userColors[message.username]">{{ message.username }}: </div>
                 <div class="message">{{ message.message }} </div>
             </div>

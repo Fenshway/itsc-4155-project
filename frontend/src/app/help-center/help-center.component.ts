@@ -13,18 +13,17 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class HelpCenterComponent {
 
   messageForm = new FormGroup({
-    emailUser: new FormControl('', [
-      Validators.required,
-      Validators.minLength(10)
+    email: new FormControl('', [
+      Validators.required
+
     ]),
     message: new FormControl('', [
-      Validators.required,
-      Validators.minLength(25)
+      Validators.required
+
     ])
   })
 
-  loginError? : string
-  formSubmitted = false;
+  error? : string
 
   constructor(
     private flaskService: FlaskdataService, 
@@ -35,36 +34,21 @@ export class HelpCenterComponent {
   ) {}
 
   onSubmit() {
-
+    console.log('this works')
     if (this.messageForm.valid) {
-      const email = this.messageForm.get('emailUser')?.value;
+      const email = this.messageForm.get('email')?.value;
       const message = this.messageForm.get('message')?.value;
 
-      const msg = { email, message }
+      const msg = { email: email, message: message }
       this.flaskService.sendHelpMsg(msg).subscribe({
         next: (result: any) => {
-        if (result && result.access_token) {
-          this.userService.user = result;
-          localStorage.setItem('access_token', result.access_token)
-  
-          //testing. delete later
-          console.log(this.jwtHelper.decodeToken(result.access_token.username))
-  
-          if (!this.jwtHelper.isTokenExpired(result.access_token)) {
-            console.log('Login successful');
-            this.router.navigate(['/directory']);
-          } else {
-            console.error('Token is expired');
-          }
-        } else {
-          console.error('Missing access token');
-        }      
-      },
-      error: (error: any) => {
-        this.loginError = error.error.error;
-      }    
+          console.log(result)
+        },
+        error: (error: any) => {
+          this.error = error.error.error;
+        }
       })
-    } else {
+    }  else {
       console.log('form validation failed')
     }
   }
