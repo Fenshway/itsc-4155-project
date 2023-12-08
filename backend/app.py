@@ -8,15 +8,24 @@ from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from flask_socketio import SocketIO, emit, join_room
-from datetime import timedelta
 from sqlalchemy import column, func
 from models.model import UserImage, User, db, Games, Lobby, Lobby_Players, User_games, Friends, UserRating
+from flask_mail import Mail, Message
 
 load_dotenv()
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+from flask_mail import Mail, Message
+app.config['MAIL_SERVER'] = "smtp.gmail.com"
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'quest.owner1@gmail.com'
+app.config['MAIL_PASSWORD'] = 'qghc tpzy tylg bhmu'
+mail = Mail(app)
+
 db.init_app(app) # Initialize the Database
 
 with app.app_context():
@@ -29,38 +38,11 @@ bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET')
 jwt = JWTManager(app)
 
-# Expiration for jwt
-expires = timedelta(days=365)
-
 @app.route('/')
 def index():
     from models.model import User
     print(User.query.all()) # Test [] when empty. This is how a query would be run from inside a Flask instance
     return render_template('index.html')
-
-#Authentication middleware
-def authMiddleware(callback):
-
-    @wraps(callback)
-    def decoratedFunction(*args, **kwargs):
-        
-        auth_token = request.headers.get("Authorization")
-        if not auth_token:
-            return jsonify({'error': "Authentication failed"}), 400
-        
-        decoded_token = None
-        try:
-            decoded_token = decode_token(auth_token)
-        except:
-           return jsonify({'error': "Authentication failed"}), 400
-        
-        user = User.query.filter_by(user_name=decoded_token.get("username")).first()
-        setattr(request, "user", user)
-
-        return callback(*args, **kwargs)
-    
-    return decoratedFunction
-        
 
 #json user object. keys = username, email, password. Path used for account registration
 @app.route('/api/register', methods=['POST'])
@@ -94,7 +76,7 @@ def register():
             'user_id': new_user.user_id,
             'username': new_user.user_name,
         }
-        access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data, expires_delta=expires)
+        access_token = create_access_token(identity=new_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
 
 #user login
@@ -117,7 +99,7 @@ def login():
             'user_id': existing_user.user_id,
             'username': existing_user.user_name,
         }
-        access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data, expires_delta=expires)
+        access_token = create_access_token(identity=existing_user.user_name, additional_claims=user_data)
         return jsonify({'access_token': access_token}), 200
 
 # Testing for Image Upload
@@ -138,10 +120,14 @@ def testImage():
     return render_template('fetchImage.html')
 
 @app.route('/api/profile/<username>', methods=['GET'])
-@authMiddleware
 def getProfile(username):
 
-    user = getattr(request, "user")
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+    if(not user):
+       return jsonify({})
 
     #Retrieving user data
     requestedUser = User.query.filter_by(user_name=username).first_or_404()
@@ -161,27 +147,17 @@ def getProfile(username):
     #1 = pending; route requester -> profile user
     #2 = pending; profile user -> route requester
     #3 = friends
-    #4 = blocked; route requester -> profile user
-    #5 = blocked; profile user -> route requester
-    #6 = blocked; route requester <-> profile user
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
     outgoingRelationshipData = Friends.query.filter_by(user_id = user.user_id, friend_id = requestedUser.user_id).first()
     incomingRelationshipData = Friends.query.filter_by(user_id = requestedUser.user_id, friend_id = user.user_id).first()
     relationship = 0
-
-    if incomingRelationshipData and outgoingRelationshipData and incomingRelationshipData.relationship_stat == 4 and outgoingRelationshipData.relationship_stat == 4:
-        relationship = 6
-
-    elif outgoingRelationshipData:
+    if outgoingRelationshipData:
         relationship = outgoingRelationshipData.relationship_stat
         
     elif incomingRelationshipData:
         if incomingRelationshipData.relationship_stat == 1:
             relationship = 2
-        elif incomingRelationshipData.relationship_stat == 4:
-            relationship = 5
-    
-    #Determining rating vote
-    vote = UserRating.query.filter_by(judge_id=user.user_id, user_id=requestedUser.user_id).first()
     
     user_data = {
         'user_id': requestedUser.user_id,
@@ -191,120 +167,78 @@ def getProfile(username):
         'library': userGames,
         'relationship': relationship,
         'status': requestedUser.user_status,
-        'rateChange': vote and vote.rateChange or 0,
     }
     
     return jsonify(user_data)
 
-def getFriends(user_id):
-    
-    userFriendsQuery = Friends.query.filter_by(user_id=user_id, relationship_stat=3).all() or []
-    userFriends = []
-    
-    for query in userFriendsQuery:
-        friendData = User.query.filter_by(user_id=query.friend_id).first()
-        userFriends.append({
-            'username': friendData.user_name,
-            'status': friendData.user_status,
-        })
+@app.route('/api/relationship', methods = ['POST'])
+def updateRelationship():
 
-    return userFriends
+    #relationshipId note:
+    #0 = none
+    #1 = pending; route requester -> profile user
+    #2 = pending; profile user -> route requester
+    #3 = friends
+    #dont worry about this: 4 = blocked; route requester -> profile user
+    #dont worry about this: 5 = blocked; profile user -> route requester
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
+    if(not user):
+        return jsonify({})
+
+    #Data validation
+    data = request.form
+    receieverId = int(data.get('user_id'))
+    relationshipId = int(data.get('relationship'))
     
+    if receieverId == None or relationshipId == None:
+        return jsonify({})
 
-@app.route('/api/relationship', methods = ['POST', 'GET'])
-@authMiddleware
-def handleRelationships():
+    existingOutgoingRequest = Friends.query.filter_by(user_id = user.user_id, friend_id = receieverId).first()
+    existingIncomingRequest = Friends.query.filter_by(user_id = receieverId, friend_id = user.user_id).first()
+    hasExistingRelationship = existingIncomingRequest != None or existingOutgoingRequest != None
+    hasMutualRelationship = existingIncomingRequest != None and existingOutgoingRequest != None
+    hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
+    success = False
     
-    user = getattr(request, "user")
-
-    if request.method == 'POST':
-        #relationshipId note:
-        #0 = none
-        #1 = pending; route requester -> profile user
-        #2 = pending; profile user -> route requester
-        #3 = friends
-        #4 = blocked; route requester -> profile user
-        #5 = blocked; profile user -> route requester
-        #6 = blocked; route requester <-> profile user
-
-        #Data validation
-        data = request.form
-        receieverId = int(data.get('user_id'))
-        relationshipId = int(data.get('relationship'))
+    if relationshipId == 0 and hasMutualRelationship: #Unfriend operation
+        if existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
+            db.session.delete(existingOutgoingRequest)
+            db.session.flush()
+            db.session.commit()
         
-        if receieverId == None or relationshipId == None:
-            return jsonify({})
-
-        existingOutgoingRequest = Friends.query.filter_by(user_id = user.user_id, friend_id = receieverId).first()
-        existingIncomingRequest = Friends.query.filter_by(user_id = receieverId, friend_id = user.user_id).first()
-        hasExistingRelationship = existingIncomingRequest != None or existingOutgoingRequest != None
-        hasMutualRelationship = existingIncomingRequest != None and existingOutgoingRequest != None
-        hasNoRelationship = existingIncomingRequest == None and existingOutgoingRequest == None
-        success = False
-        
-        if relationshipId == 0:
-            
-            #Unfriend operation
-            if hasMutualRelationship and existingOutgoingRequest.relationship_stat == 3 and existingIncomingRequest.relationship_stat == 3:
-                db.session.delete(existingOutgoingRequest)
-                db.session.delete(existingIncomingRequest)
-                db.session.flush()
-                db.session.commit()
-                success = True
-            
-            #Unblock operation
-            elif hasExistingRelationship and existingOutgoingRequest and existingOutgoingRequest.relationship_stat == 4:
-                db.session.delete(existingOutgoingRequest)
-                db.session.flush()
-                db.session.commit()
-                success = True
-
-        elif relationshipId == 1 and hasNoRelationship: #Send friend request operation
-            newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=1)
-            db.session.add(newRequest)
+            db.session.delete(existingIncomingRequest)
             db.session.flush()
             db.session.commit()
             success = True
 
-        elif relationshipId == 3: #Accept friend request operation
-            if existingOutgoingRequest == None and existingIncomingRequest != None and existingIncomingRequest.relationship_stat == 1:
-                existingIncomingRequest.relationship_stat = 3
-                newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=3)
-                db.session.add(newRequest)
-                db.session.flush()
-                db.session.commit()
-                success = True
-        
-        elif relationshipId == 4: #Block operation
-            
-            #Delete incoming request if it exists (and isn't a block)
-            if existingIncomingRequest and existingIncomingRequest.relationship_stat != 4:
-                db.session.delete(existingIncomingRequest)
+    elif relationshipId == 1 and hasNoRelationship: #Send request operation
+        newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=1)
+        db.session.add(newRequest)
+        db.session.flush()
+        db.session.commit()
+        success = True
 
-            #Delete outgoing request if it exists
-            if existingOutgoingRequest:
-                db.session.delete(existingOutgoingRequest)
-
-            newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=4)
+    elif relationshipId == 3: #Accept friend request
+        if existingOutgoingRequest == None and existingIncomingRequest != None and existingIncomingRequest.relationship_stat == 1:
+            existingIncomingRequest.relationship_stat = 3
+            newRequest = Friends(user_id=user.user_id, friend_id=receieverId, relationship_stat=3)
             db.session.add(newRequest)
             db.session.flush()
             db.session.commit()
             success = True
-
-        if success:
-            return jsonify({'success': 1})
-        else:
-            return jsonify({})
-        
-    elif request.method == 'GET':
-        
-        return jsonify({
-            'friends': getFriends(user.user_id),
-        })
+    
+    if success:
+        return jsonify({'success': 1})
+    else:
+        return jsonify({})
 
 #Used for updating profile status
 @app.route('/api/profileUpdate/status', methods=['POST'])
-@authMiddleware
 def updateStatus():
 
     #StatusIds:
@@ -313,7 +247,10 @@ def updateStatus():
     #2 = do not disturb
     #3 = idle
 
-    user = getattr(request, "user")
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
     
     if not user:
         return jsonify({})
@@ -332,7 +269,6 @@ def updateStatus():
 
 #Used for updating profile icon
 @app.route('/api/profileUpdate/profileIcon', methods=['POST'])
-@authMiddleware
 def updateProfileIcon():
     
     #Checking if file is valid
@@ -345,7 +281,10 @@ def updateProfileIcon():
     if not mimetype in ['image/png', 'image/jpeg']:
         return jsonify({})
     
-    user = getattr(request, "user")
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
     
     if not user:
         return jsonify({})
@@ -372,7 +311,6 @@ def updateProfileIcon():
 
 #Used for updating profile game library
 @app.route('/api/profileUpdate/library', methods=['POST'])
-@authMiddleware
 def updateProfileLibrary():
     
     #Data validation
@@ -383,7 +321,11 @@ def updateProfileLibrary():
     if gameId == None or action == None:
         return jsonify({})
     
-    user = getattr(request, "user")
+    #Checking for authentication
+    # (TODO: add this check as a middleware for certain routes instead of rewriting multiple times)
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
 
     if not user:
         return jsonify({})
@@ -441,7 +383,6 @@ def create_lobby():
     lobby_description = lobby.get('description')
     lobby_size = lobby.get('lobbySize')
     host_id = lobby.get('userId')
-    private_lobby = lobby.get('privateLobby')
 
     # Get game ID based on name
     game = Games.query.filter_by(game_name=lobby_game).first()
@@ -461,7 +402,6 @@ def create_lobby():
         title=lobby_title,
         num_players=lobby_size,
         description=lobby_description,
-        priv=private_lobby
     )
 
     db.session.add(new_lobby)
@@ -478,14 +418,14 @@ def create_lobby():
 
 # Join lobby
 @app.route('/api/join-lobby', methods=['POST'])
-@authMiddleware
 def join_lobby():
     lobbyJoin = request.get_json()
     lobby_id = lobbyJoin.get('lobbyId')
-    lobby_access_key = lobbyJoin.get('privateLobby')
-    print(lobby_access_key)
 
-    user = getattr(request, "user")
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
 
     #Checks db to see if user is in a lobby 
     existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
@@ -494,14 +434,9 @@ def join_lobby():
     
     #Checking open space in lobby
     lobby = Lobby.query.filter_by(lobby_id=lobby_id).first()
-
-    if lobby.priv == True and lobby_access_key == False:
-        return jsonify({'error': 'Lobby is private'}), 400
-
     players_in_lobby = len(set(player.players_id for player in lobby.players))
     if players_in_lobby >= lobby.num_players:
         return jsonify({'error': 'Lobby is full'}), 400
-    
 
     new_LPlayer = Lobby_Players(lobby_id=lobby_id, players_id=user.user_id)
 
@@ -572,9 +507,13 @@ def get_lobby():
     user_ids = [lobby_player.players_id for lobby_player in lobby_players]
     users = User.query.filter(User.user_id.in_(user_ids)).all()
 
-    # Add usernames and ratings to the lobby_info dict
-    user_info = [{'username': user.user_name, 'rating': user.user_rating} for user in users]
-    send_lobby['players'] = user_info
+    # Add usernames to the lobby_info dict
+    usernames = [user.user_name for user in users]
+    send_lobby['players'] = usernames
+
+    # Add user ratings to the lobby_info dict
+    user_ratings = [user.user_rating for user in users]
+    send_lobby['ratings'] = user_ratings
 
     return jsonify({'lobby': send_lobby, 'message': "Joined lobby successfully"})
 
@@ -625,49 +564,39 @@ def get_my_lobby():
     else :
         return jsonify({'message': 'User is not in a lobby'}), 200
 
-# Endpoint to set userservice if JWT in storage
+#Endpoint to set userservice if JWT in storage
 @app.route('/api/whoami', methods=['GET'])
-@authMiddleware
 def whoami():
-    user = getattr(request, "user")
-    
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
+
     user_data = {
         'user_id': user.user_id,
-        'username': user.user_name,
+        'username': user.user_name
     }
 
     return jsonify(user_data)   
 
-# Endpoint to see if user is in lobby
-@app.route('/api/in-lobby', methods=['GET'])
-@authMiddleware
-def in_lobby():
-    print('hi')
-    user = getattr(request, "user")
-
-    # Check if the user is in the lobby
-    existing_player = Lobby_Players.query.filter_by(players_id=user.user_id).first()
-
-    if existing_player is not None:
-        return jsonify({'response': 'true'})
-    else:
-        return jsonify({'response': 'false'})
-
 # Transfers the rates to the respective user in the DB
 @app.route('/api/rating', methods=['POST'])
-@authMiddleware
 def post_rating():
-    
-    user = getattr(request, "user")
+
+    #Checking for authentication
+    auth_token = request.headers.get("Authorization")
+    decoded_token = decode_token(auth_token)
+    user = User.query.filter_by(user_name=decoded_token.get("username")).first()
 
     if(not user):
         return jsonify({})
-    
+
     #Data validation
     data = request.form
     ratedUser_id = int(data.get('user_id'))
     rating = int(data.get('vote'))
-    if not ratedUser_id or rating == None or rating not in [0, 1, -1]:
+
+    if not ratedUser_id or not rating or rating not in [0, 1, -1]:
         return jsonify({})
 
     host_id = user.user_id
@@ -690,7 +619,7 @@ def post_rating():
                 new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
                 db.session.add(new_rating)
                 db.session.commit()
-            
+
             success = True
     elif rating != 0:
         new_rating = UserRating(judge_id=host_id, user_id=ratedUser_id, rateChange=rating)
@@ -699,11 +628,12 @@ def post_rating():
         success = True
 
     if success:
-        response_data = {'success': 1, 'message': "Rating processed"}
+        response_data = {'success': 1, 'Rated User ID: ': new_rating.user_id, 'message': "Rating processed", 'rating': User.query.filter_by(user_id=ratedUser_id).first().user_rating}
         return jsonify(response_data), 201
     else:
         return jsonify({'error': "Error updating rating"}), 400
     
+
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
@@ -735,3 +665,28 @@ def handle_message(data):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
+@app.route('/api/send-help-message', methods = ['GET','POST'])
+def contact_page():
+    print('hi')
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        message = data.get('message')
+        print(email, message)
+        msg = Message('Form Submission from Quest help center',
+                  sender = 'quest.owner1@gmail.com',
+                  recipients = ['yjang6@uncc.edu'])
+    
+    msg.body = """
+    Message from the forum:
+
+    From: {email}
+
+    The message is:
+    {message}
+    """.format(email = email, message = message)
+    mail.send(msg)
+    
+    return jsonify({"message": "Thank you {email}! Your message has been submitted to the admin"})
+
