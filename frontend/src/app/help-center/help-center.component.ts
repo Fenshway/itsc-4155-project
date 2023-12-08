@@ -1,8 +1,5 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { FlaskdataService } from '../services/flaskdata.service';
-import { UserServiceService } from '../services/user-service.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -23,14 +20,11 @@ export class HelpCenterComponent {
     ])
   })
 
-  error? : string
+  errorMsg? : string
+  successMsg? : string
 
   constructor(
-    private flaskService: FlaskdataService, 
-    private jwtHelper: JwtHelperService, 
-    private router: Router,
-    private userService: UserServiceService
-
+    private flaskService: FlaskdataService
   ) {}
 
   onSubmit() {
@@ -42,9 +36,10 @@ export class HelpCenterComponent {
       this.flaskService.sendHelpMsg(msg).subscribe({
         next: (result: any) => {
           console.log(result)
+          this.successMsg = result.message;
         },
         error: (error: any) => {
-          this.error = error.error.error;
+          this.errorMsg = error;
         }
       })
     }  else {

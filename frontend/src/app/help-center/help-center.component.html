@@ -7,6 +7,8 @@
             <p>If you encounter any issues or have suggestions, please feel free to report them using the form below. Our team will review your reports and get back to you with solutions as soon as possible.</p>
         </div>
         <div class="right-side">
+            <div style="font-size: 30px;" *ngIf="successMsg"><strong>Received. We appreciate your report and will reach out to you as soon as possible.</strong></div>
+            <div style="font-size: 30px;" *ngIf="errorMsg"><strong>Error. Please try again later.</strong></div>
             <form [formGroup]="messageForm" (ngSubmit)="onSubmit();">
                 <label for="email">Email address</label>
                 <input formControlName="email" type="email" id="email" placeholder="name@example.com">

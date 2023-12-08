@@ -727,7 +727,7 @@ def contact_page():
         print(email, message)
         msg = Message('Form Submission from Quest help center',
                   sender = 'quest.owner1@gmail.com',
-                  recipients = ['yjang6@uncc.edu'])
+                  recipients = ['jprivet6@uncc.edu'])
 
     msg.body = """
     Message from the forum:
